@@ -1,5 +1,8 @@
 using CareConnect.API.Data;
 using CareConnect.API.Repositories.Patients;
+using CareConnect.API.Repositories.Users;
+using CareConnect.API.Repositories.CarePlans;
+using CareConnect.API.Repositories.TaskLogs;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -17,7 +20,10 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 // Registro do nosso Repositório
-builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IPatientRepositories, PatientRepositories>();
+builder.Services.AddScoped<IUserRepositories, UserRepositories>();
+builder.Services.AddScoped<ICarePlanRepositories, CarePlanRepositories>();
+builder.Services.AddScoped<ITaskLogRepositories, TaskLogRepositories>();
 
 var app = builder.Build();
 

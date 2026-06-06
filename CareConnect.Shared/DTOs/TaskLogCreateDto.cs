@@ -1,10 +1,10 @@
 using System;
+using CareConnect.Shared.Models;
 
-namespace CareConnect.Shared.Models;
+namespace CareConnect.Shared.DTOs;
 
-public class TaskLog
+public class TaskLogCreateDto
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
     public Guid CarePlanId { get; set; }
     public Guid ExecutorId { get; set; }
     public DateTime TimestampExecucao { get; set; }

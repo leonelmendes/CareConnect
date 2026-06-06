@@ -4,11 +4,11 @@ using CareConnect.Shared.Models;
 
 namespace CareConnect.API.Repositories.Patients;
 
-public class PatientRepository : IPatientRepository
+public class PatientRepositories : IPatientRepositories
 {
     private readonly AppDbContext _context;
 
-    public PatientRepository(AppDbContext context)
+    public PatientRepositories(AppDbContext context)
     {
         _context = context;
     }

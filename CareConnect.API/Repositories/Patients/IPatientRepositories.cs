@@ -2,7 +2,7 @@ using CareConnect.Shared.Models;
 
 namespace CareConnect.API.Repositories.Patients;
 
-public interface IPatientRepository
+public interface IPatientRepositories
 {
     Task<IEnumerable<Patient>> GetAllAsync();
     Task<Patient?> GetByIdAsync(Guid id);

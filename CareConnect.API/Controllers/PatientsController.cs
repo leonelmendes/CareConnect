@@ -9,9 +9,9 @@ namespace CareConnect.API.Controllers;
 [Route("api/[controller]")]
 public class PatientsController : ControllerBase
 {
-    private readonly IPatientRepository _patientRepository;
+    private readonly IPatientRepositories _patientRepository;
 
-    public PatientsController(IPatientRepository patientRepository)
+    public PatientsController(IPatientRepositories patientRepository)
     {
         _patientRepository = patientRepository;
     }

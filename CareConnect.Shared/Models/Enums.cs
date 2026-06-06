@@ -14,7 +14,7 @@ public enum PlanType
     Fisioterapia
 }
 
-public enum TaskStatus
+public enum CareTaskStatus
 {
     Pendente,
     Realizado,
