@@ -1,10 +1,12 @@
 using CareConnect.API.Repositories.TaskLogs;
 using CareConnect.Shared.DTOs;
 using CareConnect.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CareConnect.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class TaskLogsController : ControllerBase

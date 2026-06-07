@@ -2,9 +2,11 @@ using Microsoft.AspNetCore.Mvc;
 using CareConnect.Shared.Models;
 using CareConnect.Shared.DTOs;
 using CareConnect.API.Repositories.CarePlans;
+using Microsoft.AspNetCore.Authorization;
 
 namespace CareConnect.API.Controllers;
 
+[Authorize]
 [ApiController]
 [Route("api/[controller]")]
 public class CarePlansController : ControllerBase
