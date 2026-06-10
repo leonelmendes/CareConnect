@@ -13,20 +13,65 @@ public class PatientRepositories : IPatientRepositories
         _context = context;
     }
 
-    public async Task<IEnumerable<Patient>> GetAllAsync()
+    public async Task<IEnumerable<Patient>> GetAllByGestorIdAsync(Guid gestorId)
     {
-        return await _context.Patients.ToListAsync();
+        return await _context.Patients
+            .Where(p => p.GestorId == gestorId && p.Ativo)
+            .OrderByDescending(p => p.DataCriacao)
+            .ToListAsync();
     }
 
-    public async Task<Patient?> GetByIdAsync(Guid id)
+    public async Task<Patient?> GetByIdAsync(Guid id, Guid gestorId)
     {
-        return await _context.Patients.FindAsync(id);
+        return await _context.Patients
+            .FirstOrDefaultAsync(p => p.Id == id && p.GestorId == gestorId && p.Ativo);
     }
 
-    public async Task<Patient> AddAsync(Patient patient)
+    public async Task<Patient> CreateAsync(Patient patient)
     {
-        _context.Patients.Add(patient);
+        // O ID já é gerado automaticamente pelo modelo, apenas adicionamos e guardamos
+        await _context.Patients.AddAsync(patient);
         await _context.SaveChangesAsync();
+        
         return patient;
+    }
+
+    public async Task<Patient?> UpdateAsync(Guid id, Patient patientAtualizado, Guid gestorId)
+    {
+        var patientExistente = await GetByIdAsync(id, gestorId);
+
+        if (patientExistente == null)
+        {
+            return null; // O controlador vai saber que deve devolver um 404 Not Found
+        }
+
+        // Atualizamos apenas os campos permitidos
+        patientExistente.Nome = patientAtualizado.Nome;
+        patientExistente.DataNascimento = patientAtualizado.DataNascimento;
+        patientExistente.Contacto = patientAtualizado.Contacto;
+        patientExistente.ContactoEmergencia = patientAtualizado.ContactoEmergencia;
+        patientExistente.CondicoesMedicas = patientAtualizado.CondicoesMedicas;
+        patientExistente.Alergias = patientAtualizado.Alergias;
+        patientExistente.Notas = patientAtualizado.Notas;
+
+        await _context.SaveChangesAsync();
+        
+        return patientExistente;
+    }
+
+    public async Task<bool> DeactivateAsync(Guid id, Guid gestorId)
+    {
+        var patient = await GetByIdAsync(id, gestorId);
+
+        if (patient == null)
+        {
+            return false;
+        }
+
+        // Soft Delete: Apenas mudamos o estado para falso
+        patient.Ativo = false;
+        await _context.SaveChangesAsync();
+
+        return true;
     }
 }

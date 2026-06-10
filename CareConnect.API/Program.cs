@@ -10,21 +10,15 @@ using Microsoft.OpenApi; // <-- Adicionado para corrigir as referências do Swag
 
 var builder = WebApplication.CreateBuilder(args);
 
-// ==========================================
-// 1. BASE DE DADOS
-// ==========================================
+// BASE DE DADOS
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
 
-// ==========================================
-// 2. CONTROLADORES E ROTAS (Apenas 1 vez)
-// ==========================================
+// CONTROLADORES E ROTAS
 builder.Services.AddControllers(); 
 builder.Services.AddEndpointsApiExplorer();
 
-// ==========================================
-// 3. REPOSITÓRIOS (Injeção de Dependências)
-// ==========================================
+// REPOSITÓRIOS (Injeção de Dependências)
 builder.Services.AddScoped<IPatientRepositories, PatientRepositories>();
 builder.Services.AddScoped<IUserRepositories, UserRepositories>();
 builder.Services.AddScoped<ICarePlanRepositories, CarePlanRepositories>();

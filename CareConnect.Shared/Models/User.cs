@@ -1,4 +1,5 @@
 using System;
+using System.Text.Json.Serialization;
 
 namespace CareConnect.Shared.Models;
 
@@ -11,4 +12,11 @@ public class User
     public string PasswordHash { get; set; } = string.Empty;
     public DateTime CreatedAt { get; set; }
     public UserRole Role { get; set; }
+
+    // Propriedades de Navegação (Relações)
+    [JsonIgnore]
+    public ICollection<TaskLog> TarefasExecutadas { get; set; } = new List<TaskLog>();
+    
+    [JsonIgnore]
+    public ICollection<Patient> PacientesGeridos { get; set; } = new List<Patient>();
 }

@@ -1,11 +1,30 @@
+using System;
+using System.Collections.Generic;
+using System.Text.Json.Serialization;
+
 namespace CareConnect.Shared.Models;
 
 public class Patient
 {
     public Guid Id { get; set; } = Guid.NewGuid();
+    
     public string Nome { get; set; } = string.Empty;
     public DateTime DataNascimento { get; set; }
+    public string? Contacto { get; set; }
+    public string? ContactoEmergencia { get; set; }
     public string CondicoesMedicas { get; set; } = string.Empty;
-    
+    public string? Alergias { get; set; }
+    public string? Notas { get; set; }
+    public bool Ativo { get; set; } = true;
+    public DateTime DataCriacao { get; set; } = DateTime.UtcNow;
+
+    // Chave Estrangeira (Guarda apenas o ID do Gestor)
     public Guid GestorId { get; set; }
+
+    // Propriedades de Navegação (Obrigatórias para o AppDbContext funcionar)
+    [JsonIgnore]
+    public User? Gestor { get; set; }
+    
+    [JsonIgnore]
+    public ICollection<CarePlan> CarePlans { get; set; } = new List<CarePlan>();
 }
