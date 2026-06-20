@@ -74,4 +74,19 @@
 	  <ProjectReference Include="..\CareConnect.Shared\CareConnect.Shared.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Models\" />
+	  <Folder Include="ViewModels\" />
+	  <Folder Include="Services\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <MauiXaml Update="Shells\CuidadorShell.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Shells\GestorShell.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	</ItemGroup>
+
 </Project>

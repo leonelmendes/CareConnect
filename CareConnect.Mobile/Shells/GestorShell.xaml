@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<Shell
+    x:Class="CareConnect.Mobile.Shells.GestorShell"
+    xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+    xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    Shell.FlyoutBehavior="Disabled">
+
+    <!-- TabBar exclusivo para ferramentas de Administração -->
+    <TabBar>
+        <Tab Title="Início">
+            <ShellContent>
+                <ContentPage Title="Dashboard Gestor" BackgroundColor="#FAFAFA" />
+            </ShellContent>
+        </Tab>
+        <Tab Title="Utentes">
+            <ShellContent>
+                <ContentPage Title="Gestão de Utentes" BackgroundColor="#FAFAFA" />
+            </ShellContent>
+        </Tab>
+        <Tab Title="Planos">
+            <ShellContent>
+                <ContentPage Title="Planos de Cuidados" BackgroundColor="#FAFAFA" />
+            </ShellContent>
+        </Tab>
+        <Tab Title="Perfil">
+            <ShellContent>
+                <ContentPage Title="O Meu Perfil" BackgroundColor="#FAFAFA" />
+            </ShellContent>
+        </Tab>
+    </TabBar>
+</Shell>
