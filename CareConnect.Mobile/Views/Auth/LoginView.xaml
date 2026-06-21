@@ -7,13 +7,22 @@
     <ScrollView>
         <VerticalStackLayout Padding="30,50,30,30" Spacing="25">
             
-            <Image Source="careconnect_logo.png" 
-                   HeightRequest="50" 
-                   HorizontalOptions="Center" 
-                   Margin="0,0,0,20"/>
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
+                <Image Source="logo_careconnect" 
+                   HeightRequest="36" 
+                   HorizontalOptions="Center" />
+                <Label Text="CareConnect" 
+                    FontFamily="Inter-Bold"
+                    FontSize="24" 
+                    FontAttributes="Bold" 
+                    TextColor="#1A1A1A" 
+                    VerticalOptions="Center"/>
+            
+            </HorizontalStackLayout>
 
             <VerticalStackLayout Spacing="5">
-                <Label Text="Welcome back" 
+                <Label Text="Bem-vindo(a) de volta"
+                    FontFamily="Inter-SemiBold" 
                        FontSize="26" 
                        FontAttributes="Bold" 
                        TextColor="#1A1A1A"
@@ -28,7 +37,7 @@
                 
                 <VerticalStackLayout Spacing="5">
                     <Label Text="Email" FontSize="12" TextColor="#1A1A1A" FontAttributes="Bold"/>
-                    <Border Stroke="#E0E0E0" StrokeThickness="1" BackgroundColor="White" Padding="15,0">
+                    <Border Stroke="pink" StrokeThickness="1" BackgroundColor="White" Padding="15,0">
                         <Border.StrokeShape>
                             <RoundRectangle CornerRadius="8"/>
                         </Border.StrokeShape>
