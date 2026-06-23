@@ -8,7 +8,9 @@
     <Color x:Key="Primary">#0056D2</Color>
     <Color x:Key="PrimaryDark">#ac99ea</Color>
     <Color x:Key="PrimaryDarkText">#242424</Color>
-    <Color x:Key="Secondary">#DFD8F7</Color>
+    <Color x:Key="Secondary">#64748B</Color>
+    <Color x:Key="SecondaryDarkText">#9880e5</Color>
+    <Color x:Key="StrokeEntry">#E2E8F0</Color>
     <Color x:Key="SecondaryText">#64748B</Color>
     <Color x:Key="Tertiary">#2B0B98</Color>
 

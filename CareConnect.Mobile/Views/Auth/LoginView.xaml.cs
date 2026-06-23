@@ -6,4 +6,11 @@ public partial class LoginView : ContentPage
     {
         InitializeComponent();
     }
+
+    [Obsolete]
+    public async void OnGoogleSignInClicked(object sender, EventArgs e)
+    {
+        // Lógica para iniciar o processo de login com o Google
+        await DisplayAlert("Login", "Iniciando login com o Google...", "OK");
+    }
 }

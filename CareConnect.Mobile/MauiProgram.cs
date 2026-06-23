@@ -7,6 +7,16 @@ public static class MauiProgram
 {
 	public static MauiApp CreateMauiApp()
 	{
+		Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("Placeholder", (h, v) =>
+		{
+		#if ANDROID
+		h.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Colors.Transparent.ToAndroid());
+		#endif
+		#if IOS
+		h.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
+		#endif
+		});
+
 		var builder = MauiApp.CreateBuilder();
 		builder
 			.UseMauiApp<App>()
