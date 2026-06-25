@@ -2,9 +2,9 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CareConnect.Mobile.Views.LoginView"
-             BackgroundColor="White">
+             NavigationPage.HasNavigationBar="False">
 
-    <ScrollView>
+    <ScrollView HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
         <VerticalStackLayout Padding="30,50,30,30" Spacing="25">
             
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
@@ -40,6 +40,7 @@
                     <Label Text="Email" FontSize="12" FontFamily="InterMedium" TextColor="#1A1A1A" FontAttributes="Bold"/>
                     <Border Stroke="{StaticResource StrokeEntry}" StrokeShape="RoundRectangle 8" StrokeThickness="1" BackgroundColor="White" Padding="15,0">
                         <Entry Placeholder="nome@exemplo.com" 
+                            Text="{Binding Email}"
                             BackgroundColor="Transparent"
                             FontFamily="InterRegular"
                             Keyboard="Email" 
@@ -56,14 +57,33 @@
                             TextColor="{StaticResource Primary}" 
                             FontSize="12" 
                             FontAttributes="Bold" 
-                            HorizontalTextAlignment="End"/>
+                            HorizontalTextAlignment="End">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Tapped="{Binding GoToForgotPasswordAsync}"/>
+                            </Label.GestureRecognizers>
+                        </Label>
                     </Grid>
                     <Border Stroke="{StaticResource StrokeEntry}" StrokeShape="RoundRectangle 8" StrokeThickness="1" BackgroundColor="White" Padding="15,0">
-                        <Entry Placeholder="A sua palavra-passe"
-                               IsPassword="True" 
+                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="3">
+                            <Entry Placeholder="A sua palavra-passe"
+                                x:Name="passwordEntry"
+                                Grid.Column="0"
+                               IsPassword="True"
                                FontFamily="InterRegular"
+                               Text="{Binding Password}"
                                TextColor="#1A1A1A" 
                                PlaceholderColor="{StaticResource SecondaryText}"/>
+                            <Image Source="ico_show_password" 
+                                Grid.Column="1"
+                                BackgroundColor="Transparent" 
+                                WidthRequest="20"
+                                HorizontalOptions="End" 
+                                VerticalOptions="Center">
+                                <Image.GestureRecognizers>
+                                    <TapGestureRecognizer Tapped="OnShowPasswordTapped"/>
+                                </Image.GestureRecognizers>
+                            </Image>
+                        </Grid>
                     </Border>
                 </VerticalStackLayout>
             </VerticalStackLayout>
@@ -75,7 +95,8 @@
                     CornerRadius="8" 
                     HeightRequest="50" 
                     FontAttributes="Bold"
-                    Margin="0,10,0,0"/>
+                    Margin="0,10,0,0"
+                    Command="{Binding LoginCommand}"/>
 
             <Grid ColumnDefinitions="*, Auto, *" Margin="0,10">
                 <BoxView Grid.Column="0" HeightRequest="1" Color="#E0E0E0" VerticalOptions="Center"/>
@@ -143,7 +164,11 @@
 
             <HorizontalStackLayout HorizontalOptions="Center" Margin="0,20,0,0">
                 <Label Text="Ainda não tem uma conta? " TextColor="#757575" FontSize="14"/>
-                <Label Text="Criar conta" TextColor="{StaticResource Primary}" FontSize="14" FontAttributes="Bold"/>
+                <Label Text="Criar conta" TextColor="{StaticResource Primary}" FontSize="14" FontAttributes="Bold">
+                    <Label.GestureRecognizers>
+                        <TapGestureRecognizer Tapped="{Binding GoToRegisterAsync}"/>
+                    </Label.GestureRecognizers>
+                </Label>
             </HorizontalStackLayout>
 
         </VerticalStackLayout>

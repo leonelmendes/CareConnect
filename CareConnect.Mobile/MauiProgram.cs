@@ -1,5 +1,8 @@
 ﻿using Microsoft.Extensions.Logging;
 using DotNet.Meteor.HotReload.Plugin;
+using CareConnect.Mobile.ViewModels.Auth;
+using CareConnect.Mobile.Views.Auth;
+using CareConnect.Mobile.Views;
 
 namespace CareConnect.Mobile;
 
@@ -7,17 +10,31 @@ public static class MauiProgram
 {
 	public static MauiApp CreateMauiApp()
 	{
+		#region Costumizacao do Entry para remover a borda padrão do Android e iOS
 		Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("Placeholder", (h, v) =>
 		{
-		#if ANDROID
+#if ANDROID
 		h.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Colors.Transparent.ToAndroid());
-		#endif
-		#if IOS
+#endif
+#if IOS
 		h.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
-		#endif
+#endif
 		});
+		#endregion
 
 		var builder = MauiApp.CreateBuilder();
+
+		#region Registro de Views e ViewModels(Injecao de dependencias)
+		builder.Services.AddTransient<ProfileSelectionViewModel>(); 
+		builder.Services.AddTransient<ProfileSelectionView>();
+
+		builder.Services.AddTransient<LoginViewModel>();
+		builder.Services.AddTransient<LoginView>();
+
+		builder.Services.AddTransient<RegisterStep1ViewModel>();
+		builder.Services.AddTransient<RegisterStep1View>();
+		#endregion
+		
 		builder
 			.UseMauiApp<App>()
 #if DEBUG
