@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentView xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CareConnect.Mobile.Components.BackButton">
+
+    <Grid WidthRequest="40" HeightRequest="40" HorizontalOptions="Start" VerticalOptions="Center">
+        <Grid.GestureRecognizers>
+            <TapGestureRecognizer Tapped="OnBackTapped" />
+        </Grid.GestureRecognizers>
+        
+        <Image Source="icon_arrow_back" WidthRequest="24" HeightRequest="24" HorizontalOptions="Start" VerticalOptions="Center" />
+    </Grid>
+
+</ContentView>

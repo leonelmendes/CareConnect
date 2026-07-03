@@ -6,7 +6,8 @@ using CareConnect.API.Repositories.TaskLogs;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.IdentityModel.Tokens;
-using Microsoft.OpenApi; // <-- Adicionado para corrigir as referências do Swagger
+using Microsoft.OpenApi;
+using CareConnect.API.Repositories.Auth; // <-- Adicionado para corrigir as referências do Swagger
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +24,7 @@ builder.Services.AddScoped<IPatientRepositories, PatientRepositories>();
 builder.Services.AddScoped<IUserRepositories, UserRepositories>();
 builder.Services.AddScoped<ICarePlanRepositories, CarePlanRepositories>();
 builder.Services.AddScoped<ITaskLogRepositories, TaskLogRepositories>();
+builder.Services.AddScoped<IAuthRepositories, AuthRepositories>();
 
 // ==========================================
 // 4. AUTENTICAÇÃO (Firebase)

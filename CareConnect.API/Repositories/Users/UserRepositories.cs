@@ -16,7 +16,6 @@ public class UserRepositories : IUserRepositories
 
     public async Task<User?> GetByFirebaseUidAsync(string firebaseUid)
     {
-        // Vai à base de dados procurar o primeiro utilizador que tenha este FirebaseUid
         return await _context.Users.FirstOrDefaultAsync(u => u.FirebaseUid == firebaseUid);
     }
 
@@ -35,5 +34,10 @@ public class UserRepositories : IUserRepositories
         _context.Users.Add(user);
         await _context.SaveChangesAsync();
         return user;
+    }
+
+    public async Task<User?> GetByEmailAsync(string email)
+    {
+        return await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
     }
 }

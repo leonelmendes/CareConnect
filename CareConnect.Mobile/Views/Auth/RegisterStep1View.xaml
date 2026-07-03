@@ -1,13 +1,16 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:components="clr-namespace:CareConnect.Mobile.Components"
              x:Class="CareConnect.Mobile.Views.Auth.RegisterStep1View"
              Title="RegisterStep1View"
-             NavigationPage.HasNavigationBar="False">
+             NavigationPage.HasNavigationBar="True">
 
     <ScrollView HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
-        <VerticalStackLayout Padding="30,50,30,30" Spacing="25">
-            
+        <VerticalStackLayout Padding="30,0,30,30" Spacing="25">
+
+            <components:BackButton />
+
             <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
                 <Image Source="logo_careconnect" 
                        HeightRequest="36" 
@@ -77,8 +80,8 @@
                                    VerticalOptions="Center"/>
                             <Image Source="ico_show_password" 
                                    Grid.Column="1"
-                                   WidthRequest="24"
-                                   HeightRequest="24"
+                                   WidthRequest="20"
+                                   HeightRequest="20"
                                    HorizontalOptions="End" 
                                    VerticalOptions="Center">
                                 <Image.GestureRecognizers>
@@ -104,8 +107,8 @@
                                    VerticalOptions="Center"/>
                             <Image Source="ico_show_password" 
                                    Grid.Column="1"
-                                   WidthRequest="24"
-                                   HeightRequest="24"
+                                   WidthRequest="20"
+                                   HeightRequest="20"
                                    HorizontalOptions="End" 
                                    VerticalOptions="Center">
                                 <Image.GestureRecognizers>
@@ -125,7 +128,7 @@
                     HeightRequest="50" 
                     CornerRadius="8" 
                     Margin="0, 10, 0, 0"
-                    Command="{Binding ContinueAsync}"/>
+                    Command="{Binding RegistarCommand}"/>
 
             <Grid ColumnDefinitions="*, Auto, *" ColumnSpacing="15" VerticalOptions="Center" Margin="0, 5">
                 <BoxView Grid.Column="0" HeightRequest="1" Color="#E0E0E0" VerticalOptions="Center" />
@@ -155,7 +158,7 @@
                 <Label Text="Já tem uma conta?" FontFamily="InterRegular" FontSize="14" TextColor="{StaticResource SecondaryText}" VerticalOptions="Center"/>
                 <Label Text="Entrar" FontFamily="InterBold" FontSize="14" TextColor="{StaticResource Primary}" FontAttributes="Bold" VerticalOptions="Center">
                     <Label.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="{Binding GoBackToLoginAsync}"/>
+                        <TapGestureRecognizer Command="{Binding GoBackToLoginCommand}"/>
                     </Label.GestureRecognizers>
                 </Label>
             </HorizontalStackLayout>

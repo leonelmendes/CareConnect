@@ -63,4 +63,11 @@ public partial class ProfileSelectionView : ContentPage
         );
 
     }
+
+    // Interceta o botão de voltar do hardware (Android) e bloqueia a ação.
+    protected override bool OnBackButtonPressed()
+    {
+        // Devolver 'true' cancela a navegação para trás.
+        return true; 
+    }
 }

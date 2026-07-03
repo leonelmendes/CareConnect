@@ -1,6 +1,6 @@
 using CareConnect.Mobile.ViewModels.Auth;
 
-namespace CareConnect.Mobile.Views;
+namespace CareConnect.Mobile.Views.Auth;
 
 public partial class LoginView : ContentPage
 {

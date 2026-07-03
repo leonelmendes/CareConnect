@@ -2,11 +2,72 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              x:Class="CareConnect.Mobile.Views.Auth.OnboardingView"
-             Title="OnboardingView">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="OnboardingView"
+             NavigationPage.HasNavigationBar="False"
+             NavigationPage.HasBackButton="False">
+
+    <Grid RowDefinitions="Auto, Auto, *, Auto" Padding="30,30,30,30">
+        
+        <Grid Grid.Row="0" ColumnDefinitions="40,*,40,*,40" ColumnSpacing="0" Margin="0, 10, 0, 10">
+            <Ellipse Grid.Column="0" WidthRequest="32" HeightRequest="32" Fill="White" Stroke="{StaticResource Primary}" StrokeThickness="1.5" HorizontalOptions="Center" VerticalOptions="Center"/>
+            <Image Grid.Column="0" Source="icon_correct_blue" WidthRequest="18" HeightRequest="18" HorizontalOptions="Center" VerticalOptions="Center"/>
+            <BoxView Grid.Column="1" HeightRequest="2" Color="{StaticResource Primary}" VerticalOptions="Center" Margin="-2,0"/>
+            <Ellipse Grid.Column="2" WidthRequest="32" HeightRequest="32" Fill="White" Stroke="{StaticResource Primary}" StrokeThickness="1.5" HorizontalOptions="Center" VerticalOptions="Center"/>
+            <Image Grid.Column="2" Source="icon_correct_blue" WidthRequest="18" HeightRequest="18" HorizontalOptions="Center" VerticalOptions="Center"/>
+            <BoxView Grid.Column="3" HeightRequest="2" Color="{StaticResource Primary}" VerticalOptions="Center" Margin="-2,0"/>
+            <Ellipse Grid.Column="4" WidthRequest="32" HeightRequest="32" Fill="{StaticResource Primary}" HorizontalOptions="Center" VerticalOptions="Center"/>
+            <Label Grid.Column="4" Text="3" FontFamily="InterBold" FontSize="14" TextColor="White" HorizontalOptions="Center" VerticalOptions="Center" FontAttributes="Bold"/>
+        </Grid>
+
+        <HorizontalStackLayout Grid.Row="1" HorizontalOptions="Center" Spacing="5" Margin="0,15,0,20">
+            <Image Source="logo_careconnect" HeightRequest="36" />
+            <Label Text="CareConnect" FontFamily="InterBold" FontSize="24" TextColor="#1A1A1A" FontAttributes="Bold" VerticalOptions="Center"/>
+        </HorizontalStackLayout>
+
+        <CarouselView Grid.Row="2" 
+                      ItemsSource="{Binding Slides}" 
+                      Position="{Binding Position}"
+                      IndicatorView="Indicator"
+                      IsSwipeEnabled="True"
+                      IsBounceEnabled="False">
+            <CarouselView.ItemTemplate>
+                <DataTemplate>
+                    <Grid RowDefinitions="*, Auto">
+                        <Image Grid.Row="0" Source="{Binding ImageSource}" Aspect="AspectFit" Margin="0,0,0,20"/>
+                        
+                        <VerticalStackLayout Grid.Row="1" Spacing="10" Margin="0,0,0,20">
+                            <Label HorizontalOptions="Start">
+                                <Label.FormattedText>
+                                    <FormattedString>
+                                        <Span Text="{Binding TitleBlack}" FontFamily="InterRegular" FontSize="28" TextColor="#1A1A1A" />
+                                        <Span Text="{x:Static x:Environment.NewLine}" />
+                                        <Span Text="{Binding TitleBlue}" FontFamily="InterRegular" FontSize="28" TextColor="{StaticResource Primary}" />
+                                    </FormattedString>
+                                </Label.FormattedText>
+                            </Label>
+                            <Label Text="{Binding Description}" FontFamily="InterRegular" FontSize="15" TextColor="{StaticResource SecondaryText}" HorizontalOptions="Start"/>
+                        </VerticalStackLayout>
+                    </Grid>
+                </DataTemplate>
+            </CarouselView.ItemTemplate>
+        </CarouselView>
+
+        <VerticalStackLayout Grid.Row="3" Spacing="20">
+            <IndicatorView x:Name="Indicator" 
+                           IndicatorColor="#E0E0E0" 
+                           SelectedIndicatorColor="{StaticResource Primary}" 
+                           HorizontalOptions="Center" 
+                           IndicatorSize="8" />
+
+            <Button Text="{Binding CurrentItem.ButtonText}" 
+                    Command="{Binding NextCommand}"
+                    BackgroundColor="{StaticResource Primary}" 
+                    TextColor="White" 
+                    FontFamily="InterSemiBold"
+                    FontAttributes="Bold"
+                    HeightRequest="50" 
+                    CornerRadius="8"/>
+        </VerticalStackLayout>
+
+    </Grid>
 </ContentPage>

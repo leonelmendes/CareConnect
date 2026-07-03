@@ -3,7 +3,8 @@ namespace CareConnect.Shared.Models;
 public enum UserRole
 {
     Gestor,
-    Executor
+    Default,
+    Cuidador
 }
 
 public enum PlanType

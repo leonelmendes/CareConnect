@@ -1,12 +1,197 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
              x:Class="CareConnect.Mobile.Views.Gestor.GestorHomeView"
-             Title="GestorHomeView">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Dashboard"
+             NavigationPage.HasNavigationBar="False"
+             BackgroundColor="#F8F9FA">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,40,20,30" Spacing="25">
+            
+            <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                <HorizontalStackLayout Grid.Column="0" Spacing="5" VerticalOptions="Center">
+                    <Image Source="logo_careconnect" HeightRequest="28" />
+                    <Label Text="CareConnect" FontFamily="InterBold" FontSize="20" TextColor="#1A1A1A" FontAttributes="Bold" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+                
+                <Grid Grid.Column="1" WidthRequest="40" HeightRequest="40">
+                    <Ellipse Fill="White" Stroke="#E0E0E0" StrokeThickness="1" WidthRequest="40" HeightRequest="40" />
+                    <Image Source="icon_bell" WidthRequest="20" HeightRequest="20" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    <Ellipse Fill="#EF4444" WidthRequest="8" HeightRequest="8" HorizontalOptions="End" VerticalOptions="Start" Margin="0,8,8,0"/>
+                </Grid>
+            </Grid>
+
+            <VerticalStackLayout Spacing="0">
+                <Label Text="Olá," FontFamily="InterRegular" FontSize="16" TextColor="{StaticResource SecondaryText}"/>
+                <HorizontalStackLayout Spacing="5">
+                    <Label Text="{Binding NomeGestor}" FontFamily="InterBold" FontSize="28" FontAttributes="Bold" TextColor="#1A1A1A"/>
+                    <Label Text="👋" FontSize="28"/>
+                </HorizontalStackLayout>
+                <Label Text="Eis o que está a acontecer hoje." FontFamily="InterRegular" FontSize="14" TextColor="{StaticResource SecondaryText}" Margin="0,5,0,0"/>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="15">
+                <Grid ColumnDefinitions="*, Auto">
+                    <Label Grid.Column="0" Text="Pacientes" FontFamily="InterBold" FontSize="18" FontAttributes="Bold" TextColor="#1A1A1A"/>
+                    <Label Grid.Column="1" Text="Ver todos" FontFamily="InterSemiBold" FontSize="14" TextColor="{StaticResource Primary}" FontAttributes="Bold"/>
+                </Grid>
+
+                <CollectionView ItemsSource="{Binding Pacientes}" HeightRequest="100">
+                    <CollectionView.ItemsLayout>
+                        <LinearItemsLayout Orientation="Horizontal" ItemSpacing="15" />
+                    </CollectionView.ItemsLayout>
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <VerticalStackLayout Spacing="5" WidthRequest="70">
+                                <Grid WidthRequest="60" HeightRequest="60" HorizontalOptions="Center">
+                                    <Border Stroke="#0052CC" StrokeThickness="2" StrokeShape="RoundRectangle 30" WidthRequest="60" HeightRequest="60" Padding="2">
+                                        <Image Source="{Binding Imagem}" Aspect="AspectFill"/>
+                                    </Border>
+                                    <Ellipse IsVisible="{Binding EstaOnline}" Fill="#10B981" Stroke="White" StrokeThickness="2" WidthRequest="16" HeightRequest="16" HorizontalOptions="End" VerticalOptions="End" Margin="0,0,2,2"/>
+                                </Grid>
+                                <Label Text="{Binding Nome}" FontFamily="InterSemiBold" FontSize="12" TextColor="#1A1A1A" HorizontalOptions="Center" HorizontalTextAlignment="Center" LineBreakMode="TailTruncation"/>
+                            </VerticalStackLayout>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </VerticalStackLayout>
+
+            <VerticalStackLayout Spacing="15">
+                <Grid ColumnDefinitions="*, Auto">
+                    <Label Grid.Column="0" Text="Alertas recentes" FontFamily="InterBold" FontSize="18" FontAttributes="Bold" TextColor="#1A1A1A"/>
+                    <Label Grid.Column="1" Text="Ver todos" FontFamily="InterSemiBold" FontSize="14" TextColor="{StaticResource Primary}" FontAttributes="Bold"/>
+                </Grid>
+
+                <VerticalStackLayout BindableLayout.ItemsSource="{Binding Alertas}" Spacing="10">
+                    <BindableLayout.ItemTemplate>
+                        <DataTemplate>
+                            <Border Stroke="#E0E0E0" StrokeShape="RoundRectangle 12" BackgroundColor="White" Padding="15">
+                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="15" VerticalOptions="Center">
+                                    <Border Grid.Column="0" BackgroundColor="{Binding CorIcone}" StrokeThickness="0" StrokeShape="RoundRectangle 8" WidthRequest="40" HeightRequest="40">
+                                        <Image Source="{Binding ImagemIcone}" WidthRequest="20" HeightRequest="20" VerticalOptions="Center" HorizontalOptions="Center"/>
+                                    </Border>
+                                    <VerticalStackLayout Grid.Column="1" Spacing="2" VerticalOptions="Center">
+                                        <Label Text="{Binding Titulo}" FontFamily="InterSemiBold" FontSize="15" TextColor="#1A1A1A" FontAttributes="Bold"/>
+                                        <Label Text="{Binding Descricao}" FontFamily="InterRegular" FontSize="13" TextColor="{StaticResource SecondaryText}"/>
+                                    </VerticalStackLayout>
+                                    <HorizontalStackLayout Grid.Column="2" Spacing="5" VerticalOptions="Center">
+                                        <Label Text="{Binding Tempo}" FontFamily="InterRegular" FontSize="11" TextColor="{StaticResource SecondaryText}" VerticalOptions="Center"/>
+                                        <Image Source="icon_chevron_right" WidthRequest="14" HeightRequest="14" VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </BindableLayout.ItemTemplate>
+                </VerticalStackLayout>
+            </VerticalStackLayout>
+
+            <Grid ColumnDefinitions="*,*,*" ColumnSpacing="10">
+                <Border Grid.Column="0" BackgroundColor="#4F75D3" StrokeThickness="0" StrokeShape="RoundRectangle 12" HeightRequest="90">
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8">
+                        <Image Source="icon_add_user" WidthRequest="28" HeightRequest="28"/>
+                        <Label Text="Novo Utente" FontFamily="InterSemiBold" FontSize="12" TextColor="White" FontAttributes="Bold"/>
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="1" BackgroundColor="#68C57C" StrokeThickness="0" StrokeShape="RoundRectangle 12" HeightRequest="90">
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8">
+                        <Image Source="icon_add_plan" WidthRequest="28" HeightRequest="28"/>
+                        <Label Text="Criar plano" FontFamily="InterSemiBold" FontSize="12" TextColor="White" FontAttributes="Bold"/>
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="2" BackgroundColor="#4F75D3" StrokeThickness="0" StrokeShape="RoundRectangle 12" HeightRequest="90">
+                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8">
+                        <Image Source="icon_reports" WidthRequest="28" HeightRequest="28"/>
+                        <Label Text="Relatórios" FontFamily="InterSemiBold" FontSize="12" TextColor="White" FontAttributes="Bold"/>
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
+                <Border Grid.Column="0" BackgroundColor="White" Stroke="#E0E0E0" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="15">
+                    <VerticalStackLayout Spacing="15">
+                        <Border BackgroundColor="#EEF2FF" StrokeThickness="0" StrokeShape="RoundRectangle 8" WidthRequest="32" HeightRequest="32" HorizontalOptions="Start">
+                            <Image Source="icon_tasks_blue" WidthRequest="16" HeightRequest="16" VerticalOptions="Center" HorizontalOptions="Center"/>
+                        </Border>
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="47" FontFamily="InterBold" FontSize="20" FontAttributes="Bold" TextColor="#1A1A1A"/>
+                            <Label Text="Total Tasks Today" FontFamily="InterRegular" FontSize="12" TextColor="{StaticResource SecondaryText}"/>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+                <Border Grid.Column="1" BackgroundColor="White" Stroke="#E0E0E0" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="15">
+                    <VerticalStackLayout Spacing="15">
+                        <Border BackgroundColor="#ECFDF5" StrokeThickness="0" StrokeShape="RoundRectangle 8" WidthRequest="32" HeightRequest="32" HorizontalOptions="Start">
+                            <Image Source="icon_check_green" WidthRequest="16" HeightRequest="16" VerticalOptions="Center" HorizontalOptions="Center"/>
+                        </Border>
+                        <VerticalStackLayout Spacing="2">
+                            <Label Text="32" FontFamily="InterBold" FontSize="20" FontAttributes="Bold" TextColor="#1A1A1A"/>
+                            <Label Text="Completed Today" FontFamily="InterRegular" FontSize="12" TextColor="{StaticResource SecondaryText}"/>
+                        </VerticalStackLayout>
+                    </VerticalStackLayout>
+                </Border>
+            </Grid>
+
+            <Border BackgroundColor="White" Stroke="#E0E0E0" StrokeThickness="1" StrokeShape="RoundRectangle 24" Padding="20">
+                <VerticalStackLayout Spacing="20">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <VerticalStackLayout Grid.Column="0" Spacing="2">
+                            <Label Text="Daily Summary" FontFamily="InterBold" FontSize="18" FontAttributes="Bold" TextColor="#1A1A1A"/>
+                            <Label Text="May 14, 2026" FontFamily="InterRegular" FontSize="13" TextColor="{StaticResource SecondaryText}"/>
+                        </VerticalStackLayout>
+                        <Border Grid.Column="1" BackgroundColor="#F8F9FA" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="10,5">
+                            <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                                <Label Text="Today" FontFamily="InterSemiBold" FontSize="12" TextColor="#1A1A1A"/>
+                                <Image Source="icon_arrow_down" WidthRequest="10" HeightRequest="10"/>
+                            </HorizontalStackLayout>
+                        </Border>
+                    </Grid>
+                            <Grid ColumnDefinitions="140, *" ColumnSpacing="20">
+                                
+                                <Grid Grid.Column="0" HeightRequest="140" WidthRequest="140">
+                                    <lvc:PieChart Series="{Binding ResumoDiarioSeries}" LegendPosition="Hidden" Margin="0"/>
+                                    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                                        <Label Text="78%" FontFamily="InterBold" FontSize="22" FontAttributes="Bold" TextColor="#1A1A1A" HorizontalOptions="Center"/>
+                                        <Label Text="DONE" FontFamily="InterSemiBold" FontSize="10" TextColor="{StaticResource SecondaryText}" HorizontalOptions="Center"/>
+                                    </VerticalStackLayout>
+                                </Grid>
+                                
+                                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="10">
+                                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                        <Ellipse Fill="#10B981" WidthRequest="8" HeightRequest="8" VerticalOptions="Center"/>
+                                        <Label Text="Completed" FontFamily="InterRegular" FontSize="13" TextColor="{StaticResource SecondaryText}" VerticalOptions="Center" WidthRequest="80"/>
+                                        <Label Text="32" FontFamily="InterBold" FontSize="14" FontAttributes="Bold" TextColor="#1A1A1A" VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                        <Ellipse Fill="#3B82F6" WidthRequest="8" HeightRequest="8" VerticalOptions="Center"/>
+                                        <Label Text="In Progress" FontFamily="InterRegular" FontSize="13" TextColor="{StaticResource SecondaryText}" VerticalOptions="Center" WidthRequest="80"/>
+                                        <Label Text="7" FontFamily="InterBold" FontSize="14" FontAttributes="Bold" TextColor="#1A1A1A" VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
+                                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                        <Ellipse Fill="#E5E7EB" WidthRequest="8" HeightRequest="8" VerticalOptions="Center"/>
+                                        <Label Text="Pending" FontFamily="InterRegular" FontSize="13" TextColor="{StaticResource SecondaryText}" VerticalOptions="Center" WidthRequest="80"/>
+                                        <Label Text="8" FontFamily="InterBold" FontSize="14" FontAttributes="Bold" TextColor="#1A1A1A" VerticalOptions="Center"/>
+                                    </HorizontalStackLayout>
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <BoxView HeightRequest="1" Color="#F3F4F6" Margin="0,10" />
+
+                            <VerticalStackLayout Spacing="15">
+                                <Label Text="Care Tasks Activity" FontFamily="InterBold" FontSize="16" FontAttributes="Bold" TextColor="#1A1A1A"/>
+                                
+                                <lvc:CartesianChart 
+                                    Series="{Binding AtividadeSeries}" 
+                                    XAxes="{Binding EixoX}" 
+                                    YAxes="{Binding EixoY}"
+                                    HeightRequest="160"
+                                    Margin="0,0,0,0"/>
+                            </VerticalStackLayout>
+
+                        </VerticalStackLayout>
+                    </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>

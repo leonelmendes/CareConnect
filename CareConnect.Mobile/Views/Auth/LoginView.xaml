@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
-             x:Class="CareConnect.Mobile.Views.LoginView"
+             x:Class="CareConnect.Mobile.Views.Auth.LoginView"
              NavigationPage.HasNavigationBar="False">
 
     <ScrollView HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
@@ -37,7 +37,7 @@
             <VerticalStackLayout Spacing="20" Margin="0,20,0,0">
                 
                 <VerticalStackLayout Spacing="5">
-                    <Label Text="Email" FontSize="12" FontFamily="InterMedium" TextColor="#1A1A1A" FontAttributes="Bold"/>
+                    <Label Text="Email" FontSize="14" FontFamily="InterMedium" TextColor="#1A1A1A" FontAttributes="Bold"/>
                     <Border Stroke="{StaticResource StrokeEntry}" StrokeShape="RoundRectangle 8" StrokeThickness="1" BackgroundColor="White" Padding="15,0">
                         <Entry Placeholder="nome@exemplo.com" 
                             Text="{Binding Email}"
@@ -51,7 +51,7 @@
 
                 <VerticalStackLayout Spacing="5">
                     <Grid >
-                        <Label Text="Palavra-passe" FontSize="12" HorizontalTextAlignment="Start" FontFamily="InterMedium" TextColor="#1A1A1A" FontAttributes="Bold"/>
+                        <Label Text="Palavra-passe" FontSize="14" HorizontalTextAlignment="Start" FontFamily="InterMedium" TextColor="#1A1A1A" FontAttributes="Bold"/>
                         <Label Text="Esqueceu a palavra-passe?"
                             FontFamily="InterRegular"
                             TextColor="{StaticResource Primary}" 
@@ -59,7 +59,7 @@
                             FontAttributes="Bold" 
                             HorizontalTextAlignment="End">
                             <Label.GestureRecognizers>
-                                <TapGestureRecognizer Tapped="{Binding GoToForgotPasswordAsync}"/>
+                                <TapGestureRecognizer Command="{Binding GoToForgotPasswordCommand}"/>
                             </Label.GestureRecognizers>
                         </Label>
                     </Grid>
@@ -166,7 +166,7 @@
                 <Label Text="Ainda não tem uma conta? " TextColor="#757575" FontSize="14"/>
                 <Label Text="Criar conta" TextColor="{StaticResource Primary}" FontSize="14" FontAttributes="Bold">
                     <Label.GestureRecognizers>
-                        <TapGestureRecognizer Tapped="{Binding GoToRegisterAsync}"/>
+                        <TapGestureRecognizer Command="{Binding GoToRegisterCommand}"/>
                     </Label.GestureRecognizers>
                 </Label>
             </HorizontalStackLayout>

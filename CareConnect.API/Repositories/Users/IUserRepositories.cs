@@ -8,4 +8,6 @@ public interface IUserRepositories
     Task<User?> GetByIdAsync(Guid id);
     Task<User> AddAsync(User user);
     Task<User?> GetByFirebaseUidAsync(string firebaseUid);
+    Task<User?> GetByEmailAsync(string email);
+    
 }
