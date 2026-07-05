@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:CareConnect.Mobile.ViewModels.Shared"
+             x:Class="CareConnect.Mobile.Views.Shared.PerfilView"
+             Title="Perfil"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#F9FAFB">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20,40,20,30" Spacing="25">
+
+            <VerticalStackLayout HorizontalOptions="Center" Spacing="8">
+                <Border WidthRequest="110" HeightRequest="110" StrokeShape="RoundRectangle 55" Stroke="#E5E7EB" StrokeThickness="2" BackgroundColor="White" HorizontalOptions="Center">
+                    <Image Source="{Binding FotoUrl}" Aspect="AspectFill" />
+                </Border>
+
+                <Label Text="{Binding Nome}" FontFamily="InterBold" FontSize="22" TextColor="#111827" HorizontalOptions="Center"/>
+
+                <Border StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#EFF6FF" HorizontalOptions="Center" Padding="12,6">
+                    <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                        <Label Text="👤" FontSize="12" VerticalOptions="Center"/>
+                        <Label Text="{Binding Cargo}" FontFamily="InterSemiBold" FontSize="13" TextColor="#1D4ED8"/>
+                    </HorizontalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <Border StrokeShape="RoundRectangle 15" Stroke="#E5E7EB" BackgroundColor="White" Margin="0,10,0,0">
+                <VerticalStackLayout>
+
+                    <Grid ColumnDefinitions="Auto, *, Auto" Padding="20,15">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavegarMenuCommand}" CommandParameter="Editar Perfil"/>
+                        </Grid.GestureRecognizers>
+                        <Label Grid.Column="0" Text="👤" FontSize="20" VerticalOptions="Center" Margin="0,0,15,0"/>
+                        <Label Grid.Column="1" Text="Editar Perfil" FontFamily="InterSemiBold" FontSize="15" TextColor="#374151" VerticalOptions="Center"/>
+                        <Label Grid.Column="2" Text="&gt;" FontFamily="InterBold" FontSize="16" TextColor="#9CA3AF" VerticalOptions="Center"/>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="#F3F4F6"/>
+
+                    <Grid ColumnDefinitions="Auto, *, Auto" Padding="20,15">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavegarMenuCommand}" CommandParameter="Notificações"/>
+                        </Grid.GestureRecognizers>
+                        <Label Grid.Column="0" Text="🔔" FontSize="20" VerticalOptions="Center" Margin="0,0,15,0"/>
+                        <Label Grid.Column="1" Text="Notificações" FontFamily="InterSemiBold" FontSize="15" TextColor="#374151" VerticalOptions="Center"/>
+                        <Label Grid.Column="2" Text="&gt;" FontFamily="InterBold" FontSize="16" TextColor="#9CA3AF" VerticalOptions="Center"/>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="#F3F4F6"/>
+
+                    <Grid ColumnDefinitions="Auto, *, Auto" Padding="20,15" IsVisible="{Binding IsGestor}">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavegarMenuCommand}" CommandParameter="Gerir Cuidadores"/>
+                        </Grid.GestureRecognizers>
+                        <Label Grid.Column="0" Text="👥" FontSize="20" VerticalOptions="Center" Margin="0,0,15,0"/>
+                        <Label Grid.Column="1" Text="Gerir Cuidadores" FontFamily="InterSemiBold" FontSize="15" TextColor="#374151" VerticalOptions="Center"/>
+                        <Label Grid.Column="2" Text="&gt;" FontFamily="InterBold" FontSize="16" TextColor="#9CA3AF" VerticalOptions="Center"/>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="#F3F4F6" IsVisible="{Binding IsGestor}"/>
+
+                    <Grid ColumnDefinitions="Auto, *, Auto" Padding="20,15">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavegarMenuCommand}" CommandParameter="Segurança"/>
+                        </Grid.GestureRecognizers>
+                        <Label Grid.Column="0" Text="🛡️" FontSize="20" VerticalOptions="Center" Margin="0,0,15,0"/>
+                        <Label Grid.Column="1" Text="Segurança" FontFamily="InterSemiBold" FontSize="15" TextColor="#374151" VerticalOptions="Center"/>
+                        <Label Grid.Column="2" Text="&gt;" FontFamily="InterBold" FontSize="16" TextColor="#9CA3AF" VerticalOptions="Center"/>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="#F3F4F6"/>
+
+                    <Grid ColumnDefinitions="Auto, *, Auto" Padding="20,15">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavegarMenuCommand}" CommandParameter="Privacidade"/>
+                        </Grid.GestureRecognizers>
+                        <Label Grid.Column="0" Text="🔒" FontSize="20" VerticalOptions="Center" Margin="0,0,15,0"/>
+                        <Label Grid.Column="1" Text="Privacidade" FontFamily="InterSemiBold" FontSize="15" TextColor="#374151" VerticalOptions="Center"/>
+                        <Label Grid.Column="2" Text="&gt;" FontFamily="InterBold" FontSize="16" TextColor="#9CA3AF" VerticalOptions="Center"/>
+                    </Grid>
+                    <BoxView HeightRequest="1" Color="#F3F4F6"/>
+
+                    <Grid ColumnDefinitions="Auto, *, Auto" Padding="20,15">
+                        <Grid.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding NavegarMenuCommand}" CommandParameter="Sobre o CareConnect"/>
+                        </Grid.GestureRecognizers>
+                        <Label Grid.Column="0" Text="ℹ️" FontSize="20" VerticalOptions="Center" Margin="0,0,15,0"/>
+                        <Label Grid.Column="1" Text="Sobre o CareConnect" FontFamily="InterSemiBold" FontSize="15" TextColor="#374151" VerticalOptions="Center"/>
+                        <Label Grid.Column="2" Text="&gt;" FontFamily="InterBold" FontSize="16" TextColor="#9CA3AF" VerticalOptions="Center"/>
+                    </Grid>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <Border StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#FEF2F2" HeightRequest="55" Margin="0,10,0,20">
+                <Border.GestureRecognizers>
+                    <TapGestureRecognizer Command="{Binding LogoutCommand}"/>
+                </Border.GestureRecognizers>
+                <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
+                    <Label Text="↪️" FontSize="18" TextColor="#EF4444" VerticalOptions="Center"/>
+                    <Label Text="Sair" FontFamily="InterBold" FontSize="16" TextColor="#EF4444" VerticalOptions="Center"/>
+                </HorizontalStackLayout>
+            </Border>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

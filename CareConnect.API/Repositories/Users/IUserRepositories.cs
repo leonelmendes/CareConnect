@@ -9,5 +9,7 @@ public interface IUserRepositories
     Task<User> AddAsync(User user);
     Task<User?> GetByFirebaseUidAsync(string firebaseUid);
     Task<User?> GetByEmailAsync(string email);
-    
+    Task UpdateAsync(User usuaruserio);
+
+
 }

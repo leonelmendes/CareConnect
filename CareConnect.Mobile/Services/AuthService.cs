@@ -1,8 +1,9 @@
-using System.Net.Http.Json;
-using System.Text.Json;
 using CareConnect.Mobile.Models;
 using CareConnect.Shared.DTOs;
 using CareConnect.Shared.Models;
+using System.Net.Http.Headers;
+using System.Net.Http.Json;
+using System.Text.Json;
 
 namespace CareConnect.Mobile.Services;
 
@@ -165,6 +166,67 @@ public class AuthService
         catch
         {
             // Falha silenciosa propositada.
+        }
+    }
+
+    public async Task<bool> UploadAvatarAsync(string caminhoArquivo)
+    {
+        try
+        {
+            // 1. Validação local: verifica se o ficheiro realmente existe no telemóvel
+            if (string.IsNullOrEmpty(caminhoArquivo) || !File.Exists(caminhoArquivo))
+                return false;
+
+            // 2. Vai buscar o Token JWT ao cofre do telemóvel
+            var token = await SecureStorage.Default.GetAsync("jwt_token");
+            if (string.IsNullOrEmpty(token))
+                return false;
+
+            // 3. Prepara o ficheiro para envio em formato MultipartFormData
+            using var stream = File.OpenRead(caminhoArquivo);
+            using var content = new MultipartFormDataContent();
+
+            var fileContent = new StreamContent(stream);
+
+            // Descobre o tipo de imagem (PNG ou JPEG)
+            var extensao = Path.GetExtension(caminhoArquivo).ToLower();
+            var contentType = extensao switch
+            {
+                ".png" => "image/png",
+                ".jpg" or ".jpeg" => "image/jpeg",
+                _ => "image/jpeg" // Fallback padrão
+            };
+            fileContent.Headers.ContentType = new MediaTypeHeaderValue(contentType);
+
+            // ⚠️ ATENÇÃO CRÍTICA: O primeiro parâmetro ("foto") TEM de ser rigorosamente igual 
+            // ao nome da variável no teu Controller da API: UploadAvatar(IFormFile foto)
+            content.Add(fileContent, "foto", Path.GetFileName(caminhoArquivo));
+
+            // 4. Cria um pedido HTTP manual para podermos injetar o Bearer Token
+            using var request = new HttpRequestMessage(HttpMethod.Post, $"{Constants.BaseUrl}/api/Auth/upload-avatar");
+            request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            request.Content = content;
+
+            // 5. Envia para a API (que por sua vez mandará para a AWS S3)
+            var response = await _httpClient.SendAsync(request);
+
+            if (response.IsSuccessStatusCode)
+            {
+                // Lê a resposta da API para pegar o link da AWS e guardar nas Preferences para uso rápido
+                var resultado = await response.Content.ReadFromJsonAsync<UploadAvatarResponse>();
+                if (resultado != null && !string.IsNullOrEmpty(resultado.AvatarUrl))
+                {
+                    Preferences.Default.Set("auth_avatar", resultado.AvatarUrl);
+                }
+                return true;
+            }
+
+            return false;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro no upload do avatar: {ex.Message}");
+            return false;
         }
     }
 }

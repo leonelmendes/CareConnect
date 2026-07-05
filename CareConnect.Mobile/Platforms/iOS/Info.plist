@@ -28,5 +28,11 @@
 	</array>
 	<key>XSAppIconAssets</key>
 	<string>Assets.xcassets/appicon.appiconset</string>
+	<key>UISupportedInterfaceOrientations</key>
+	<array>
+		<string>UIInterfaceOrientationPortrait</string>
+	</array>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>A aplicação necessita de aceder à galeria para selecionar a foto de perfil do utente.</string>
 </dict>
 </plist>

@@ -3,6 +3,7 @@
     x:Class="CareConnect.Mobile.Shells.GestorShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:gestor="clr-namespace:CareConnect.Mobile.Views.Gestor"
+    xmlns:shared="clr-namespace:CareConnect.Mobile.Views.Shared"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     Shell.NavBarIsVisible="False" 
     NavigationPage.HasNavigationBar="False"
@@ -10,22 +11,20 @@
 
     <TabBar>
         
-        <Tab Title="Início">
+        <Tab Title="Início" Icon="icon_inicio">
             <ShellContent ContentTemplate="{DataTemplate gestor:GestorHomeView}" />
         </Tab>
         
-        <Tab Title="Utentes">
-            <ShellContent ContentTemplate="{DataTemplate gestor:PatientFormView}" />
+        <Tab Title="Utentes" Icon="icon_utentes">
+            <ShellContent ContentTemplate="{DataTemplate shared:UtentesView}" />
         </Tab>
         
-        <Tab Title="Planos">
-            <ShellContent ContentTemplate="{DataTemplate gestor:CarePlanListView}" />
+        <Tab Title="Planos" Icon="icon_planos.png">
+            <ShellContent ContentTemplate="{DataTemplate gestor:GestorPlanosView}" />
         </Tab>
         
-        <Tab Title="Perfil">
-            <ShellContent>
-                <ContentPage Title="O Meu Perfil" BackgroundColor="#FAFAFA" />
-            </ShellContent>
+        <Tab Title="Perfil" Icon="icon_perfil.png">
+            <ShellContent ContentTemplate="{DataTemplate shared:PerfilView}"/>
         </Tab>
         
     </TabBar>

@@ -1,13 +1,14 @@
 using CareConnect.API.Data;
-using CareConnect.API.Repositories.Patients;
-using CareConnect.API.Repositories.Users;
+using CareConnect.API.Repositories.Auth; // <-- Adicionado para corrigir as referências do Swagger
 using CareConnect.API.Repositories.CarePlans;
+using CareConnect.API.Repositories.Patients;
 using CareConnect.API.Repositories.TaskLogs;
-using Microsoft.EntityFrameworkCore;
+using CareConnect.API.Repositories.Users;
+using CareConnect.API.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi;
-using CareConnect.API.Repositories.Auth; // <-- Adicionado para corrigir as referências do Swagger
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +26,7 @@ builder.Services.AddScoped<IUserRepositories, UserRepositories>();
 builder.Services.AddScoped<ICarePlanRepositories, CarePlanRepositories>();
 builder.Services.AddScoped<ITaskLogRepositories, TaskLogRepositories>();
 builder.Services.AddScoped<IAuthRepositories, AuthRepositories>();
+builder.Services.AddScoped<S3Service>();
 
 // ==========================================
 // 4. AUTENTICAÇÃO (Firebase)

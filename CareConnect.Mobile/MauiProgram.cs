@@ -1,13 +1,16 @@
-﻿using Microsoft.Extensions.Logging;
-using DotNet.Meteor.HotReload.Plugin;
+﻿using CareConnect.Mobile.Services;
+using CareConnect.Mobile.Shells;
 using CareConnect.Mobile.ViewModels.Auth;
-using CareConnect.Mobile.Views.Auth;
 using CareConnect.Mobile.ViewModels.Gestor;
+using CareConnect.Mobile.ViewModels.Shared;
+using CareConnect.Mobile.Views.Auth;
 using CareConnect.Mobile.Views.Gestor;
-using SkiaSharp.Views.Maui.Controls.Hosting;
-using LiveChartsCore.SkiaSharpView.Maui;
+using CareConnect.Mobile.Views.Shared;
 using CommunityToolkit.Maui;
-using CareConnect.Mobile.Services;
+using DotNet.Meteor.HotReload.Plugin;
+using LiveChartsCore.SkiaSharpView.Maui;
+using Microsoft.Extensions.Logging;
+using SkiaSharp.Views.Maui.Controls.Hosting;
 
 namespace CareConnect.Mobile;
 
@@ -47,7 +50,7 @@ public static class MauiProgram
         });
 		#endregion
 
-        #region REGISTO DE SERVIÇOS
+        #region REGISTO DE SERVIÇOS E SHELLS
         builder.Services.AddSingleton<INotificationService, NotificationService>();
         builder.Services.AddSingleton<AuthService>();
         builder.Services.AddTransient<AuthInterceptor>(); // CRÍTICO: O intercetor tem de ser registado aqui!
@@ -65,7 +68,11 @@ public static class MauiProgram
             client.BaseAddress = new Uri(Constants.BaseUrl);
         })
         .AddHttpMessageHandler<AuthInterceptor>();
-		#endregion
+
+        builder.Services.AddSingleton<AppShell>();
+        builder.Services.AddSingleton<GestorShell>();
+        builder.Services.AddSingleton<CuidadorShell>();
+        #endregion
 
         #region REGISTO DE VIEWS E VIEWMODELS
         builder.Services.AddTransient<ProfileSelectionViewModel>(); 
@@ -82,7 +89,20 @@ public static class MauiProgram
 
         builder.Services.AddTransient<GestorHomeViewModel>();
         builder.Services.AddTransient<GestorHomeView>();
-		#endregion
+
+        builder.Services.AddTransient<UtentesViewModel>();
+        builder.Services.AddTransient<UtentesView>();
+
+        builder.Services.AddTransient<DetalheUtenteViewModel>();
+        builder.Services.AddTransient<DetalheUtenteView>();
+
+        builder.Services.AddTransient<PerfilViewModel>();
+        builder.Services.AddTransient<PerfilView>();
+
+        builder.Services.AddTransient<AdicionarUtenteViewModel>();
+        builder.Services.AddTransient<AdicionarUtenteView>();
+
+        #endregion
 
 #if DEBUG
         builder.Logging.AddDebug();

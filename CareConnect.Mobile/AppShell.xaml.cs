@@ -1,5 +1,7 @@
 using CareConnect.Mobile.Views;
 using CareConnect.Mobile.Views.Auth;
+using CareConnect.Mobile.Views.Gestor;
+using CareConnect.Mobile.Views.Shared;
 
 namespace CareConnect.Mobile;
 
@@ -15,6 +17,11 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("ForgotPasswordView", typeof(ForgotPasswordView));
         Routing.RegisterRoute("ProfileSelectionView", typeof(ProfileSelectionView));
         Routing.RegisterRoute("OnboardingView", typeof(OnboardingView));
+
+        Routing.RegisterRoute("UtentesView", typeof(UtentesView));
+        Routing.RegisterRoute("DetalheUtenteView", typeof(DetalheUtenteView));
+        Routing.RegisterRoute("PerfilView", typeof(PerfilView));
+        Routing.RegisterRoute("AdicionarUtenteView", typeof(AdicionarUtenteView));
         #endregion
     }
 }

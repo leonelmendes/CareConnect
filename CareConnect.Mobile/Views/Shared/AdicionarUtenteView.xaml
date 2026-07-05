@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:CareConnect.Mobile.ViewModels.Gestor"
+             xmlns:components="clr-namespace:CareConnect.Mobile.Components"
+             x:Class="CareConnect.Mobile.Views.Gestor.AdicionarUtenteView"
+             Title="Adicionar Utente"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#F4F7FA">
+    <ScrollView>
+        <VerticalStackLayout Padding="20,10,20,40" Spacing="30">
+
+            <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
+                <components:BackButton Grid.Column="0"/>
+
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="2">
+                    <Label Text="Adicionar Utente" FontFamily="InterBold" FontSize="18" TextColor="#111827" HorizontalOptions="Center"/>
+                    <Label Text="CareConnect" FontFamily="InterRegular" FontSize="12" TextColor="#9CA3AF" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+
+                <BoxView Grid.Column="2" WidthRequest="40" Color="Transparent"/>
+            </Grid>
+
+            <VerticalStackLayout HorizontalOptions="Center" Spacing="10">
+                <Grid WidthRequest="110" HeightRequest="110">
+                    <Grid.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding EscolherFotoCommand}"/>
+                    </Grid.GestureRecognizers>
+
+                    <Border WidthRequest="100" HeightRequest="100" StrokeShape="RoundRectangle 50" Stroke="#E5E7EB" BackgroundColor="White" HorizontalOptions="Center" VerticalOptions="Center">
+                        <Image Source="{Binding FotoCaminho}" Aspect="AspectFill" />
+                    </Border>
+
+                    <Border WidthRequest="32" HeightRequest="32" StrokeShape="RoundRectangle 16" Stroke="White" StrokeThickness="2" BackgroundColor="#1E40AF" HorizontalOptions="End" VerticalOptions="End" Margin="0,0,5,5">
+                        <Label Text="📷" FontSize="14" HorizontalOptions="Center" VerticalOptions="Center" TextColor="White"/>
+                    </Border>
+                </Grid>
+                <Label Text="Foto de perfil" FontFamily="InterMedium" FontSize="14" TextColor="#6B7280" HorizontalOptions="Center"/>
+            </VerticalStackLayout>
+
+            <Border StrokeShape="RoundRectangle 20" Stroke="#E5E7EB" BackgroundColor="White" Padding="20,25">
+                <VerticalStackLayout Spacing="25">
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="NOME COMPLETO" FontFamily="InterBold" FontSize="12" TextColor="#9CA3AF"/>
+                        <Border StrokeShape="RoundRectangle 12" Stroke="#E5E7EB" BackgroundColor="White" HeightRequest="55" Padding="15,0">
+                            <Entry Text="{Binding NomeCompleto}" Placeholder="Ex: Maria da Silva" FontFamily="InterRegular" TextColor="#111827"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="IDADE" FontFamily="InterBold" FontSize="12" TextColor="#9CA3AF"/>
+                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="15">
+
+                            <Border Grid.Column="0" WidthRequest="100" StrokeShape="RoundRectangle 12" Stroke="#1E40AF" BackgroundColor="White" HeightRequest="55">
+                                <Label Text="{Binding Idade}" FontFamily="InterSemiBold" FontSize="16" TextColor="#111827" HorizontalOptions="Center" VerticalOptions="Center"/>
+                            </Border>
+
+                            <Label Grid.Column="1" Text="anos" FontFamily="InterMedium" FontSize="16" TextColor="#6B7280" VerticalOptions="Center"/>
+
+                            <VerticalStackLayout Grid.Column="2" Spacing="8" VerticalOptions="Center">
+                                <Border WidthRequest="35" HeightRequest="35" StrokeShape="RoundRectangle 17.5" Stroke="#1E40AF" BackgroundColor="White">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding DiminuirIdadeCommand}"/>
+                                    </Border.GestureRecognizers>
+                                    <Label Text="-" FontFamily="InterBold" FontSize="20" TextColor="#1E40AF" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                </Border>
+                                <Border WidthRequest="35" HeightRequest="35" StrokeShape="RoundRectangle 17.5" Stroke="#E5E7EB" BackgroundColor="#EFF6FF">
+                                    <Border.GestureRecognizers>
+                                        <TapGestureRecognizer Command="{Binding AumentarIdadeCommand}"/>
+                                    </Border.GestureRecognizers>
+                                    <Label Text="+" FontFamily="InterBold" FontSize="20" TextColor="#1E40AF" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                </Border>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+
+                    <BoxView HeightRequest="1" Color="#F3F4F6"/>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="ATRIBUIR CUIDADOR" FontFamily="InterBold" FontSize="12" TextColor="#9CA3AF"/>
+                        <Border StrokeShape="RoundRectangle 12" Stroke="#E5E7EB" BackgroundColor="White" HeightRequest="55" Padding="15,0">
+                            <Picker ItemsSource="{Binding CuidadoresDisponiveis}" SelectedItem="{Binding CuidadorSelecionado}" Title="Selecionar cuidador..." TextColor="#111827" TitleColor="#9CA3AF" FontFamily="InterRegular"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="8">
+                        <Label Text="CONDIÇÃO MÉDICA" FontFamily="InterBold" FontSize="12" TextColor="#9CA3AF"/>
+                        <Border StrokeShape="RoundRectangle 12" Stroke="#E5E7EB" BackgroundColor="White" HeightRequest="55" Padding="15,0">
+                            <Picker ItemsSource="{Binding CondicoesDisponiveis}" SelectedItem="{Binding CondicaoSelecionada}" Title="Selecionar condição..." TextColor="#111827" TitleColor="#9CA3AF" FontFamily="InterRegular"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                </VerticalStackLayout>
+            </Border>
+
+            <Border StrokeShape="RoundRectangle 12" StrokeThickness="0" BackgroundColor="#E0E7FF" Padding="15">
+                <Grid ColumnDefinitions="Auto, *">
+                    <Label Grid.Column="0" Text="ℹ️" FontSize="16" TextColor="#1E40AF" VerticalOptions="Start" Margin="0,0,10,0"/>
+                    <Label Grid.Column="1" Text="Os dados do utente são encriptados e armazenados em conformidade com o RGPD." FontFamily="InterRegular" FontSize="12" TextColor="#6B7280" LineBreakMode="WordWrap"/>
+                </Grid>
+            </Border>
+
+            <Button Text="Guardar Utente" Command="{Binding GuardarUtenteCommand}" HeightRequest="55" CornerRadius="12" BackgroundColor="#1E40AF" TextColor="White" FontFamily="InterBold" FontSize="16" Margin="0,10,0,0"/>
+
+        </VerticalStackLayout>
+    </ScrollView>
+</ContentPage>

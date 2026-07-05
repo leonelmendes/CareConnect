@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:CareConnect.Mobile.Models"
+             xmlns:viewmodels="clr-namespace:CareConnect.Mobile.ViewModels.Shared"
+             x:Class="CareConnect.Mobile.Views.Shared.UtentesView"
+             Title="Utentes"
+             Shell.NavBarIsVisible="False"
+             BackgroundColor="#F8F9FA">
+
+    <Grid>
+        <ScrollView>
+            <StackLayout Padding="20,40,20,30" Spacing="20">
+                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                    <VerticalStackLayout>
+                        <HorizontalStackLayout Grid.Column="0" Spacing="5" VerticalOptions="Center">
+                            <Image Source="logo_careconnect.png" HeightRequest="28" />
+                            <Label Text="CareConnect" FontFamily="InterBold" FontSize="20" TextColor="#1A1A1A" FontAttributes="Bold" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+
+                        <Label Text="Utentes" FontSize="16" FontFamily="InterMedium" TextColor="#6B7280" Margin="40,0,0,0"/>
+                    </VerticalStackLayout>
+
+                    <Grid Grid.Column="1" WidthRequest="40" HeightRequest="40">
+                        <Ellipse Fill="White" Stroke="#E0E0E0" StrokeThickness="1" WidthRequest="40" HeightRequest="40" />
+                        <Image Source="icon_notification.png" WidthRequest="20" HeightRequest="20" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        <Ellipse Fill="#EF4444" WidthRequest="8" HeightRequest="8" HorizontalOptions="End" VerticalOptions="Start" Margin="0,8,8,0"/>
+                    </Grid>
+                </Grid>
+
+                <Grid ColumnDefinitions="*, Auto" ColumnSpacing="15">
+                    <Border Grid.Column="0" StrokeShape="RoundRectangle 25" Stroke="#E5E7EB" BackgroundColor="#F9FAFB" HeightRequest="50">
+                        <Grid ColumnDefinitions="Auto, *">
+                            <Image Grid.Column="0" Source="icon_pesquisa.png" HeightRequest="20" WidthRequest="20" VerticalOptions="Center" Margin="15,0,5,0"/>
+                            <Entry Grid.Column="1" Placeholder="Pesquisar utentes" PlaceholderColor="#9CA3AF" TextColor="#111827" FontFamily="InterRegular" BackgroundColor="Transparent" VerticalOptions="Center"/>
+                        </Grid>
+                    </Border>
+
+                    <Border Grid.Column="1" WidthRequest="50" HeightRequest="50" StrokeShape="RoundRectangle 25" Stroke="#E5E7EB" BackgroundColor="Transparent">
+                        <Image Source="icon_configuracao.png" HeightRequest="22" WidthRequest="22" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    </Border>
+                </Grid>
+
+                <CollectionView ItemsSource="{Binding ListaUtentes}" SelectionMode="None">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate x:DataType="models:Utente">
+                            <Border StrokeShape="RoundRectangle 15" Stroke="#E5E7EB" BackgroundColor="White" Margin="0,0,0,15" Padding="15">
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:UtentesViewModel}}, Path=VerDetalhesCommand}" CommandParameter="{Binding .}"/>
+                                </Border.GestureRecognizers>
+
+                                <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="15">
+                                    <Border Grid.Column="0" WidthRequest="60" HeightRequest="60" StrokeShape="RoundRectangle 30" StrokeThickness="0">
+                                        <Image Source="{Binding FotoUrl}" Aspect="AspectFill" BackgroundColor="#E5E7EB"/>
+                                    </Border>
+
+                                    <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                        <Label Text="{Binding Nome}" FontFamily="InterBold" FontSize="16" TextColor="#111827"/>
+                                        <Label Text="{Binding StringFormat='{0} anos • Cuidador: {1}', Path=Idade}" FontFamily="InterRegular" FontSize="13" TextColor="#6B7280"/>
+
+                                        <Border StrokeShape="RoundRectangle 10" StrokeThickness="0" BackgroundColor="{Binding CorFundoStatus}" HorizontalOptions="Start" Padding="8,4" Margin="0,5,0,0">
+                                            <Label Text="{Binding StatusCuidado}" FontFamily="InterMedium" FontSize="11" TextColor="{Binding CorTextoStatus}"/>
+                                        </Border>
+                                    </VerticalStackLayout>
+
+                                    <Label Grid.Column="2" Text="&gt;" FontSize="20" TextColor="#9CA3AF" FontFamily="InterBold" VerticalOptions="Center"/>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+            </StackLayout>
+        </ScrollView>
+
+        <Border IsVisible="{Binding IsGestor}" WidthRequest="65" HeightRequest="65" StrokeShape="RoundRectangle 32.5" StrokeThickness="0" BackgroundColor="#1E40AF" HorizontalOptions="End" VerticalOptions="End" Margin="0,0,20,20">
+            <Border.Shadow>
+                <Shadow Brush="#1E40AF" Offset="0,4" Radius="10" Opacity="0.4"/>
+            </Border.Shadow>
+            <Border.GestureRecognizers>
+                <TapGestureRecognizer Command="{Binding AdicionarUtenteCommand}"/>
+            </Border.GestureRecognizers>
+
+            <Label Text="+" FontSize="35" TextColor="White" FontFamily="InterRegular" HorizontalOptions="Center" VerticalOptions="Center" Margin="0,-5,0,0"/>
+        </Border>
+    </Grid>
+</ContentPage>

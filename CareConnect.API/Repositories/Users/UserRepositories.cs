@@ -40,4 +40,11 @@ public class UserRepositories : IUserRepositories
     {
         return await _context.Users.FirstOrDefaultAsync(u => u.Email.ToLower() == email.ToLower());
     }
+
+    public async Task UpdateAsync(User user)
+    {
+        _context.Users.Update(user);
+
+        await _context.SaveChangesAsync();
+    }
 }

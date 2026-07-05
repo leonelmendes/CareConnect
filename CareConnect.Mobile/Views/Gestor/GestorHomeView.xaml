@@ -8,7 +8,7 @@
              BackgroundColor="#F8F9FA">
 
     <ScrollView>
-        <VerticalStackLayout Padding="20,40,20,30" Spacing="25">
+        <VerticalStackLayout Padding="20,40,20,30" Spacing="20">
             
             <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
                 <HorizontalStackLayout Grid.Column="0" Spacing="5" VerticalOptions="Center">
@@ -18,7 +18,7 @@
                 
                 <Grid Grid.Column="1" WidthRequest="40" HeightRequest="40">
                     <Ellipse Fill="White" Stroke="#E0E0E0" StrokeThickness="1" WidthRequest="40" HeightRequest="40" />
-                    <Image Source="icon_bell" WidthRequest="20" HeightRequest="20" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    <Image Source="icon_notification.png" WidthRequest="20" HeightRequest="20" HorizontalOptions="Center" VerticalOptions="Center"/>
                     <Ellipse Fill="#EF4444" WidthRequest="8" HeightRequest="8" HorizontalOptions="End" VerticalOptions="Start" Margin="0,8,8,0"/>
                 </Grid>
             </Grid>

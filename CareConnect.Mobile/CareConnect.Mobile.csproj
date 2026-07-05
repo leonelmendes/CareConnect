@@ -9,6 +9,9 @@
 		
 		<_KeepRunningWhenXcodeIsNewer>true</_KeepRunningWhenXcodeIsNewer>
 
+		<VerifyXcodeVersion>false</VerifyXcodeVersion>
+		<ValidateXcodeVersion>false</ValidateXcodeVersion>
+
 		<!-- Note for MacCatalyst:
 		The default runtime is maccatalyst-x64, except in Release config, in which case the default is maccatalyst-x64;maccatalyst-arm64.
 		When specifying both architectures, use the plural <RuntimeIdentifiers> instead of the singular <RuntimeIdentifier>.
@@ -84,9 +87,19 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Folder Include="Models\" />
-	  <Folder Include="ViewModels\" />
 	  <Folder Include="Services\" />
+	</ItemGroup>
+
+	<ItemGroup>
+	  <Compile Update="Views\Gestor\GestorPlanosView.xaml.cs">
+	    <DependentUpon>GestorPlanosView.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Gestor\GestorPerfilView.xaml.cs">
+	    <DependentUpon>GestorPerfilView.xaml</DependentUpon>
+	  </Compile>
+	  <Compile Update="Views\Shared\PerfilView.xaml.cs">
+	    <DependentUpon>PerfilView.xaml</DependentUpon>
+	  </Compile>
 	</ItemGroup>
 
 	<ItemGroup>
@@ -120,25 +133,25 @@
 	  <MauiXaml Update="Views\Gestor\CarePlanDetailView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Gestor\CarePlanFormView.xaml">
-	    <Generator>MSBuild:Compile</Generator>
-	  </MauiXaml>
-	  <MauiXaml Update="Views\Gestor\CarePlanListView.xaml">
+	  <MauiXaml Update="Views\Gestor\GestorPlanosView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	  <MauiXaml Update="Views\Gestor\GestorHomeView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Gestor\PatientFormView.xaml">
+	  <MauiXaml Update="Views\Gestor\GestorPerfilView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Shared\PatientDetailView.xaml">
+	  <MauiXaml Update="Views\Shared\AdicionarUtenteView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Shared\PatientListView.xaml">
+	  <MauiXaml Update="Views\Shared\DetalheUtenteView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
-	  <MauiXaml Update="Views\Shared\ProfileView.xaml">
+	  <MauiXaml Update="Views\Shared\PerfilView.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
+	  <MauiXaml Update="Views\Shared\UtentesView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
 	</ItemGroup>
