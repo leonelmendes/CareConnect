@@ -3,7 +3,7 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:CareConnect.Mobile.ViewModels.Gestor"
              xmlns:components="clr-namespace:CareConnect.Mobile.Components"
-             x:Class="CareConnect.Mobile.Views.Gestor.AdicionarUtenteView"
+             x:Class="CareConnect.Mobile.Views.Shared.AdicionarUtenteView"
              Title="Adicionar Utente"
              Shell.NavBarIsVisible="False"
              BackgroundColor="#F4F7FA">
