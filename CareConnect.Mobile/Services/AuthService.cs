@@ -12,27 +12,28 @@ public class AuthService
     private const string TokenKey = "auth_token";
     private const string ExpirationKey = "auth_expiration";
     private const string ProfileKey = "auth_profile";
+    private const string LastEmailKey = "last_logged_email";
 
     public AuthService(HttpClient httpClient)
     {
         _httpClient = httpClient;
     }
-
+    
     public async Task<AuthResponse> LoginAsync(string email, string password)
     {
         try
         {
-            var request = new LoginRequest { Email = email, Password = password };
+            // Usamos o LoginDto oficial do projeto partilhado
+            var request = new LoginDto { Email = email, Password = password };
             
             var response = await _httpClient.PostAsJsonAsync(Constants.LoginUrl, request);
 
             if (response.IsSuccessStatusCode)
             {
                 var authResult = await response.Content.ReadFromJsonAsync<AuthResponse>();
-                
                 if (authResult != null && authResult.Sucesso)
                 {
-                    await GuardarSessaoAsync(authResult);
+                    await GuardarSessaoAsync(authResult, email);
                     return authResult;
                 }
             }
@@ -46,17 +47,19 @@ public class AuthService
         }
     }
 
+    // --- 2. REGISTO COM O USERSCONTROLLER ---
     public async Task<AuthResponse> RegistarAsync(string nome, string email, string password, string perfil)
     {
         try
         {
+            // Converte a string da UI para o Enum esperado pela API
             UserRole perfilEnum = perfil == "Gestor" ? UserRole.Gestor : UserRole.Cuidador;
 
             var request = new UserCreateDto 
             { 
                 Nome = nome, 
                 Email = email, 
-                PasswordHash = password, 
+                PasswordHash = password, // A API encripta com BCrypt quando receber!
                 Role = perfilEnum 
             };
             
@@ -65,10 +68,9 @@ public class AuthService
             if (response.IsSuccessStatusCode)
             {
                 var authResult = await response.Content.ReadFromJsonAsync<AuthResponse>();
-                
                 if (authResult != null && authResult.Sucesso)
                 {
-                    await GuardarSessaoAsync(authResult);
+                    await GuardarSessaoAsync(authResult, email);
                     return authResult;
                 }
             }
@@ -82,11 +84,16 @@ public class AuthService
         }
     }
 
-    private async Task GuardarSessaoAsync(AuthResponse response)
+    private async Task GuardarSessaoAsync(AuthResponse response, string emailDigitado)
     {
         await SecureStorage.Default.SetAsync(TokenKey, response.Token);
         await SecureStorage.Default.SetAsync(ProfileKey, response.Perfil);
-        Preferences.Default.Set(ExpirationKey, response.DataExpiracao.ToString("o")); 
+        Preferences.Default.Set(ExpirationKey, response.DataExpiracao.ToString("o"));
+        
+        if (!string.IsNullOrWhiteSpace(emailDigitado))
+        {
+            Preferences.Default.Set(LastEmailKey, emailDigitado);
+        }
     }
 
     public async Task<(bool IsValid, string Perfil)> VerificarSessaoAtivaAsync()
@@ -131,6 +138,33 @@ public class AuthService
         catch
         {
             return $"Falha ao comunicar com o servidor (Status: {response.StatusCode})";
+        }
+    }
+
+    public string ObterUltimoEmail()
+    {
+        return Preferences.Default.Get(LastEmailKey, string.Empty);
+    }
+
+    public async Task RenovarTokenSilenciosoAsync()
+    {
+        try
+        {
+            var response = await _httpClient.PostAsync(Constants.RefreshUrl, null);
+
+            if (response.IsSuccessStatusCode)
+            {
+                var authResult = await response.Content.ReadFromJsonAsync<AuthResponse>();
+                if (authResult != null && authResult.Sucesso)
+                {
+                    // Substitui o token velho pelo novo no cofre do telemóvel e empurra a expiração +7 dias
+                    await GuardarSessaoAsync(authResult, string.Empty);
+                }
+            }
+        }
+        catch
+        {
+            // Falha silenciosa propositada.
         }
     }
 }

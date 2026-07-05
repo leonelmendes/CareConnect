@@ -86,9 +86,7 @@ namespace CareConnect.API.Repositories.Auth
 
             return (true, novoToken, createdUser.Role.ToString(), string.Empty);
         }
-
-        // --- 3. GERADOR DE TOKEN JWT ---
-        private string GerarTokenJwt(User user)
+        public string GerarTokenJwt(User user)
         {
             var chaveSecreta = _configuration["Jwt:Key"] ?? "CareConnect_Super_Secret_Key_1234567890_!@#$";
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(chaveSecreta));
@@ -111,5 +109,6 @@ namespace CareConnect.API.Repositories.Auth
 
             return new JwtSecurityTokenHandler().WriteToken(token);
         }
+
     }
 }

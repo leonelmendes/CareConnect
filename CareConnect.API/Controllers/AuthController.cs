@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Authorization;
 using CareConnect.Shared.DTOs;
 using System.Security.Claims;
 using CareConnect.API.Repositories.Auth;
+using CareConnect.API.Repositories.Users;
 
 namespace CareConnect.API.Controllers;
 
@@ -11,10 +12,12 @@ namespace CareConnect.API.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IAuthRepositories _authService;
+    private readonly IUserRepositories _repository;
 
-    public AuthController(IAuthRepositories authService)
+    public AuthController(IAuthRepositories authService, IUserRepositories repository)
     {
         _authService = authService;
+        _repository = repository;
     }
 
     [AllowAnonymous]
@@ -33,6 +36,34 @@ public class AuthController : ControllerBase
             sucesso = true,
             token = resultado.Token,
             perfil = resultado.Perfil,
+            dataExpiracao = DateTime.UtcNow.AddDays(7),
+            mensagemErro = ""
+        });
+    }
+
+    [Authorize]
+    [HttpPost("refresh")]
+    public async Task<IActionResult> RefreshToken()
+    {
+        var userIdStr = User.FindFirst(ClaimTypes.NameIdentifier)?.Value 
+                    ?? User.FindFirst("sub")?.Value;
+
+        if (string.IsNullOrEmpty(userIdStr) || !Guid.TryParse(userIdStr, out Guid userId))
+            return Unauthorized(new { sucesso = false, mensagemErro = "Token inválido." });
+
+        var user = await _repository.GetByIdAsync(userId); 
+        
+        if (user == null)
+            return Unauthorized(new { sucesso = false, mensagemErro = "Utilizador não encontrado." });
+
+        // Gera um novo token com mais 7 dias!
+        var novoToken = _authService.GerarTokenJwt(user);
+
+        return Ok(new
+        {
+            sucesso = true,
+            token = novoToken,
+            perfil = user.Role.ToString(),
             dataExpiracao = DateTime.UtcNow.AddDays(7),
             mensagemErro = ""
         });

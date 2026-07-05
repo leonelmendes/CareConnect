@@ -14,7 +14,8 @@ namespace CareConnect.Mobile
             }
         }
 
-        public static string LoginUrl = $"{BaseUrl}/api/Users/sync-login";
+        public static string LoginUrl = $"{BaseUrl}/api/Auth/login";
         public static string RegisterUrl = $"{BaseUrl}/api/Users";
+        public static string RefreshUrl = $"{BaseUrl}/api/Auth/refresh";
     }
 }

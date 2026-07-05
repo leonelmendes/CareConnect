@@ -5,6 +5,8 @@
 		<TargetFrameworks Condition="!$([MSBuild]::IsOSPlatform('linux'))">$(TargetFrameworks);net10.0-ios;net10.0-maccatalyst</TargetFrameworks>
 		<TargetFrameworks Condition="$([MSBuild]::IsOSPlatform('windows'))">$(TargetFrameworks);net10.0-windows10.0.19041.0</TargetFrameworks>
 
+		<MauiVersion>10.0.60</MauiVersion>
+		
 		<_KeepRunningWhenXcodeIsNewer>true</_KeepRunningWhenXcodeIsNewer>
 
 		<!-- Note for MacCatalyst:
@@ -68,6 +70,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<PackageReference Include="CommunityToolkit.Maui" Version="14.2.0" />
 		<PackageReference Include="CommunityToolkit.Mvvm" Version="8.4.2" />
 		<PackageReference Include="LiveChartsCore.SkiaSharpView.Maui" Version="2.0.5" />
 		<PackageReference Include="Microsoft.Extensions.Http" Version="10.0.9" />

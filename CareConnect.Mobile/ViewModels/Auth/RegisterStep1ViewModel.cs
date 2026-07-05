@@ -9,6 +9,8 @@ namespace CareConnect.Mobile.ViewModels.Auth;
 public partial class RegisterStep1ViewModel : ObservableObject
 {
     private readonly AuthService _authService;
+    private readonly INotificationService _notificationService;
+
     [ObservableProperty]
     private string _nomeCompleto = string.Empty;
 
@@ -27,9 +29,10 @@ public partial class RegisterStep1ViewModel : ObservableObject
     [ObservableProperty]
     private bool _isLoading;
 
-    public RegisterStep1ViewModel(AuthService authService)
+    public RegisterStep1ViewModel(AuthService authService, INotificationService notificationService)
     {
         _authService = authService;
+        _notificationService = notificationService;
     }
 
     [RelayCommand]
@@ -42,68 +45,49 @@ public partial class RegisterStep1ViewModel : ObservableObject
             string.IsNullOrWhiteSpace(Email) || 
             string.IsNullOrWhiteSpace(Password))
         {
-            await MostrarErro("Por favor, preencha todos os campos.");
+            await _notificationService.MostrarAvisoAsync("Por favor, preencha todos os campos.");
             return;
         }
 
         var nomeRegex = new Regex(@"^[a-zA-ZÀ-ÿ\s]+$");
         if (!nomeRegex.IsMatch(NomeCompleto))
         {
-            await MostrarErro("O nome contém caracteres inválidos. Use apenas letras.");
+            await _notificationService.MostrarAvisoAsync("O nome contém caracteres inválidos. Use apenas letras.");
             return;
         }
 
         var emailRegex = new Regex(@"^[^@\s]+@[^@\s]+\.[^@\s]+$");
         if (!emailRegex.IsMatch(Email))
         {
-            await MostrarErro("Por favor, insira um endereço de e-mail válido.");
+            await _notificationService.MostrarAvisoAsync("Por favor, insira um endereço de e-mail válido.");
             return;
         }
 
         if (Password.Length < 6)
         {
-            await MostrarErro("A password deve ter pelo menos 6 caracteres.");
+            await _notificationService.MostrarAvisoAsync("A password deve ter pelo menos 6 caracteres.");
             return;
         }
 
         if (Password != ConfirmPassword)
         {
-            await MostrarErro("As passwords não coincidem.");
+            await _notificationService.MostrarAvisoAsync("As passwords não coincidem.");
             return;
         }
 
-        IsLoading = true;
-
-        var resposta = await _authService.RegistarAsync(NomeCompleto, Email, Password, PerfilSelecionado);
-
-        IsLoading = false;
-
-        if (resposta.Sucesso)
+        var parametros = new Dictionary<string, object>
         {
-            var parametros = new Dictionary<string, object>
-            {
-                { "Nome", NomeCompleto },
-                { "Email", Email },
-                { "Password", Password }
-            };
+            { "Nome", NomeCompleto },
+            { "Email", Email },
+            { "Password", Password }
+        };
 
-            await Shell.Current.GoToAsync("ProfileSelectionView", parametros);
-        }
-        else
-        {
-            await MostrarErro(resposta.MensagemErro);
-        }
-    }
-
-    private async Task MostrarErro(string mensagem)
-    {
-        await Application.Current.Windows[0].Page.DisplayAlertAsync("Atenção", mensagem, "OK");
+        await Shell.Current.GoToAsync("ProfileSelectionView", parametros);
     }
 
     [RelayCommand]
     private async Task GoBackToLoginAsync()
     {
-        // Volta para trás na pilha de navegação
         await Shell.Current.GoToAsync("..");
     }
 }

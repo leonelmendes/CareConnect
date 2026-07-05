@@ -1,4 +1,5 @@
 using CareConnect.Shared.DTOs;
+using CareConnect.Shared.Models;
 
 namespace CareConnect.API.Repositories.Auth
 {
@@ -6,5 +7,7 @@ namespace CareConnect.API.Repositories.Auth
     {
         Task<(bool Sucesso, string Token, string Perfil, string MensagemErro)> LoginAsync(LoginDto dto);
         Task<(bool Sucesso, string Token, string Perfil, string MensagemErro)> SyncFirebaseAsync(string firebaseUid, string email, string nome);
+        //Task<User?> GetByIdAsync(Guid id);
+        string GerarTokenJwt(User user);
     }
 }
