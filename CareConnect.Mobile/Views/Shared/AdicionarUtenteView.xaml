@@ -53,7 +53,7 @@
                         <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="15">
 
                             <Border Grid.Column="0" WidthRequest="100" StrokeShape="RoundRectangle 12" Stroke="#1E40AF" BackgroundColor="White" HeightRequest="55">
-                                <Label Text="{Binding Idade}" FontFamily="InterSemiBold" FontSize="16" TextColor="#111827" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                <Entry Text="{Binding Idade}" HorizontalTextAlignment="Center" FontFamily="InterSemiBold" FontSize="16" TextColor="#111827" HorizontalOptions="Center" VerticalOptions="Center"/>
                             </Border>
 
                             <Label Grid.Column="1" Text="anos" FontFamily="InterMedium" FontSize="16" TextColor="#6B7280" VerticalOptions="Center"/>
