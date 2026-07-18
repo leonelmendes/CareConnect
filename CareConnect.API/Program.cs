@@ -1,3 +1,4 @@
+using System.Text;
 using CareConnect.API.Data;
 using CareConnect.API.Repositories.Auth; // <-- Adicionado para corrigir as referências do Swagger
 using CareConnect.API.Repositories.CarePlans;
@@ -28,22 +29,35 @@ builder.Services.AddScoped<ITaskLogRepositories, TaskLogRepositories>();
 builder.Services.AddScoped<IAuthRepositories, AuthRepositories>();
 builder.Services.AddScoped<S3Service>();
 
+/// ==========================================
+// 4. AUTENTICAÇÃO E JWT
 // ==========================================
-// 4. AUTENTICAÇÃO (Firebase)
-// ==========================================
-var firebaseProjectId = "careconnect-30522";
+var jwtSecret = builder.Configuration["Jwt:Key"] ?? builder.Configuration["Jwt:Secret"];
 
-builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
+// ⚠️ TRAVA DE SEGURANÇA: Se a chave não existir, avisa imediatamente com uma mensagem clara!
+if (string.IsNullOrWhiteSpace(jwtSecret))
+{
+    throw new InvalidOperationException("❌ ERRO FATAL: A chave 'Jwt:Key' não foi encontrada no appsettings.json ou nos User Secrets! Verifique as configurações da API.");
+}
+
+builder.Services.AddAuthentication(options =>
+    {
+        options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+        options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+    })
     .AddJwtBearer(options =>
     {
-        options.Authority = $"https://securetoken.google.com/{firebaseProjectId}";
         options.TokenValidationParameters = new TokenValidationParameters
         {
             ValidateIssuer = true,
-            ValidIssuer = $"https://securetoken.google.com/{firebaseProjectId}",
             ValidateAudience = true,
-            ValidAudience = firebaseProjectId,
-            ValidateLifetime = true
+            ValidateLifetime = true,
+            
+            ValidateIssuerSigningKey = true,
+            IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(jwtSecret)),
+            
+            ValidIssuer = builder.Configuration["Jwt:Issuer"] ?? "CareConnectAPI",
+            ValidAudience = builder.Configuration["Jwt:Audience"] ?? "CareConnectMobile"
         };
     });
 

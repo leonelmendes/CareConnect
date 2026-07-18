@@ -6,7 +6,7 @@
              NavigationPage.HasNavigationBar="False"
              NavigationPage.HasBackButton="False">
 
-    <Grid RowDefinitions="Auto, Auto, *, Auto" Padding="30,30,30,30">
+    <Grid RowDefinitions="Auto, Auto, *, Auto" Padding="20,40,20,30">
         
         <Grid Grid.Row="0" ColumnDefinitions="40,*,40,*,40" ColumnSpacing="0" Margin="0, 10, 0, 10">
             <Ellipse Grid.Column="0" WidthRequest="32" HeightRequest="32" Fill="White" Stroke="{StaticResource Primary}" StrokeThickness="1.5" HorizontalOptions="Center" VerticalOptions="Center"/>

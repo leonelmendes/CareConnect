@@ -7,6 +7,7 @@ public class CarePlan
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid PatientId { get; set; }
+    [JsonConverter(typeof(JsonStringEnumConverter))]
     public PlanType Tipo { get; set; }
     public string Descricao { get; set; } = string.Empty;
     public TimeSpan HoraProgramada { get; set; }

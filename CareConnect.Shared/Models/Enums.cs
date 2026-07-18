@@ -3,7 +3,6 @@ namespace CareConnect.Shared.Models;
 public enum UserRole
 {
     Gestor,
-    Default,
     Cuidador
 }
 
@@ -11,8 +10,8 @@ public enum PlanType
 {
     Medicacao,
     Higiene,
-    Refeicao,
-    Fisioterapia
+    Terapia,
+    Alimentacao
 }
 
 public enum CareTaskStatus

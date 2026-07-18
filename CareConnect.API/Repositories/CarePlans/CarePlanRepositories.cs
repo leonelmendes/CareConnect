@@ -20,7 +20,7 @@ public class CarePlanRepositories : ICarePlanRepositories
     public async Task<CarePlan?> GetByIdAsync(Guid id, Guid gestorId)
     {
         return await _context.CarePlans
-            .Include(c => c.Patient)
+            //.Include(c => c.Patient)
             .FirstOrDefaultAsync(c => c.Id == id && c.Patient!.GestorId == gestorId && c.Patient.Ativo);
     }
 

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CareConnect.Mobile.ViewModels.Gestor"
+             xmlns:components="clr-namespace:CareConnect.Mobile.Components"
+             xmlns:models="clr-namespace:CareConnect.Shared.Models;assembly=CareConnect.Shared"
+             x:Class="CareConnect.Mobile.Views.Gestor.CriarPlanoCuidadoView"
+             Title="Criar Plano de Cuidado"
+             BackgroundColor="#F9FAFB"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False">
+
+    <Grid>
+        <ScrollView IsVisible="{Binding IsNotLoading}">
+            <VerticalStackLayout Padding="20,40,20,30" Spacing="20">
+
+                <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
+                    <components:BackButton Grid.Column="0"/>
+                    <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="2">
+                        <Label Text="Adicionar Plano de Cuidado" FontFamily="InterBold" FontSize="18" TextColor="#111827" HorizontalOptions="Center"/>
+                        <Label Text="CareConnect" FontFamily="InterRegular" FontSize="12" TextColor="#9CA3AF" HorizontalOptions="Center"/>
+                    </VerticalStackLayout>
+                </Grid>
+                
+                <Grid>
+                    <Border StrokeShape="RoundRectangle 16" Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="White" Padding="16">
+                        <Grid ColumnDefinitions="50,*,Auto" ColumnSpacing="12" VerticalOptions="Center">
+                            <Border Grid.Column="0" WidthRequest="50" HeightRequest="50" StrokeShape="RoundRectangle 25" StrokeThickness="0">
+                                <Image Source="{Binding PacienteSelecionado.AvatarUrl, TargetNullValue='avatar_elderly.png', FallbackValue='avatar_elderly.png'}" Aspect="AspectFill" />
+                            </Border>
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                <Label Text="Utente Selecionado" FontSize="11" TextColor="#3B82F6" FontAttributes="Bold" />
+                                <Label Text="{Binding PacienteSelecionado.Nome, TargetNullValue='Toque para selecionar'}" FontSize="16" FontAttributes="Bold" TextColor="#1F2937" />
+                                <Label Text="{Binding PacienteSelecionado.Id, StringFormat='ID: {0}'}" FontSize="10" TextColor="#9CA3AF" LineBreakMode="TailTruncation" />
+                            </VerticalStackLayout>
+                            <Label Grid.Column="2" Text="▼" FontSize="16" TextColor="#9CA3AF" VerticalOptions="Center" />
+                        </Grid>
+                    </Border>
+                    
+                    <Picker ItemsSource="{Binding PacientesAtivos}" 
+                            ItemDisplayBinding="{Binding Nome}" 
+                            SelectedItem="{Binding PacienteSelecionado}" 
+                            HorizontalOptions="Fill" 
+                            VerticalOptions="Fill" 
+                            BackgroundColor="Transparent"
+                            TextColor="Transparent"
+                            TitleColor="Transparent"
+                            ZIndex="10" />
+                </Grid>
+
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Tipo de Cuidado" FontSize="14" FontAttributes="Bold" TextColor="#374151" />
+                    <Grid RowDefinitions="90,90" ColumnDefinitions="*,*" RowSpacing="12" ColumnSpacing="12">
+                        
+                        <Border Grid.Row="0" Grid.Column="0" StrokeShape="RoundRectangle 12" BackgroundColor="#EFF6FF">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelecionarTipoCommand}" CommandParameter="Medicacao" /></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsMedicacao}" Value="True">
+                                    <Setter Property="Stroke" Value="#1D4ED8" />
+                                    <Setter Property="StrokeThickness" Value="2" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsMedicacao}" Value="False">
+                                    <Setter Property="Stroke" Value="#DBEAFE" />
+                                    <Setter Property="StrokeThickness" Value="1" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
+                                <Label Text="💊" FontSize="28" HorizontalOptions="Center" />
+                                <Label Text="Medicação" FontSize="13" FontAttributes="Bold" TextColor="#1D4ED8" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Row="0" Grid.Column="1" StrokeShape="RoundRectangle 12" BackgroundColor="#F0FDF4">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelecionarTipoCommand}" CommandParameter="Higiene" /></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsHigiene}" Value="True">
+                                    <Setter Property="Stroke" Value="#15803D" />
+                                    <Setter Property="StrokeThickness" Value="2" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsHigiene}" Value="False">
+                                    <Setter Property="Stroke" Value="#DCFCE7" />
+                                    <Setter Property="StrokeThickness" Value="1" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
+                                <Label Text="🚿" FontSize="28" HorizontalOptions="Center" />
+                                <Label Text="Higiene" FontSize="13" FontAttributes="Bold" TextColor="#15803D" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Row="1" Grid.Column="0" StrokeShape="RoundRectangle 12" BackgroundColor="#FAF5FF">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelecionarTipoCommand}" CommandParameter="Terapia" /></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsTerapia}" Value="True">
+                                    <Setter Property="Stroke" Value="#7E22CE" />
+                                    <Setter Property="StrokeThickness" Value="2" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsTerapia}" Value="False">
+                                    <Setter Property="Stroke" Value="#F3E8FF" />
+                                    <Setter Property="StrokeThickness" Value="1" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
+                                <Label Text="🩺" FontSize="28" HorizontalOptions="Center" />
+                                <Label Text="Terapia" FontSize="13" FontAttributes="Bold" TextColor="#7E22CE" />
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <Border Grid.Row="1" Grid.Column="1" StrokeShape="RoundRectangle 12" BackgroundColor="#FFF7ED">
+                            <Border.GestureRecognizers><TapGestureRecognizer Command="{Binding SelecionarTipoCommand}" CommandParameter="Alimentacao" /></Border.GestureRecognizers>
+                            <Border.Triggers>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsAlimentacao}" Value="True">
+                                    <Setter Property="Stroke" Value="#C2410C" />
+                                    <Setter Property="StrokeThickness" Value="2" />
+                                </DataTrigger>
+                                <DataTrigger TargetType="Border" Binding="{Binding IsAlimentacao}" Value="False">
+                                    <Setter Property="Stroke" Value="#FFEDD5" />
+                                    <Setter Property="StrokeThickness" Value="1" />
+                                </DataTrigger>
+                            </Border.Triggers>
+                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="8">
+                                <Label Text="🍲" FontSize="28" HorizontalOptions="Center" />
+                                <Label Text="Alimentação" FontSize="13" FontAttributes="Bold" TextColor="#C2410C" />
+                            </VerticalStackLayout>
+                        </Border>
+                    </Grid>
+                </VerticalStackLayout>
+
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Descrição da Tarefa" FontSize="14" FontAttributes="Bold" TextColor="#374151" />
+                    <Border StrokeShape="RoundRectangle 12" Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="White" Padding="12,4" HeightRequest="100">
+                        <Editor Placeholder="Ex.: Dar comprimido X após a refeição" 
+                                Text="{Binding DescricaoTarefa}"
+                                TextColor="#1F2937" 
+                                PlaceholderColor="#9CA3AF"
+                                VerticalOptions="Fill" />
+                    </Border>
+                </VerticalStackLayout>
+
+                <Grid ColumnDefinitions="*,*" ColumnSpacing="16">
+                    <VerticalStackLayout Grid.Column="0" Spacing="8">
+                        <Label Text="Horário" FontSize="14" FontAttributes="Bold" TextColor="#374151" />
+                        <Border StrokeShape="RoundRectangle 12" Stroke="#E5E7EB" StrokeThickness="1" BackgroundColor="White" HeightRequest="48" Padding="12,0">
+                            <TimePicker Time="{Binding HorarioSelecionado}" TextColor="#1D4ED8" FontAttributes="Bold" VerticalOptions="Center" HorizontalOptions="Center" />
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Grid.Column="1" Spacing="8">
+                        <Label Text="Frequência" FontSize="14" FontAttributes="Bold" TextColor="#374151" />
+                        <Grid ColumnDefinitions="*,*" ColumnSpacing="8">
+                            <Button Grid.Column="0" Text="Diário" Command="{Binding SelecionarFrequenciaCommand}" CommandParameter="Diário" CornerRadius="12" HeightRequest="48" FontSize="13" FontAttributes="Bold">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsDiario}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="#1D4ED8" />
+                                        <Setter Property="TextColor" Value="White" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsDiario}" Value="False">
+                                        <Setter Property="BackgroundColor" Value="White" />
+                                        <Setter Property="TextColor" Value="#4B5563" />
+                                        <Setter Property="BorderColor" Value="#E5E7EB" />
+                                        <Setter Property="BorderWidth" Value="1" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                            
+                            <Button Grid.Column="1" Text="Semanal" Command="{Binding SelecionarFrequenciaCommand}" CommandParameter="Semanal" CornerRadius="12" HeightRequest="48" FontSize="13" FontAttributes="Bold">
+                                <Button.Triggers>
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsSemanal}" Value="True">
+                                        <Setter Property="BackgroundColor" Value="#1D4ED8" />
+                                        <Setter Property="TextColor" Value="White" />
+                                    </DataTrigger>
+                                    <DataTrigger TargetType="Button" Binding="{Binding IsSemanal}" Value="False">
+                                        <Setter Property="BackgroundColor" Value="White" />
+                                        <Setter Property="TextColor" Value="#4B5563" />
+                                        <Setter Property="BorderColor" Value="#E5E7EB" />
+                                        <Setter Property="BorderWidth" Value="1" />
+                                    </DataTrigger>
+                                </Button.Triggers>
+                            </Button>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <Button Text="💾  Guardar Plano" Command="{Binding GuardarPlanoCommand}" CornerRadius="16" HeightRequest="54" Margin="0,16,0,30" BackgroundColor="#1D4ED8" TextColor="White" FontSize="16" FontAttributes="Bold" Shadow="{Shadow Brush=#1D4ED8, Offset='0,4', Radius=12, Opacity=0.3}" />
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid BackgroundColor="#80000000" IsVisible="{Binding IsLoading}" SafeAreaEdges="None" ZIndex="999">
+            <Border StrokeShape="RoundRectangle 16" BackgroundColor="White" WidthRequest="140" HeightRequest="140" HorizontalOptions="Center" VerticalOptions="Center">
+                <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12">
+                    <ActivityIndicator IsRunning="{Binding IsLoading}" Color="#2563EB" WidthRequest="40" HeightRequest="40" />
+                    <Label Text="A gravar..." TextColor="#4B5563" FontSize="14" FontAttributes="Bold" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
+</ContentPage>

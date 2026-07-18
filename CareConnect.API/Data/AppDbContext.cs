@@ -43,5 +43,9 @@ public class AppDbContext : DbContext
             .WithMany(u => u.TarefasExecutadas)
             .HasForeignKey(t => t.ExecutorId)
             .OnDelete(DeleteBehavior.Restrict); // Restrict: Protege os registos históricos. Não podes apagar um User se ele já executou tarefas.
+
+        modelBuilder.Entity<CarePlan>()
+            .Property(c => c.Tipo)
+            .HasConversion<string>();
     }
 }

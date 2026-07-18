@@ -17,7 +17,10 @@ namespace CareConnect.Mobile.ViewModels.Auth
         private string _password = string.Empty;
 
         [ObservableProperty]
+        [NotifyPropertyChangedFor(nameof(IsNotLoading))] // Dica pro: cria a propriedade inversa automaticamente!
         private bool _isLoading;
+
+        public bool IsNotLoading => !IsLoading;
 
         public LoginViewModel(AuthService authService, INotificationService notificationService)
         {
@@ -39,31 +42,37 @@ namespace CareConnect.Mobile.ViewModels.Auth
                 return;
             }
 
-            IsLoading = true;
-
-            var resposta = await _authService.LoginAsync(Email, Password);
-
-            IsLoading = false;
-
-            if (resposta.Sucesso)
+            try
             {
-                await _notificationService.MostrarSucessoAsync("Sessão iniciada com sucesso!");
+                IsLoading = true;
+                var resposta = await _authService.LoginAsync(Email, Password);
 
-                // Redireciona para o ecossistema correto com base no Role do utilizador
-                if (resposta.Perfil == "Gestor")
+                if (resposta.Sucesso)
                 {
-                    Application.Current!.Windows[0].Page = new GestorShell();
+                    await _notificationService.MostrarSucessoAsync("Sessão iniciada com sucesso!");
+
+                    // Redireciona para o ecossistema correto com base no Role do utilizador
+                    if (resposta.Perfil == "Gestor")
+                    {
+                        Application.Current!.Windows[0].Page = new GestorShell();
+                    }
+                    else
+                    {
+                        Application.Current!.Windows[0].Page = new CuidadorShell();
+                    }
                 }
                 else
                 {
-                    Application.Current!.Windows[0].Page = new CuidadorShell();
+                    // Mostra o erro devolvido pela API (ex: "Palavra-passe incorreta." ou "Utilizador não encontrado.")
+                    await _notificationService.MostrarErroAsync(resposta.MensagemErro);
                 }
+                IsLoading = false;
             }
-            else
+            finally
             {
-                // Mostra o erro devolvido pela API (ex: "Palavra-passe incorreta." ou "Utilizador não encontrado.")
-                await _notificationService.MostrarErroAsync(resposta.MensagemErro);
+                IsLoading = false;
             }
+            
         }
 
         [RelayCommand]

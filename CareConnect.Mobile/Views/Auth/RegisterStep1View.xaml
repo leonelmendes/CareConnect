@@ -7,7 +7,7 @@
              NavigationPage.HasNavigationBar="True">
 
     <ScrollView HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
-        <VerticalStackLayout Padding="30,0,30,30" Spacing="25">
+        <VerticalStackLayout Padding="20,40,20,30" Spacing="25">
 
             <components:BackButton />
 
@@ -45,7 +45,7 @@
                     </Grid.GestureRecognizers>
 
                     <Border WidthRequest="100" HeightRequest="100" StrokeShape="RoundRectangle 50" Stroke="#E5E7EB" BackgroundColor="White" HorizontalOptions="Center" VerticalOptions="Center">
-                        <Image Source="{Binding FotoCaminho}" Aspect="AspectFill" />
+                        <Image Source="{Binding FotoPerfil}" Aspect="AspectFill" />
                     </Border>
 
                     <Border WidthRequest="32" HeightRequest="32" StrokeShape="RoundRectangle 16" Stroke="White" StrokeThickness="2" BackgroundColor="#1E40AF" HorizontalOptions="End" VerticalOptions="End" Margin="0,0,5,5">

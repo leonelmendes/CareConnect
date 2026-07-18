@@ -3,6 +3,7 @@ using System;
 using CareConnect.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CareConnect.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260708173944_AdicionarAvatarUtente")]
+    partial class AdicionarAvatarUtente
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -42,9 +45,8 @@ namespace CareConnect.API.Migrations
                     b.Property<Guid>("PatientId")
                         .HasColumnType("uuid");
 
-                    b.Property<string>("Tipo")
-                        .IsRequired()
-                        .HasColumnType("text");
+                    b.Property<int>("Tipo")
+                        .HasColumnType("integer");
 
                     b.HasKey("Id");
 

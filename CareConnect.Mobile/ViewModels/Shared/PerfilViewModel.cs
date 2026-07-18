@@ -1,59 +1,74 @@
-﻿using CareConnect.Mobile.Services;
-using CareConnect.Mobile.Views.Auth; // Para redirecionar para o Login
-using CommunityToolkit.Mvvm.ComponentModel;
+﻿using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CareConnect.Mobile.Services;
 
 namespace CareConnect.Mobile.ViewModels.Shared;
 
 public partial class PerfilViewModel : ObservableObject
 {
     private readonly AuthService _authService;
-    private readonly INotificationService _notificationService;
 
     [ObservableProperty]
-    private string _nome = string.Empty;
+    private string _nome = "Carregando...";
 
     [ObservableProperty]
-    private string _cargo = string.Empty;
+    private string _emaill = "---";
 
     [ObservableProperty]
-    private string _fotoUrl = "avatar_1.png"; // Placeholder da foto
+    private string _perfil = "Gestor";
 
-    // Lógica de Permissões
-    public bool IsGestor => Preferences.Default.Get("auth_profile", "Gestor") == "Gestor";
+    [ObservableProperty]
+    private string _avatarUrl = "avatar_elderly.png"; // Fallback por defeito
 
-    public PerfilViewModel(AuthService authService, INotificationService notificationService)
+    [ObservableProperty]
+    private bool _isDarkMode;
+
+    public PerfilViewModel(AuthService authService)
     {
         _authService = authService;
-        _notificationService = notificationService;
-        CarregarDadosUsuario();
+        CarregarDadosPerfil();
     }
 
-    private void CarregarDadosUsuario()
+    public void CarregarDadosPerfil()
     {
-        // Vai buscar o Nome e o Perfil (Cargo) às Preferences
-        Nome = Preferences.Default.Get("auth_name", "Carla Monteiro"); // Usa um fallback do design
+        // 1. Lê os dados salvos nas Preferências
+        Nome = Preferences.Default.Get("user_nome", "Utilizador CareConnect");
+        Emaill = Preferences.Default.Get("last_logged_email", "email@careconnect.pt");
+        Perfil = Preferences.Default.Get("auth_profile", "Gestor");
+        
+        var fotoSalva = Preferences.Default.Get("user_avatar", string.Empty);
+        if (!string.IsNullOrWhiteSpace(fotoSalva))
+        {
+            AvatarUrl = fotoSalva;
+        }
 
-        var perfilStr = Preferences.Default.Get("auth_profile", "Gestor");
-        Cargo = perfilStr == "Gestor" ? "Gestor de Cuidados" : "Cuidador Principal";
+        // 2. Verifica qual é o tema atual da App para ajustar o Switch
+        var temaSalvo = Preferences.Default.Get("app_theme_dark", false);
+        _isDarkMode = temaSalvo;
+        OnPropertyChanged(nameof(IsDarkMode));
+    }
+
+    // ⚠️ MÁGICA DO .NET MAUI: Dispara sempre que o utilizador clica no Switch!
+    partial void OnIsDarkModeChanged(bool value)
+    {
+        Preferences.Default.Set("app_theme_dark", value);
+
+        // Altera o tema da aplicação em tempo real!
+        Application.Current!.UserAppTheme = value ? AppTheme.Dark : AppTheme.Light;
     }
 
     [RelayCommand]
-    private async Task NavegarMenuAsync(string menu)
+    private async Task TerminarSessaoAsync()
     {
-        // Exemplo usando a nossa notificação em vez do DisplayAlert!
-        await _notificationService.MostrarAvisoAsync($"A abrir a secção: {menu}...");
-    }
+        bool confirmar = await Application.Current!.Windows[0].Page!.DisplayAlert(
+            "Terminar Sessão", 
+            "Tem a certeza que deseja sair da sua conta?", 
+            "Sim, Sair", "Cancelar");
 
-    [RelayCommand]
-    private async Task LogoutAsync()
-    {
-        // Limpa todos os dados da sessão (Cofre e Preferences)
-        _authService.FazerLogout();
-
-        await _notificationService.MostrarSucessoAsync("Sessão terminada com sucesso.");
-
-        // Redireciona para o ecrã de Login e limpa o histórico da Shell!
-        Application.Current!.Windows[0].Page = new AppShell();
+        if (confirmar)
+        {
+            _authService.FazerLogout();
+            Application.Current!.Windows[0].Page = new AppShell();
+        }
     }
 }

@@ -25,9 +25,17 @@ public class CarePlansController : ControllerBase
     // Método Auxiliar de Segurança
     private async Task<User?> ObterUtilizadorAutenticadoAsync()
     {
-        var firebaseUid = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("user_id");
-        if (string.IsNullOrEmpty(firebaseUid)) return null;
-        return await _userRepository.GetByFirebaseUidAsync(firebaseUid);
+        var userIdString = User.FindFirstValue(ClaimTypes.NameIdentifier) ?? User.FindFirstValue("id");
+        
+        if (string.IsNullOrEmpty(userIdString)) 
+            return null;
+
+        // Converte a string para o formato Guid do PostgreSQL
+        if (!Guid.TryParse(userIdString, out Guid userId))
+            return null;
+
+        // Vai buscar o utilizador real à base de dados!
+        return await _userRepository.GetByIdAsync(userId);
     }
 
     // GET: api/careplans/patient/{patientId}

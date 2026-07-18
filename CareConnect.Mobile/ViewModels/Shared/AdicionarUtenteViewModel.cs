@@ -1,4 +1,5 @@
 ﻿using CareConnect.Mobile.Services;
+using CareConnect.Shared.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using System.Collections.ObjectModel;
@@ -8,96 +9,144 @@ namespace CareConnect.Mobile.ViewModels.Gestor;
 public partial class AdicionarUtenteViewModel : ObservableObject
 {
     private readonly INotificationService _notificationService;
+    private readonly PatientService _patientService;
 
     [ObservableProperty]
-    private string _nomeCompleto = string.Empty;
+    [NotifyPropertyChangedFor(nameof(IsNotLoading))]
+    private bool _isLoading;
+    public bool IsNotLoading => !IsLoading;
 
-    [ObservableProperty]
-    private int _idade = 65; // Idade inicial padrão
-
-    [ObservableProperty]
-    private string _fotoCaminho = "avatar_placeholder.png"; // Imagem padrão
-
-    // Ficheiro real que será enviado para a API mais tarde
+    // --- CAMPOS DO FORMULÁRIO (Mapeados para o Patient) ---
+    [ObservableProperty] private string _nomeCompleto = string.Empty;
+    [ObservableProperty] private int _idade = 65; 
+    [ObservableProperty] private ImageSource _fotoCaminho = ImageSource.FromFile("avatar_elderly.png"); 
+    
+    [ObservableProperty] private string _contacto = string.Empty;
+    [ObservableProperty] private string _contactoEmergencia = string.Empty;
+    [ObservableProperty] private string _alergias = string.Empty;
+    
     private FileResult? _fotoFicheiro;
 
-    // Listas para os Pickers (Dropdowns)
-    [ObservableProperty]
-    private ObservableCollection<string> _cuidadoresDisponiveis = new();
+    // --- CAIXAS DE SELEÇÃO ---
+    [ObservableProperty] private ObservableCollection<string> _cuidadoresDisponiveis = new();
+    [ObservableProperty] private string _cuidadorSelecionado = string.Empty;
+    
+    [ObservableProperty] private ObservableCollection<string> _condicoesDisponiveis = new();
+    [ObservableProperty] private string _condicaoSelecionada = string.Empty;
 
-    [ObservableProperty]
-    private string _cuidadorSelecionado = string.Empty;
-
-    [ObservableProperty]
-    private ObservableCollection<string> _condicoesDisponiveis = new();
-
-    [ObservableProperty]
-    private string _condicaoSelecionada = string.Empty;
-
-    public AdicionarUtenteViewModel(INotificationService notificationService)
+    public AdicionarUtenteViewModel(INotificationService notificationService, PatientService patientService)
     {
         _notificationService = notificationService;
-        CarregarListasMock();
+        _patientService = patientService;
+        
+        _ = CarregarDadosReaisAsync();
     }
 
-    private void CarregarListasMock()
+    private async Task CarregarDadosReaisAsync()
     {
+        // Aqui simulamos as condições.
+        CondicoesDisponiveis = new ObservableCollection<string> { "Nenhuma", "Diabetes Tipo 2", "Hipertensão", "DPOC", "Alzheimer", "Cardiopatia" };
+        CondicaoSelecionada = "Nenhuma";
+
+        // TODO: Aqui deves chamar a tua API para ir buscar a lista de Cuidadores da tua empresa.
+        // Exemplo: var cuidadores = await _userService.GetCuidadoresAsync();
+        // Por agora, mantém o mock para não quebrar a compilação:
         CuidadoresDisponiveis = new ObservableCollection<string> { "Ana Silva", "Sarah Miller", "Michael Brown" };
-        CondicoesDisponiveis = new ObservableCollection<string> { "Diabetes Tipo 2", "Hipertensão", "DPOC", "Alzheimer", "Nenhuma" };
     }
 
-    // --- COMANDOS PARA A IDADE ---
-    [RelayCommand]
-    private void AumentarIdade() => Idade++;
+    [RelayCommand] private void AumentarIdade() => Idade++;
+    [RelayCommand] private void DiminuirIdade() { if (Idade > 0) Idade--; }
 
     [RelayCommand]
-    private void DiminuirIdade()
-    {
-        if (Idade > 0) Idade--;
-    }
+    private async Task VoltarAsync() => await Shell.Current.GoToAsync("..");
 
-    // --- COMANDO PARA FOTO ---
     [RelayCommand]
     private async Task EscolherFotoAsync()
     {
         try
         {
-            // Pede ao MAUI para abrir a galeria do telemóvel
-            var foto = await MediaPicker.Default.PickPhotoAsync(new MediaPickerOptions
-            {
-                Title = "Por favor, selecione uma foto"
-            });
+            string acao = await Application.Current!.Windows[0].Page!.DisplayActionSheet("Foto de Perfil", "Cancelar", null, "Tirar Foto", "Escolher da Galeria");
 
-            if (foto != null)
+            if (acao == "Tirar Foto" && MediaPicker.Default.IsCaptureSupported)
             {
-                _fotoFicheiro = foto;
-                FotoCaminho = foto.FullPath; // Atualiza a UI para mostrar a foto escolhida
+                _fotoFicheiro = await MediaPicker.Default.CapturePhotoAsync();
+            }
+            else if (acao == "Escolher da Galeria")
+            {
+                _fotoFicheiro = await MediaPicker.Default.PickPhotoAsync();
+            }
+
+            if (_fotoFicheiro != null)
+            {
+                string caminhoLocal = Path.Combine(FileSystem.CacheDirectory, _fotoFicheiro.FileName);
+                using Stream streamOrigem = await _fotoFicheiro.OpenReadAsync();
+                using FileStream streamDestino = File.OpenWrite(caminhoLocal);
+                await streamOrigem.CopyToAsync(streamDestino);
+
+                MainThread.BeginInvokeOnMainThread(() =>
+                {
+                    FotoCaminho = ImageSource.FromFile(caminhoLocal);
+                });
+                
+                _fotoFicheiro = new FileResult(caminhoLocal);
             }
         }
         catch (Exception ex)
         {
-            await _notificationService.MostrarErroAsync("Erro ao abrir a galeria: " + ex.Message);
+            await _notificationService.MostrarErroAsync("Erro com a foto: " + ex.Message);
         }
-    }
-
-    // --- COMANDOS DE NAVEGAÇÃO E GUARDAR ---
-    [RelayCommand]
-    private async Task VoltarAsync()
-    {
-        await Shell.Current.GoToAsync("..");
     }
 
     [RelayCommand]
     private async Task GuardarUtenteAsync()
     {
-        if (string.IsNullOrWhiteSpace(NomeCompleto) || string.IsNullOrWhiteSpace(CuidadorSelecionado))
+        if (string.IsNullOrWhiteSpace(NomeCompleto))
         {
-            await _notificationService.MostrarAvisoAsync("Preencha o nome e atribua um cuidador.");
+            await _notificationService.MostrarAvisoAsync("Por favor, preencha o Nome Completo do utente.");
             return;
         }
 
-        // TODO: Enviar dados e ficheiro (_fotoFicheiro) para a API no futuro.
-        await _notificationService.MostrarSucessoAsync("Utente guardado com sucesso!");
-        await Shell.Current.GoToAsync("..");
+        if (IsLoading) return;
+
+        try
+        {
+            IsLoading = true;
+
+            // 1. Mapeamento exato para a tua classe Patient
+            var novoPaciente = new Patient
+            {
+                Nome = NomeCompleto,
+                DataNascimento = DateTime.UtcNow.AddYears(-Idade),
+                Contacto = Contacto,
+                ContactoEmergencia = ContactoEmergencia,
+                CondicoesMedicas = CondicaoSelecionada,
+                Alergias = Alergias,
+                Ativo = true,
+                Notas = !string.IsNullOrWhiteSpace(CuidadorSelecionado) ? $"Cuidador atribuído: {CuidadorSelecionado}" : "Nenhum cuidador inicial atribuído."
+            };
+
+            // 2. Grava na Base de Dados
+            var pacienteCriado = await _patientService.CreatePatientAsync(novoPaciente);
+
+            if (pacienteCriado != null)
+            {
+                // 3. Faz o Upload da Foto para a Amazon S3
+                if (_fotoFicheiro != null)
+                {
+                    await _patientService.UploadPatientAvatarAsync(pacienteCriado.Id, _fotoFicheiro.FullPath);
+                }
+
+                await _notificationService.MostrarSucessoAsync("Ficha de Utente gravada com sucesso!");
+                await Shell.Current.GoToAsync("..");
+            }
+        }
+        catch (Exception ex)
+        {
+            await _notificationService.MostrarErroAsync($"Falha a gravar: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
     }
 }

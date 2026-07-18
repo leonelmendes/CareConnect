@@ -12,9 +12,9 @@ namespace CareConnect.Mobile.ViewModels.Auth
     public partial class ProfileSelectionViewModel : ObservableObject
     {
         private readonly AuthService _authService;
-        private readonly NotificationService _notificationService;
+        private readonly INotificationService _notificationService;
 
-        public ProfileSelectionViewModel(AuthService authService, NotificationService notificationService)
+        public ProfileSelectionViewModel(AuthService authService, INotificationService notificationService)
         {
             _authService = authService;
             _notificationService = notificationService;
@@ -56,7 +56,7 @@ namespace CareConnect.Mobile.ViewModels.Auth
                 {
                     if (!string.IsNullOrEmpty(FotoRecebida))
                     {
-                       await _authService.UploadAvatarAsync(FotoRecebida);
+                       await _authService.UploadAvatarAsync(FotoRecebida, SelectedProfile);
                     }
                     await _notificationService.MostrarSucessoAsync("Conta criada e sessão iniciada!");
                     await Shell.Current.GoToAsync($"//OnboardingView?Perfil={SelectedProfile}");

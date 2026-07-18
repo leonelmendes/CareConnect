@@ -1,12 +1,149 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:vm="clr-namespace:CareConnect.Mobile.ViewModels.Gestor"
+             xmlns:components="clr-namespace:CareConnect.Mobile.Components"
              x:Class="CareConnect.Mobile.Views.Gestor.GestorPlanosView"
-             Title="CarePlanListView">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Plano de Cuidados"
+             BackgroundColor="#F8F9FA">
+
+    <Grid>
+        
+        <RefreshView IsRefreshing="{Binding IsRefreshing}"
+                     Command="{Binding CarregarPlanosCommand}"
+                     RefreshColor="#1E3A8A">
+            
+            <CollectionView ItemsSource="{Binding Planos}">
+                
+                <CollectionView.Header>
+                    <VerticalStackLayout Padding="20,40,20,20" Spacing="20">
+                        
+                        <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                            <VerticalStackLayout>
+                                <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                                    <Image Source="logo_careconnect.png" HeightRequest="28" />
+                                    <Label Text="CareConnect" FontFamily="InterBold" FontSize="20" TextColor="#1A1A1A" FontAttributes="Bold" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                                <Label Text="Gerir Planos de Cuidado" FontSize="16" FontFamily="InterMedium" TextColor="#6B7280" Margin="40,0,0,0"/>
+                            </VerticalStackLayout>
+
+                            <Grid Grid.Column="1" WidthRequest="40" HeightRequest="40">
+                                <Ellipse Fill="White" Stroke="#E0E0E0" StrokeThickness="1" WidthRequest="40" HeightRequest="40" />
+                                <Image Source="icon_notification.png" WidthRequest="20" HeightRequest="20" HorizontalOptions="Center" VerticalOptions="Center"/>
+                                <Ellipse Fill="#EF4444" WidthRequest="8" HeightRequest="8" HorizontalOptions="End" VerticalOptions="Start" Margin="0,8,8,0"/>
+                            </Grid>
+                        </Grid>
+
+                        <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                            <HorizontalStackLayout Spacing="10">
+                                
+                                <Button Text="🔄 Todos" Command="{Binding FiltrarPlanosCommand}" CommandParameter="Todos" 
+                                        CornerRadius="20" HeightRequest="38" Padding="16,0" FontSize="13" FontAttributes="Bold"
+                                        BackgroundColor="White" TextColor="#4B5563" BorderColor="#E5E7EB" BorderWidth="1">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding FiltroAtual}" Value="Todos">
+                                            <Setter Property="BackgroundColor" Value="#1E3A8A" />
+                                            <Setter Property="TextColor" Value="White" />
+                                            <Setter Property="BorderWidth" Value="0" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+
+                                <Button Text="💊 Medicação" Command="{Binding FiltrarPlanosCommand}" CommandParameter="Medicacao" 
+                                        CornerRadius="20" HeightRequest="38" Padding="16,0" FontSize="13" FontAttributes="Bold"
+                                        BackgroundColor="White" TextColor="#4B5563" BorderColor="#E5E7EB" BorderWidth="1">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding FiltroAtual}" Value="Medicacao">
+                                            <Setter Property="BackgroundColor" Value="#1E3A8A" />
+                                            <Setter Property="TextColor" Value="White" />
+                                            <Setter Property="BorderWidth" Value="0" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+
+                                <Button Text="🚿 Higiene" Command="{Binding FiltrarPlanosCommand}" CommandParameter="Higiene" 
+                                        CornerRadius="20" HeightRequest="38" Padding="16,0" FontSize="13" FontAttributes="Bold"
+                                        BackgroundColor="White" TextColor="#4B5563" BorderColor="#E5E7EB" BorderWidth="1">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding FiltroAtual}" Value="Higiene">
+                                            <Setter Property="BackgroundColor" Value="#1E3A8A" />
+                                            <Setter Property="TextColor" Value="White" />
+                                            <Setter Property="BorderWidth" Value="0" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+
+                                <Button Text="🏋️ Terapia" Command="{Binding FiltrarPlanosCommand}" CommandParameter="Terapia" 
+                                        CornerRadius="20" HeightRequest="38" Padding="16,0" FontSize="13" FontAttributes="Bold"
+                                        BackgroundColor="White" TextColor="#4B5563" BorderColor="#E5E7EB" BorderWidth="1">
+                                    <Button.Triggers>
+                                        <DataTrigger TargetType="Button" Binding="{Binding FiltroAtual}" Value="Terapia">
+                                            <Setter Property="BackgroundColor" Value="#1E3A8A" />
+                                            <Setter Property="TextColor" Value="White" />
+                                            <Setter Property="BorderWidth" Value="0" />
+                                        </DataTrigger>
+                                    </Button.Triggers>
+                                </Button>
+                                
+                            </HorizontalStackLayout>
+                        </ScrollView>
+                    </VerticalStackLayout>
+                </CollectionView.Header>
+
+                <CollectionView.ItemTemplate>
+                    <DataTemplate>
+                        <ContentView Padding="20,0,20,12">
+                            <Border StrokeShape="RoundRectangle 16" Stroke="#F3F4F6" StrokeThickness="1"
+                                    BackgroundColor="White" Padding="16"
+                                    Shadow="{Shadow Brush=#0D000000, Offset='0,2', Radius=6}">
+                                
+                                <Border.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type vm:GestorPlanosViewModel}}, Path=VerDetalhesPlanoCommand}" CommandParameter="{Binding .}" />
+                                </Border.GestureRecognizers>
+
+                                <Grid ColumnDefinitions="48,*,Auto" RowDefinitions="Auto,Auto" ColumnSpacing="12" RowSpacing="12">
+                                    
+                                    <Border Grid.Row="0" Grid.Column="0" WidthRequest="44" HeightRequest="44" 
+                                            StrokeShape="RoundRectangle 22" StrokeThickness="0" BackgroundColor="{Binding CorFundoIcone}">
+                                        <Label Text="{Binding Icone}" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center" />
+                                    </Border>
+
+                                    <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="4" VerticalOptions="Center">
+                                        <Label Text="{Binding Titulo}" FontSize="15" FontAttributes="Bold" TextColor="#1F2937" />
+                                        <Label Text="{Binding Descricao}" FontSize="13" TextColor="#6B7280" />
+                                        <HorizontalStackLayout Spacing="6" VerticalOptions="Center">
+                                            <Label Text="🕒" FontSize="12" TextColor="#3B82F6" />
+                                            <Label Text="{Binding Horarios}" FontSize="12" TextColor="#3B82F6" FontFamily="InterMedium" />
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+
+                                    <Label Grid.Row="0" Grid.Column="2" Text=">" FontSize="18" TextColor="#9CA3AF" VerticalOptions="Start" />
+
+                                    <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" ColumnDefinitions="Auto,*,Auto" Padding="0,8,0,0">
+                                        <Border Grid.Column="0" WidthRequest="24" HeightRequest="24" StrokeShape="RoundRectangle 12" StrokeThickness="0" Margin="0,0,8,0">
+                                            <Image Source="{Binding UtenteFoto}" Aspect="AspectFill" />
+                                        </Border>
+                                        <Label Grid.Column="1" Text="{Binding UtenteNome}" FontSize="13" TextColor="#4B5563" VerticalOptions="Center" />
+                                        
+                                        <Border Grid.Column="2" StrokeShape="RoundRectangle 12" StrokeThickness="0" 
+                                                BackgroundColor="#DCFCE7" Padding="8,4">
+                                            <Label Text="Ativo ✓" FontSize="11" FontAttributes="Bold" TextColor="#15803D" />
+                                        </Border>
+                                    </Grid>
+                                </Grid>
+                            </Border>
+                        </ContentView>
+                    </DataTemplate>
+                </CollectionView.ItemTemplate>
+            </CollectionView>
+        </RefreshView>
+
+        <Button Text="+" FontSize="28" FontAttributes="Bold"
+                BackgroundColor="#1E3A8A" TextColor="White"
+                WidthRequest="60" HeightRequest="60" CornerRadius="30"
+                HorizontalOptions="End" VerticalOptions="End" Margin="0,0,20,20"
+                Shadow="{Shadow Brush=#1E3A8A, Offset='0,4', Radius=10, Opacity=0.4}"
+                Command="{Binding AbrirCriarPlanoCommand}" />
+
+    </Grid>
 </ContentPage>

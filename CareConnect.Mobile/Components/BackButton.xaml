@@ -8,7 +8,7 @@
             <TapGestureRecognizer Tapped="OnBackTapped" />
         </Grid.GestureRecognizers>
         
-        <Image Source="icon_arrow_back" WidthRequest="24" HeightRequest="24" HorizontalOptions="Start" VerticalOptions="Center" />
+        <Image Source="icon_arrow_back.png" WidthRequest="24" HeightRequest="24" HorizontalOptions="Start" VerticalOptions="Center" />
     </Grid>
 
 </ContentView>

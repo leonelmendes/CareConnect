@@ -9,4 +9,15 @@ public partial class UtentesView : ContentPage
         InitializeComponent();
         BindingContext = viewModel;
     }
+
+    protected override void OnAppearing()
+    {
+        base.OnAppearing();
+        
+        if (BindingContext is UtentesViewModel vm)
+        {
+            // Executa em segundo plano sem travar a abertura da tela!
+            vm.CarregarUtentesAsyncCommand.Execute(null);
+        }
+    }
 }

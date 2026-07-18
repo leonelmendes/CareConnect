@@ -4,174 +4,209 @@
              x:Class="CareConnect.Mobile.Views.Auth.LoginView"
              NavigationPage.HasNavigationBar="False">
 
-    <ScrollView HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
-        <VerticalStackLayout Padding="30,50,30,30" Spacing="25">
-            
-            <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
-                <Image Source="logo_careconnect" 
-                   HeightRequest="36" 
-                   HorizontalOptions="Center" />
-                <Label Text="CareConnect" 
-                    FontFamily="InterBold"
-                    FontSize="24" 
-                    FontAttributes="Bold" 
-                    TextColor="#1A1A1A" 
-                    VerticalOptions="Center"/>
-            
-            </HorizontalStackLayout>
-
-            <VerticalStackLayout Spacing="5">
-                <Label Text="Bem-vindo(a) de volta"
-                    FontFamily="InterSemiBold" 
-                       FontSize="26" 
-                       FontAttributes="Bold" 
-                       TextColor="#1A1A1A"
-                       HorizontalOptions="Center"/>
-                <Label Text="Entre para gerir os seus cuidados." 
-                    FontFamily="InterRegular"
-                       FontSize="14" 
-                       TextColor="{StaticResource SecondaryText}"
-                       HorizontalOptions="Center"/>
-            </VerticalStackLayout>
-
-            <VerticalStackLayout Spacing="20" Margin="0,20,0,0">
+    <Grid SafeAreaEdges="None">
+        <ScrollView  HorizontalScrollBarVisibility="Never" VerticalScrollBarVisibility="Never">
+            <VerticalStackLayout Padding="20,40,20,30" Spacing="25">
+                <HorizontalStackLayout HorizontalOptions="Center" Spacing="5">
+                    <Image Source="logo_careconnect" 
+                    HeightRequest="36" 
+                    HorizontalOptions="Center" />
+                    <Label Text="CareConnect" 
+                        FontFamily="InterBold"
+                        FontSize="24" 
+                        FontAttributes="Bold" 
+                        TextColor="#1A1A1A" 
+                        VerticalOptions="Center"/>
                 
+                </HorizontalStackLayout>
+
                 <VerticalStackLayout Spacing="5">
-                    <Label Text="Email" FontSize="14" FontFamily="InterMedium" TextColor="#1A1A1A" FontAttributes="Bold"/>
-                    <Border Stroke="{StaticResource StrokeEntry}" StrokeShape="RoundRectangle 8" StrokeThickness="1" BackgroundColor="White" Padding="15,0">
-                        <Entry Placeholder="nome@exemplo.com" 
-                            Text="{Binding Email}"
-                            BackgroundColor="Transparent"
-                            FontFamily="InterRegular"
-                            Keyboard="Email" 
-                            TextColor="#1A1A1A" 
-                            PlaceholderColor="{StaticResource SecondaryText}"/>
-                    </Border>
+                    <Label Text="Bem-vindo(a) de volta"
+                        FontFamily="InterSemiBold" 
+                        FontSize="26" 
+                        FontAttributes="Bold" 
+                        TextColor="#1A1A1A"
+                        HorizontalOptions="Center"/>
+                    <Label Text="Entre para gerir os seus cuidados." 
+                        FontFamily="InterRegular"
+                        FontSize="14" 
+                        TextColor="{StaticResource SecondaryText}"
+                        HorizontalOptions="Center"/>
                 </VerticalStackLayout>
 
-                <VerticalStackLayout Spacing="5">
-                    <Grid >
-                        <Label Text="Palavra-passe" FontSize="14" HorizontalTextAlignment="Start" FontFamily="InterMedium" TextColor="#1A1A1A" FontAttributes="Bold"/>
-                        <Label Text="Esqueceu a palavra-passe?"
-                            FontFamily="InterRegular"
-                            TextColor="{StaticResource Primary}" 
-                            FontSize="12" 
-                            FontAttributes="Bold" 
-                            HorizontalTextAlignment="End">
-                            <Label.GestureRecognizers>
-                                <TapGestureRecognizer Command="{Binding GoToForgotPasswordCommand}"/>
-                            </Label.GestureRecognizers>
-                        </Label>
-                    </Grid>
-                    <Border Stroke="{StaticResource StrokeEntry}" StrokeShape="RoundRectangle 8" StrokeThickness="1" BackgroundColor="White" Padding="15,0">
-                        <Grid ColumnDefinitions="*,Auto" ColumnSpacing="3">
-                            <Entry Placeholder="A sua palavra-passe"
-                                x:Name="passwordEntry"
-                                Grid.Column="0"
-                               IsPassword="True"
-                               FontFamily="InterRegular"
-                               Text="{Binding Password}"
-                               TextColor="#1A1A1A" 
-                               PlaceholderColor="{StaticResource SecondaryText}"/>
-                            <Image Source="ico_show_password" 
-                                Grid.Column="1"
-                                BackgroundColor="Transparent" 
-                                WidthRequest="20"
-                                HorizontalOptions="End" 
-                                VerticalOptions="Center">
-                                <Image.GestureRecognizers>
-                                    <TapGestureRecognizer Tapped="OnShowPasswordTapped"/>
-                                </Image.GestureRecognizers>
-                            </Image>
+                <VerticalStackLayout Spacing="20" Margin="0,20,0,0">
+                    
+                    <VerticalStackLayout Spacing="5">
+                        <Label Text="Email" FontSize="14" FontFamily="InterMedium" TextColor="#1A1A1A" FontAttributes="Bold"/>
+                        <Border Stroke="{StaticResource StrokeEntry}" StrokeShape="RoundRectangle 8" StrokeThickness="1" BackgroundColor="White" Padding="15,0">
+                            <Entry Placeholder="nome@exemplo.com" 
+                                Text="{Binding Email}"
+                                BackgroundColor="Transparent"
+                                FontFamily="InterRegular"
+                                Keyboard="Email" 
+                                TextColor="#1A1A1A" 
+                                PlaceholderColor="{StaticResource SecondaryText}"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <VerticalStackLayout Spacing="5">
+                        <Grid >
+                            <Label Text="Palavra-passe" FontSize="14" HorizontalTextAlignment="Start" FontFamily="InterMedium" TextColor="#1A1A1A" FontAttributes="Bold"/>
+                            <Label Text="Esqueceu a palavra-passe?"
+                                FontFamily="InterRegular"
+                                TextColor="{StaticResource Primary}" 
+                                FontSize="12" 
+                                FontAttributes="Bold" 
+                                HorizontalTextAlignment="End">
+                                <Label.GestureRecognizers>
+                                    <TapGestureRecognizer Command="{Binding GoToForgotPasswordCommand}"/>
+                                </Label.GestureRecognizers>
+                            </Label>
                         </Grid>
-                    </Border>
+                        <Border Stroke="{StaticResource StrokeEntry}" StrokeShape="RoundRectangle 8" StrokeThickness="1" BackgroundColor="White" Padding="15,0">
+                            <Grid ColumnDefinitions="*,Auto" ColumnSpacing="3">
+                                <Entry Placeholder="A sua palavra-passe"
+                                    x:Name="passwordEntry"
+                                    Grid.Column="0"
+                                IsPassword="True"
+                                FontFamily="InterRegular"
+                                Text="{Binding Password}"
+                                TextColor="#1A1A1A" 
+                                PlaceholderColor="{StaticResource SecondaryText}"/>
+                                <Image Source="ico_show_password" 
+                                    Grid.Column="1"
+                                    BackgroundColor="Transparent" 
+                                    WidthRequest="20"
+                                    HorizontalOptions="End" 
+                                    VerticalOptions="Center">
+                                    <Image.GestureRecognizers>
+                                        <TapGestureRecognizer Tapped="OnShowPasswordTapped"/>
+                                    </Image.GestureRecognizers>
+                                </Image>
+                            </Grid>
+                        </Border>
+                    </VerticalStackLayout>
                 </VerticalStackLayout>
-            </VerticalStackLayout>
 
-            <Button Text="Entrar" 
-                    BackgroundColor="{StaticResource Primary}" 
-                    TextColor="White" 
-                    FontFamily="InterSemiBold"
-                    CornerRadius="8" 
-                    HeightRequest="50" 
-                    FontAttributes="Bold"
-                    Margin="0,10,0,0"
-                    Command="{Binding LoginCommand}"/>
+                <Button Text="Entrar" 
+                        BackgroundColor="{StaticResource Primary}" 
+                        TextColor="White" 
+                        FontFamily="InterSemiBold"
+                        CornerRadius="8" 
+                        HeightRequest="50" 
+                        FontAttributes="Bold"
+                        Margin="0,10,0,0"
+                        Command="{Binding LoginCommand}"/>
 
-            <Grid ColumnDefinitions="*, Auto, *" Margin="0,10">
-                <BoxView Grid.Column="0" HeightRequest="1" Color="#E0E0E0" VerticalOptions="Center"/>
-                <Label Grid.Column="1" Text="Ou continue com" TextColor="{StaticResource SecondaryText}" FontSize="12" Margin="10,0"/>
-                <BoxView Grid.Column="2" HeightRequest="1" Color="#E0E0E0" VerticalOptions="Center"/>
-            </Grid>
-
-            <VerticalStackLayout Spacing="10">
-                <Grid HeightRequest="50"> 
-                    
-                    <Button BackgroundColor="White" 
-                            BorderColor="{StaticResource StrokeEntry}" 
-                            BorderWidth="1" 
-                            CornerRadius="12" 
-                            Clicked="OnGoogleSignInClicked"/>
-
-                    <HorizontalStackLayout HorizontalOptions="Center" 
-                                        VerticalOptions="Center" 
-                                        Spacing="12"
-                                        InputTransparent="True">
-                                        
-                        <Image Source="icon_google" 
-                            HeightRequest="24" 
-                            WidthRequest="24" 
-                            VerticalOptions="Center"/>
-                            
-                        <Label Text="Continuar com a Google" 
-                            FontFamily="InterMedium"
-                            FontSize="16"
-                            TextColor="#1A1A1A" 
-                            FontAttributes="Bold"
-                            VerticalOptions="Center"/>
-                            
-                    </HorizontalStackLayout>
+                <Grid ColumnDefinitions="*, Auto, *" Margin="0,10">
+                    <BoxView Grid.Column="0" HeightRequest="1" Color="#E0E0E0" VerticalOptions="Center"/>
+                    <Label Grid.Column="1" Text="Ou continue com" TextColor="{StaticResource SecondaryText}" FontSize="12" Margin="10,0"/>
+                    <BoxView Grid.Column="2" HeightRequest="1" Color="#E0E0E0" VerticalOptions="Center"/>
                 </Grid>
+
+                <VerticalStackLayout Spacing="10">
+                    <Grid HeightRequest="50"> 
+                        
+                        <Button BackgroundColor="White" 
+                                BorderColor="{StaticResource StrokeEntry}" 
+                                BorderWidth="1" 
+                                CornerRadius="12" 
+                                Clicked="OnGoogleSignInClicked"/>
+
+                        <HorizontalStackLayout HorizontalOptions="Center" 
+                                            VerticalOptions="Center" 
+                                            Spacing="12"
+                                            InputTransparent="True">
+                                            
+                            <Image Source="icon_google" 
+                                HeightRequest="24" 
+                                WidthRequest="24" 
+                                VerticalOptions="Center"/>
+                                
+                            <Label Text="Continuar com a Google" 
+                                FontFamily="InterMedium"
+                                FontSize="16"
+                                TextColor="#1A1A1A" 
+                                FontAttributes="Bold"
+                                VerticalOptions="Center"/>
+                                
+                        </HorizontalStackLayout>
+                    </Grid>
+                    
+                    <Grid HeightRequest="50"> 
+                        
+                        <Button BackgroundColor="White" 
+                                BorderColor="{StaticResource StrokeEntry}" 
+                                BorderWidth="1" 
+                                CornerRadius="12" 
+                                Clicked="OnGoogleSignInClicked"/>
+
+                        <HorizontalStackLayout HorizontalOptions="Center" 
+                                            VerticalOptions="Center" 
+                                            Spacing="12"
+                                            InputTransparent="True">
+                                            
+                            <Image Source="icon_apple" 
+                                HeightRequest="24" 
+                                WidthRequest="24" 
+                                VerticalOptions="Center"/>
+                                
+                            <Label Text="Continuar com a Apple" 
+                                FontFamily="InterMedium"
+                                FontSize="16"
+                                TextColor="#1A1A1A" 
+                                FontAttributes="Bold"
+                                VerticalOptions="Center"/>
+                                
+                        </HorizontalStackLayout>
+                    </Grid>
+                </VerticalStackLayout>
+
+                <HorizontalStackLayout HorizontalOptions="Center" Margin="0,20,0,0">
+                    <Label Text="Ainda não tem uma conta? " TextColor="#757575" FontSize="14"/>
+                    <Label Text="Criar conta" TextColor="{StaticResource Primary}" FontSize="14" FontAttributes="Bold">
+                        <Label.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding GoToRegisterCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+
+        <Grid BackgroundColor="#80000000" 
+              IsVisible="{Binding IsLoading}"
+              SafeAreaEdges="None"          
+              ZIndex="999"
+              HorizontalOptions="Fill" 
+              VerticalOptions="Fill">
+            
+            <Border StrokeShape="RoundRectangle 16"
+                    BackgroundColor="White"
+                    StrokeThickness="0"
+                    WidthRequest="140"
+                    HeightRequest="140"
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Shadow="{Shadow Brush=Black, Offset='0,4', Radius=10, Opacity=0.2}">
                 
-                <Grid HeightRequest="50"> 
+                <VerticalStackLayout HorizontalOptions="Center" 
+                                     VerticalOptions="Center" 
+                                     Spacing="12">
                     
-                    <Button BackgroundColor="White" 
-                            BorderColor="{StaticResource StrokeEntry}" 
-                            BorderWidth="1" 
-                            CornerRadius="12" 
-                            Clicked="OnGoogleSignInClicked"/>
-
-                    <HorizontalStackLayout HorizontalOptions="Center" 
-                                        VerticalOptions="Center" 
-                                        Spacing="12"
-                                        InputTransparent="True">
-                                        
-                        <Image Source="icon_apple" 
-                            HeightRequest="24" 
-                            WidthRequest="24" 
-                            VerticalOptions="Center"/>
-                            
-                        <Label Text="Continuar com a Apple" 
-                            FontFamily="InterMedium"
-                            FontSize="16"
-                            TextColor="#1A1A1A" 
-                            FontAttributes="Bold"
-                            VerticalOptions="Center"/>
-                            
-                    </HorizontalStackLayout>
-                </Grid>
-            </VerticalStackLayout>
-
-            <HorizontalStackLayout HorizontalOptions="Center" Margin="0,20,0,0">
-                <Label Text="Ainda não tem uma conta? " TextColor="#757575" FontSize="14"/>
-                <Label Text="Criar conta" TextColor="{StaticResource Primary}" FontSize="14" FontAttributes="Bold">
-                    <Label.GestureRecognizers>
-                        <TapGestureRecognizer Command="{Binding GoToRegisterCommand}"/>
-                    </Label.GestureRecognizers>
-                </Label>
-            </HorizontalStackLayout>
-
-        </VerticalStackLayout>
-    </ScrollView>
+                    <ActivityIndicator IsRunning="{Binding IsLoading}"
+                                       Color="#2563EB" 
+                                       WidthRequest="40" 
+                                       HeightRequest="40" />
+                    
+                    <Label Text="A processar..." 
+                           TextColor="#4B5563"
+                           FontSize="14"
+                           FontAttributes="Bold"
+                           HorizontalOptions="Center" />
+                </VerticalStackLayout>
+            </Border>
+        </Grid>
+    </Grid>
 
 </ContentPage>

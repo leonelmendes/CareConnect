@@ -19,12 +19,18 @@ namespace CareConnect.API.Repositories.Auth
             _configuration = configuration;
         }
 
-        public async Task<(bool Sucesso, string Token, string Perfil, string MensagemErro)> LoginAsync(LoginDto dto)
+        public async Task<AuthResponseDto> LoginAsync(LoginDto dto)
         {
             var user = await _repository.GetByEmailAsync(dto.Email);
 
             if (user == null)
-                return (false, string.Empty, string.Empty, "Utilizador não encontrado. Verifique o seu e-mail.");
+            {
+                return new AuthResponseDto 
+                { 
+                    Sucesso = false, 
+                    MensagemErro = "Utilizador não encontrado. Verifique o seu e-mail." 
+                };
+            }
 
             bool passwordValida = false;
             try
@@ -33,14 +39,34 @@ namespace CareConnect.API.Repositories.Auth
             }
             catch
             {
+                // Fallback para caso a password ainda esteja em texto plano em testes antigos
                 passwordValida = (dto.Password == user.PasswordHash);
             }
 
             if (!passwordValida)
-                return (false, string.Empty, string.Empty, "Palavra-passe incorreta.");
+            {
+                return new AuthResponseDto 
+                { 
+                    Sucesso = false, 
+                    MensagemErro = "Email ou Palavra-passe incorreta." 
+                };
+            }
 
             var token = GerarTokenJwt(user);
-            return (true, token, user.Role.ToString(), string.Empty);
+
+            // ⚠️ SUCESSO: Devolvemos o DTO completo com todos os dados que a UI precisa!
+            return new AuthResponseDto
+            {
+                Sucesso = true,
+                Token = token,
+                DataExpiracao = DateTime.UtcNow.AddDays(7), // Alinha com o tempo de expiração do teu JWT
+                UserId = user.Id,
+                Nome = user.Nome,
+                Email = user.Email,
+                Perfil = user.Role.ToString(),
+                AvatarUrl = user.AvatarUrl ?? string.Empty,
+                MensagemErro = string.Empty
+            };
         }
 
         public async Task<(bool Sucesso, string Token, string Perfil, string MensagemErro)> SyncFirebaseAsync(string firebaseUid, string email, string nome)

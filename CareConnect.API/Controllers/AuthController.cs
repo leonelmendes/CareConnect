@@ -24,21 +24,22 @@ public class AuthController : ControllerBase
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
-        var resultado = await _authService.LoginAsync(dto);
+        // O serviço da API agora devolve o AuthResponseDto completo da Shared
+        AuthResponseDto resultado = await _authService.LoginAsync(dto);
 
         if (!resultado.Sucesso)
         {
-            return Unauthorized(new { sucesso = false, mensagemErro = resultado.MensagemErro });
+            return Unauthorized(resultado); // Devolve o DTO com o MensagemErro preenchido
         }
 
-        return Ok(new
+        // Garante a data de expiração se não tiver sido definida no serviço
+        if (resultado.DataExpiracao == default)
         {
-            sucesso = true,
-            token = resultado.Token,
-            perfil = resultado.Perfil,
-            dataExpiracao = DateTime.UtcNow.AddDays(7),
-            mensagemErro = ""
-        });
+            resultado.DataExpiracao = DateTime.UtcNow.AddDays(7);
+        }
+
+        // ⚠️ DEVOLUÇÃO LIMPA: Devolvemos o objeto tipado diretamente!
+        return Ok(resultado);
     }
 
     [Authorize]

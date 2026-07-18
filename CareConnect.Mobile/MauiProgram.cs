@@ -22,6 +22,7 @@ public static class MauiProgram
 
         builder
             .UseMauiApp<App>()
+            
             .UseMauiCommunityToolkit()
             .UseSkiaSharp()
             .UseLiveCharts()
@@ -38,22 +39,67 @@ public static class MauiProgram
                 fonts.AddFont("Inter_18pt-Medium.ttf", "InterMedium");
             });
 
-        #region CUSTOMIZAÇÃO DO ENTRY
-        Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("Placeholder", (h, v) =>
+        #region CUSTOMIZAÇÃO GLOBAL DE CONTROLOS (BORDERLESS)
+
+        // 1. CUSTOMIZAÇÃO DO ENTRY (Campos de Texto Simples)
+        Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("BorderlessEntry", (handler, view) =>
         {
-#if ANDROID
-            h.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
-#endif
-#if IOS
-            h.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
-#endif
+        #if ANDROID
+            handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+        #elif IOS
+            handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
+        #endif
         });
-		#endregion
+
+        // 2. CUSTOMIZAÇÃO DO EDITOR (Campos de Texto Multilinha)
+        Microsoft.Maui.Handlers.EntryHandler.Mapper.AppendToMapping("BorderlessEditor", (handler, view) =>
+        {
+        #if ANDROID
+            handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+        #elif IOS
+            // No iOS o Editor usa UITextView que não tem BorderStyle, removemos o fundo nativo se necessário
+            handler.PlatformView.BackgroundColor = UIKit.UIColor.Clear;
+        #endif
+        });
+
+        // 3. CUSTOMIZAÇÃO DO PICKER (Seleções de Lista)
+        Microsoft.Maui.Handlers.PickerHandler.Mapper.AppendToMapping("BorderlessPicker", (handler, view) =>
+        {
+        #if ANDROID
+            handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+        #elif IOS
+            handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
+        #endif
+        });
+
+        // 4. CUSTOMIZAÇÃO DO DATEPICKER (Seleção de Datas)
+        Microsoft.Maui.Handlers.DatePickerHandler.Mapper.AppendToMapping("BorderlessDatePicker", (handler, view) =>
+        {
+        #if ANDROID
+            handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+        #elif IOS
+            handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
+        #endif
+        });
+
+        // 5. CUSTOMIZAÇÃO DO TIMEPICKER (Seleção de Horas)
+        Microsoft.Maui.Handlers.TimePickerHandler.Mapper.AppendToMapping("BorderlessTimePicker", (handler, view) =>
+        {
+        #if ANDROID
+            handler.PlatformView.BackgroundTintList = Android.Content.Res.ColorStateList.ValueOf(Android.Graphics.Color.Transparent);
+        #elif IOS
+            handler.PlatformView.BorderStyle = UIKit.UITextBorderStyle.None;
+        #endif
+        });
+
+        #endregion
 
         #region REGISTO DE SERVIÇOS E SHELLS
         builder.Services.AddSingleton<INotificationService, NotificationService>();
         builder.Services.AddSingleton<AuthService>();
-        builder.Services.AddTransient<AuthInterceptor>(); // CRÍTICO: O intercetor tem de ser registado aqui!
+        builder.Services.AddTransient<AuthInterceptor>();
+        builder.Services.AddScoped<PatientService>();
+        builder.Services.AddScoped<CarePlanService>();
 
         // 4. CONFIGURAÇÃO DE HTTP CLIENTS (Sem Dependências Circulares!)
         // A) Cliente do AuthService (Usado para Login/Registo -> NÃO LEVA INTERCETOR)
@@ -101,6 +147,15 @@ public static class MauiProgram
 
         builder.Services.AddTransient<AdicionarUtenteViewModel>();
         builder.Services.AddTransient<AdicionarUtenteView>();
+
+        builder.Services.AddTransient<GestorPlanosViewModel>();
+        builder.Services.AddTransient<GestorPlanosView>();
+
+        builder.Services.AddTransient<DetalhePlanoViewModel>();
+        builder.Services.AddTransient<DetalhePlanoView>();
+
+        builder.Services.AddTransient<CriarPlanoCuidadoViewModel>();
+        builder.Services.AddTransient<CriarPlanoCuidadoView>();
 
         #endregion
 

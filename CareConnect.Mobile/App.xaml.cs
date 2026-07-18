@@ -10,8 +10,10 @@ public partial class App : Application
 	public App()
 	{
 		InitializeComponent();
-
 		
+		// Aplica o tema salvo assim que a aplicação arranca:
+		bool isDark = Preferences.Default.Get("app_theme_dark", false);
+		Application.Current!.UserAppTheme = isDark ? AppTheme.Dark : AppTheme.Light;
 	}
 
 	protected override Window CreateWindow(IActivationState? activationState)
@@ -29,7 +31,7 @@ public partial class App : Application
 			}
 		}
 
-		Page paginaInicial;
+		Page? paginaInicial;
 
 		if (temSessaoValida)
 		{

@@ -2,6 +2,15 @@
 <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
 <plist version="1.0">
 <dict>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
+	<key>NSCameraUsageDescription</key>
+    <string>O CareConnect precisa de acesso à câmara para tirar fotos de perfil aos utilizadores.</string>
+    <key>NSPhotoLibraryUsageDescription</key>
+    <string>O CareConnect precisa de acesso à galeria para escolher fotos de perfil para os utilizadores.</string>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIDeviceFamily</key>
@@ -32,7 +41,5 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>A aplicação necessita de aceder à galeria para selecionar a foto de perfil do utente.</string>
 </dict>
 </plist>

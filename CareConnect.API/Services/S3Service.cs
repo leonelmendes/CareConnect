@@ -13,7 +13,7 @@ public class S3Service
         _config = config;
     }
 
-    public async Task<string> UploadFotoAsync(IFormFile ficheiro, string pastaDestino = "utentes")
+    public async Task<string> UploadFotoAsync(IFormFile ficheiro, string pastaDestino)
     {
         if (ficheiro == null || ficheiro.Length == 0)
             throw new ArgumentException("Ficheiro inválido ou vazio.");

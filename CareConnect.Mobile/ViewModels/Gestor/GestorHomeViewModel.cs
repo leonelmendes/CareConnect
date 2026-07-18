@@ -5,15 +5,30 @@ using LiveChartsCore;
 using LiveChartsCore.SkiaSharpView;
 using LiveChartsCore.SkiaSharpView.Painting;
 using SkiaSharp;
+using CareConnect.Mobile.Services;
+using CareConnect.Shared.Models;
+using CommunityToolkit.Mvvm.Input;
 
 namespace CareConnect.Mobile.ViewModels.Gestor;
 
 public partial class GestorHomeViewModel : ObservableObject
 {
-    [ObservableProperty]
-    private string _nomeGestor = "Leonel Francisco";
+    private readonly INotificationService _notificationService;
+    private readonly PatientService _patientService; // ⚠️ Injeção do serviço de utentes
 
-    public ObservableCollection<PacienteResumo> Pacientes { get; } = new();
+    // --- PROPRIEDADES DINÂMICAS DA HOME ---
+    [ObservableProperty]
+    private string _nomeGestor = "Carregando...";
+
+    [ObservableProperty]
+    private string _totalUtentesAtivos = "0";
+
+    [ObservableProperty]
+    private bool _isLoading;
+
+    // ⚠️ LISTA REAL DE UTENTES VINDA DA BASE DE DADOS
+    public ObservableCollection<Patient> Pacientes { get; } = new();
+
     public ObservableCollection<AlertaRecente> Alertas { get; } = new();
 
     // --- DADOS PARA O GRÁFICO DONUT (Daily Summary) ---
@@ -48,20 +63,74 @@ public partial class GestorHomeViewModel : ObservableObject
         } 
     };
 
-    public GestorHomeViewModel()
+    public GestorHomeViewModel(INotificationService notificationService, PatientService patientService)
     {
-        CarregarDadosSimulados();
+        _notificationService = notificationService;
+        _patientService = patientService;
     }
 
-    private void CarregarDadosSimulados()
+    [RelayCommand]
+    private async Task CarregarDadosHomeAsync()
     {
-        Pacientes.Add(new PacienteResumo { Nome = "John Davis", Imagem = "avatar_1", EstaOnline = false });
-        Pacientes.Add(new PacienteResumo { Nome = "Maria Silva", Imagem = "avatar_2", EstaOnline = true });
-        Pacientes.Add(new PacienteResumo { Nome = "João", Imagem = "avatar_3", EstaOnline = true });
-        Pacientes.Add(new PacienteResumo { Nome = "Ana Costa", Imagem = "avatar_4", EstaOnline = false });
+        if (Pacientes.Count > 0)
+        {
+            IsLoading = true;
+        }
 
+        try
+        {
+            IsLoading = true;
+
+            var nomeGuardado = Preferences.Default.Get("user_nome", "Gestor");
+            NomeGestor = string.IsNullOrWhiteSpace(nomeGuardado) ? "Gestor" : nomeGuardado;
+
+            var listaPacientes = await _patientService.GetMyPatientsAsync();
+
+            Pacientes.Clear();
+            int ativosCount = 0;
+
+            foreach (var p in listaPacientes)
+            {
+                Pacientes.Add(p);
+                if (p.Ativo) ativosCount++;
+            }
+
+            TotalUtentesAtivos = ativosCount.ToString();
+        }
+        catch (Exception ex)
+        {
+            await _notificationService.MostrarErroAsync($"Erro ao carregar Home: {ex.Message}");
+        }
+        finally
+        {
+            IsLoading = false;
+        }
+
+
+        // Adiciona alertas recentes simulados
         Alertas.Add(new AlertaRecente { Titulo = "João Silva", Descricao = "Sinais vitais fora do intervalo", Tempo = "Há 15 min", CorIcone = "#FEE2E2", ImagemIcone = "icon_alert_red" });
         Alertas.Add(new AlertaRecente { Titulo = "Ana Ferreira", Descricao = "Lembrete de medicamento esquecido", Tempo = "Há 45 min", CorIcone = "#FEF3C7", ImagemIcone = "icon_alert_yellow" });
         Alertas.Add(new AlertaRecente { Titulo = "Carlos Mendes", Descricao = "Avaliação de dor muito elevada", Tempo = "Há 1 h", CorIcone = "#FEE2E2", ImagemIcone = "icon_alert_red" });
+    }
+
+    [RelayCommand]
+    private async Task AbrirNovoUtenteAsync()
+    {
+        // Navega para a página de Cadastrar Utente
+        await Shell.Current.GoToAsync("AdicionarUtenteView");
+    }
+
+    [RelayCommand]
+    private async Task AbrirCriarPlanoAsync()
+    {
+        // Navega para a página de Criar Plano de Cuidado
+        await Shell.Current.GoToAsync("CriarPlanoCuidadoView");
+    }
+
+    [RelayCommand]
+    private async Task AbrirTodosUtentesAsync()
+    {
+        // Muda para a aba "Utentes" no Shell principal
+        await Shell.Current.GoToAsync("//UtentesView");
     }
 }

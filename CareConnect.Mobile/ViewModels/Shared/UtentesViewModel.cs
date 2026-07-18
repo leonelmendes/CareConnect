@@ -15,10 +15,11 @@ public partial class UtentesViewModel : ObservableObject
 
     public UtentesViewModel()
     {
-        CarregarDadosMock();
+        
     }
 
-    private void CarregarDadosMock()
+    [RelayCommand]
+    private void CarregarUtentesAsync()
     {
         // Simulando a API com os dados do teu design
         ListaUtentes = new ObservableCollection<Utente>
