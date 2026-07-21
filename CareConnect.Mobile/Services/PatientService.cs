@@ -92,4 +92,108 @@ public class PatientService
             return false;
         }
     }
+
+    // 4. APAGA (DESATIVA) UM UTENTE
+    public async Task<bool> DeletePatientAsync(Guid patientId)
+    {
+        try
+        {
+            await ConfigurarTokenAsync();
+            var response = await _httpClient.DeleteAsync($"{Constants.BaseUrl}/api/Patients/{patientId}");
+
+            // O teu back-end retorna NoContent (204) quando o DeactivateAsync funciona
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                var erroJson = await response.Content.ReadAsStringAsync();
+                System.Diagnostics.Debug.WriteLine($"Status {response.StatusCode} | Detalhe: {erroJson}");
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao apagar utente: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<bool> UpdatePatientAsync(Patient patient)
+    {
+        try
+        {
+            await ConfigurarTokenAsync();
+
+            // ADICIONADO: Configuração para camelCase!
+            var options = new System.Text.Json.JsonSerializerOptions
+            {
+                PropertyNamingPolicy = System.Text.Json.JsonNamingPolicy.CamelCase,
+                PropertyNameCaseInsensitive = true
+            };
+
+            // Usa as opções na hora de converter
+            var json = System.Text.Json.JsonSerializer.Serialize(patient, options);
+            var content = new StringContent(json, System.Text.Encoding.UTF8, "application/json");
+
+            var response = await _httpClient.PutAsync($"{Constants.BaseUrl}/api/Patients/{patient.Id}", content);
+
+            if (response.IsSuccessStatusCode)
+            {
+                return true;
+            }
+            else
+            {
+                var erroJson = await response.Content.ReadAsStringAsync();
+                System.Diagnostics.Debug.WriteLine($"Erro ao atualizar (Status {response.StatusCode}): {erroJson}");
+                return false;
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Exceção ao atualizar utente: {ex.Message}");
+            return false;
+        }
+    }
+
+    public async Task<string> UploadFotoPerfilAsync(Guid patientId, FileResult foto)
+    {
+        try
+        {
+            await ConfigurarTokenAsync();
+
+            using var stream = await foto.OpenReadAsync();
+            using var content = new MultipartFormDataContent();
+            
+            // CORREÇÃO 1: Mudar "file" para "foto" para coincidir com o "IFormFile foto" da tua API
+            content.Add(new StreamContent(stream), "foto", foto.FileName);
+
+            var response = await _httpClient.PostAsync($"{Constants.BaseUrl}/api/Patients/{patientId}/upload-avatar", content);
+
+            var respostaTexto = await response.Content.ReadAsStringAsync();
+
+            if (response.IsSuccessStatusCode)
+            {
+                // CORREÇÃO 2: Ler o JSON que a tua API devolve e extrair apenas a propriedade "avatarUrl"
+                using var jsonDoc = System.Text.Json.JsonDocument.Parse(respostaTexto);
+                if (jsonDoc.RootElement.TryGetProperty("avatarUrl", out var urlElement))
+                {
+                    return urlElement.GetString(); // Devolve APENAS o link do S3 limpo!
+                }
+                
+                return null;
+            }
+            else
+            {
+                System.Diagnostics.Debug.WriteLine($"ERRO API UPLOAD: {response.StatusCode} - {respostaTexto}");
+                return null;
+            }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Exceção no UploadFotoPerfilAsync: {ex.Message}");
+            return null;
+        }
+    }
 }

@@ -1,9 +1,11 @@
 ﻿using CareConnect.Mobile.Services;
 using CareConnect.Mobile.Shells;
+using CareConnect.Mobile.ViewModels;
 using CareConnect.Mobile.ViewModels.Auth;
 using CareConnect.Mobile.ViewModels.Gestor;
 using CareConnect.Mobile.ViewModels.Shared;
 using CareConnect.Mobile.Views.Auth;
+using CareConnect.Mobile.Views.Cuidador;
 using CareConnect.Mobile.Views.Gestor;
 using CareConnect.Mobile.Views.Shared;
 using CommunityToolkit.Maui;
@@ -100,6 +102,7 @@ public static class MauiProgram
         builder.Services.AddTransient<AuthInterceptor>();
         builder.Services.AddScoped<PatientService>();
         builder.Services.AddScoped<CarePlanService>();
+        builder.Services.AddSingleton<TarefaService>();
 
         // 4. CONFIGURAÇÃO DE HTTP CLIENTS (Sem Dependências Circulares!)
         // A) Cliente do AuthService (Usado para Login/Registo -> NÃO LEVA INTERCETOR)
@@ -156,6 +159,12 @@ public static class MauiProgram
 
         builder.Services.AddTransient<CriarPlanoCuidadoViewModel>();
         builder.Services.AddTransient<CriarPlanoCuidadoView>();
+
+        builder.Services.AddTransient<EditarUtenteViewModel>();
+        builder.Services.AddTransient<EditarUtenteView>();
+
+        builder.Services.AddTransient<CuidadorHomeViewModel>();
+        builder.Services.AddTransient<CuidadorHomeView>();
 
         #endregion
 

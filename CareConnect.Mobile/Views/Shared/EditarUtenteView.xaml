@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:viewmodels="clr-namespace:CareConnect.Mobile.ViewModels.Shared"
+             xmlns:components="clr-namespace:CareConnect.Mobile.Components"
+             x:Class="CareConnect.Mobile.Views.Shared.EditarUtenteView"
+             Title="Editar Utente"
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
+             BackgroundColor="#F9FAFB">
+
+    <Grid>
+        <!-- SCROLL DO FORMULÁRIO -->
+        <ScrollView Padding="20,10,20,100">
+            <VerticalStackLayout Spacing="20">
+                
+                <!-- CABEÇALHO -->
+                <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
+                    <components:BackButton Grid.Column="0" />
+                    <Label Grid.Column="1" Text="Editar Perfil" FontFamily="InterSemiBold" FontSize="16" TextColor="#111827" HorizontalOptions="Center"/>
+                    
+                </Grid>
+
+                <!-- FOTO DE PERFIL -->
+                <VerticalStackLayout Spacing="5" HorizontalOptions="Center" Margin="0,10,0,10">
+                    <Border WidthRequest="90" HeightRequest="90" StrokeShape="RoundRectangle 45" StrokeThickness="0" BackgroundColor="#E5E7EB">
+                        <Border.GestureRecognizers>
+                            <!-- Clique na Imagem -->
+                            <TapGestureRecognizer Command="{Binding AlterarFotoCommand}"/>
+                        </Border.GestureRecognizers>
+                        <Image Source="{Binding AvatarPreview}" Aspect="AspectFill" HeightRequest="90" WidthRequest="90" />
+                    </Border>
+                    
+                    <Label Text="Alterar Foto" FontFamily="InterMedium" FontSize="13" TextColor="#1E40AF" HorizontalOptions="Center">
+                        <Label.GestureRecognizers>
+                            <!-- Clique no Texto -->
+                            <TapGestureRecognizer Command="{Binding AlterarFotoCommand}"/>
+                        </Label.GestureRecognizers>
+                    </Label>
+                </VerticalStackLayout>
+
+                <!-- FORMULÁRIO -->
+                <!-- Nome -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Nome Completo *" FontFamily="InterMedium" FontSize="14" TextColor="#374151" />
+                    <Border StrokeShape="RoundRectangle 10" Stroke="#D1D5DB" BackgroundColor="White" HeightRequest="50">
+                        <Entry Text="{Binding Nome}" Placeholder="Ex: João Silva" FontFamily="InterRegular" TextColor="#111827" Margin="15,0" VerticalOptions="Center"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Data Nascimento -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Data de Nascimento" FontFamily="InterMedium" FontSize="14" TextColor="#374151" />
+                    <Border StrokeShape="RoundRectangle 10" Stroke="#D1D5DB" BackgroundColor="White" HeightRequest="50">
+                        <DatePicker Date="{Binding DataNascimento}" Format="dd/MM/yyyy" FontFamily="InterRegular" TextColor="#111827" Margin="15,0" VerticalOptions="Center"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                    <!-- Contacto Principal -->
+                    <VerticalStackLayout Grid.Column="0" Spacing="8">
+                        <Label Text="Contacto" FontFamily="InterMedium" FontSize="14" TextColor="#374151" />
+                        <Border StrokeShape="RoundRectangle 10" Stroke="#D1D5DB" BackgroundColor="White" HeightRequest="50">
+                            <Entry Text="{Binding Contacto}" Keyboard="Telephone" Placeholder="Ex: 910000000" FontFamily="InterRegular" TextColor="#111827" Margin="15,0" VerticalOptions="Center"/>
+                        </Border>
+                    </VerticalStackLayout>
+
+                    <!-- Contacto Emergência -->
+                    <VerticalStackLayout Grid.Column="1" Spacing="8">
+                        <Label Text="Emergência" FontFamily="InterMedium" FontSize="14" TextColor="#EF4444" />
+                        <Border StrokeShape="RoundRectangle 10" Stroke="#FECACA" BackgroundColor="#FEF2F2" HeightRequest="50">
+                            <Entry Text="{Binding ContactoEmergencia}" Keyboard="Telephone" Placeholder="Ex: 910000000" FontFamily="InterRegular" TextColor="#EF4444" Margin="15,0" VerticalOptions="Center"/>
+                        </Border>
+                    </VerticalStackLayout>
+                </Grid>
+
+                <!-- Condições Médicas -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Condições Médicas" FontFamily="InterMedium" FontSize="14" TextColor="#374151" />
+                    <Border StrokeShape="RoundRectangle 10" Stroke="#D1D5DB" BackgroundColor="White" HeightRequest="80">
+                        <Editor Text="{Binding CondicoesMedicas}" Placeholder="Ex: Diabetes, Hipertensão..." FontFamily="InterRegular" TextColor="#111827" Margin="15,5"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Alergias -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Alergias" FontFamily="InterMedium" FontSize="14" TextColor="#374151" />
+                    <Border StrokeShape="RoundRectangle 10" Stroke="#D1D5DB" BackgroundColor="White" HeightRequest="50">
+                        <Entry Text="{Binding Alergias}" Placeholder="Ex: Penicilina, Amendoins..." FontFamily="InterRegular" TextColor="#111827" Margin="15,0" VerticalOptions="Center"/>
+                    </Border>
+                </VerticalStackLayout>
+
+                <!-- Notas -->
+                <VerticalStackLayout Spacing="8">
+                    <Label Text="Notas Adicionais" FontFamily="InterMedium" FontSize="14" TextColor="#374151" />
+                    <Border StrokeShape="RoundRectangle 10" Stroke="#D1D5DB" BackgroundColor="White" HeightRequest="80">
+                        <Editor Text="{Binding Notas}" Placeholder="Informações relevantes sobre o utente..." FontFamily="InterRegular" TextColor="#111827" Margin="15,5"/>
+                    </Border>
+                </VerticalStackLayout>
+                
+                <Grid ColumnDefinitions="*, *" ColumnSpacing="15">
+                    <Button Grid.Column="0" Text="Cancelar" Command="{Binding CancelarCommand}" BackgroundColor="#F3F4F6" TextColor="#4B5563" FontFamily="InterSemiBold" CornerRadius="12" HeightRequest="50"/>
+                    <Button Grid.Column="1" Text="Guardar" Command="{Binding GuardarAlteracoesCommand}" BackgroundColor="#1E40AF" TextColor="White" FontFamily="InterSemiBold" CornerRadius="12" HeightRequest="50"/>
+                </Grid>
+                
+            </VerticalStackLayout>
+        </ScrollView>
+        
+        <!-- OVERLAY DE CARREGAMENTO -->
+        <Grid BackgroundColor="#80000000" IsVisible="{Binding IsBusy}">
+            <ActivityIndicator IsRunning="{Binding IsBusy}" Color="#1E40AF" HorizontalOptions="Center" VerticalOptions="Center"/>
+        </Grid>
+    </Grid>
+</ContentPage>

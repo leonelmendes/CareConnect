@@ -1,5 +1,6 @@
 using CareConnect.Mobile.Views;
 using CareConnect.Mobile.Views.Auth;
+using CareConnect.Mobile.Views.Cuidador;
 using CareConnect.Mobile.Views.Gestor;
 using CareConnect.Mobile.Views.Shared;
 
@@ -25,6 +26,9 @@ public partial class AppShell : Shell
         Routing.RegisterRoute("DetalheUtenteView", typeof(DetalheUtenteView));
         Routing.RegisterRoute("PerfilView", typeof(PerfilView));
         Routing.RegisterRoute("AdicionarUtenteView", typeof(AdicionarUtenteView));
+        Routing.RegisterRoute("EditarUtenteView", typeof(EditarUtenteView));
+
+        Routing.RegisterRoute("RegistoAdHocView", typeof(RegistoAdHocView));
         #endregion
     }
 }

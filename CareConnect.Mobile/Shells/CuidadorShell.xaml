@@ -3,29 +3,23 @@
     x:Class="CareConnect.Mobile.Shells.CuidadorShell"
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+    xmlns:views="clr-namespace:CareConnect.Mobile.Views.Cuidador"
+    Shell.NavBarIsVisible="False" 
+    NavigationPage.HasNavigationBar="False"
     Shell.FlyoutBehavior="Disabled">
 
-    <!-- TabBar exclusivo para Operação Diária -->
     <TabBar>
-        <Tab Title="Agenda">
-            <ShellContent>
-                <ContentPage Title="A Minha Agenda" BackgroundColor="#FAFAFA" />
-            </ShellContent>
+        <Tab Title="Dashboard" Icon="icon_home.png">
+            <ShellContent ContentTemplate="{DataTemplate views:CuidadorHomeView}" />
         </Tab>
-        <Tab Title="Utentes">
-            <ShellContent>
-                <ContentPage Title="Consulta de Utentes" BackgroundColor="#FAFAFA" />
-            </ShellContent>
+        
+        <Tab Title="Pacientes" Icon="icon_utentes.png">
         </Tab>
-        <Tab Title="Tarefas">
-            <ShellContent>
-                <ContentPage Title="Histórico de Tarefas" BackgroundColor="#FAFAFA" />
-            </ShellContent>
+        
+        <Tab Title="Tarefas" Icon="icon_tarefas.png">
         </Tab>
-        <Tab Title="Perfil">
-            <ShellContent>
-                <ContentPage Title="O Meu Perfil" BackgroundColor="#FAFAFA" />
-            </ShellContent>
+        
+        <Tab Title="Perfil" Icon="icon_perfil.png">
         </Tab>
     </TabBar>
 </Shell>

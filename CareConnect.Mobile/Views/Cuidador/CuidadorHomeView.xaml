@@ -1,12 +1,170 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:models="clr-namespace:CareConnect.Mobile.Models"
+             xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
              x:Class="CareConnect.Mobile.Views.Cuidador.CuidadorHomeView"
-             Title="CuidadorHomeView">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Início"
+             NavigationPage.HasNavigationBar="False"
+             BackgroundColor="#F8F9FA">
+
+    <Grid SafeAreaEdges="None">
+        <ScrollView>
+            <VerticalStackLayout Padding="20,40,20,30" Spacing="25">
+                
+                <!-- Cabeçalho (Logo e Notificações) -->
+                <Grid ColumnDefinitions="*, Auto" VerticalOptions="Center">
+                    <HorizontalStackLayout Grid.Column="0" Spacing="5" VerticalOptions="Center">
+                        <Image Source="logo_careconnect.png" HeightRequest="28" />
+                        <Label Text="CareConnect" FontFamily="InterBold" FontSize="20" TextColor="#1A1A1A" FontAttributes="Bold" VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                    
+                    <Grid Grid.Column="1" WidthRequest="40" HeightRequest="40">
+                        <Ellipse Fill="White" Stroke="#E0E0E0" StrokeThickness="1" WidthRequest="40" HeightRequest="40" />
+                        <Image Source="icon_notification.png" WidthRequest="20" HeightRequest="20" HorizontalOptions="Center" VerticalOptions="Center"/>
+                        <Ellipse Fill="#EF4444" WidthRequest="8" HeightRequest="8" HorizontalOptions="End" VerticalOptions="Start" Margin="0,8,8,0"/>
+                    </Grid>
+                </Grid>
+
+                <!-- Saudação e Tag de Perfil -->
+                <VerticalStackLayout Spacing="5">
+                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                        <Label Text="Olá," FontFamily="InterRegular" FontSize="16" TextColor="{StaticResource SecondaryText}"/>
+                        <!-- Tag identificadora de Cuidador -->
+                        <Border BackgroundColor="#EEF2FF" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="6,2">
+                            <Label Text="Cuidador(a)" FontFamily="InterSemiBold" FontSize="11" TextColor="#3B82F6"/>
+                        </Border>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="-25" VerticalOptions="Center">
+                        <Label Text="{Binding NomeCuidador}" FontFamily="InterBold" FontSize="26" FontAttributes="Bold" TextColor="#1A1A1A" LineBreakMode="TailTruncation" MaxLines="1" WidthRequest="240" />
+                        <Label Text="👋" FontSize="26"/>
+                    </HorizontalStackLayout>
+                    <Label Text="Aqui está o teu plano para hoje." FontFamily="InterRegular" FontSize="14" TextColor="{StaticResource SecondaryText}"/>
+                </VerticalStackLayout>
+
+                <!-- NOVA SECÇÃO: Ações Rápidas do Cuidador -->
+                <VerticalStackLayout Spacing="10">
+                    <Label Text="Ações Rápidas" FontFamily="InterBold" FontSize="18" FontAttributes="Bold" TextColor="#1A1A1A"/>
+                    <Grid ColumnDefinitions="*,*" ColumnSpacing="15">
+                        
+                        <!-- Botão Ad-Hoc -->
+                        <Border Grid.Column="0" BackgroundColor="#4F75D3" StrokeThickness="0" StrokeShape="RoundRectangle 12" HeightRequest="90">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AbrirRegistoAdHocCommand}" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8">
+                                <!-- Podes usar o icon_add_plan que já tens do Gestor -->
+                                <Image Source="icon_add_plan.png" WidthRequest="28" HeightRequest="28"/>
+                                <Label Text="Registo Ad-Hoc" FontFamily="InterSemiBold" FontSize="12" TextColor="White" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                            </VerticalStackLayout>
+                        </Border>
+
+                        <!-- Botão Extra (Ex: Alerta/Notas) -->
+                        <Border Grid.Column="1" BackgroundColor="#F59E0B" StrokeThickness="0" StrokeShape="RoundRectangle 12" HeightRequest="90">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AbrirNotasCommand}" />
+                            </Border.GestureRecognizers>
+                            <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8">
+                                <Image Source="icon_reports.png" WidthRequest="28" HeightRequest="28"/>
+                                <Label Text="Nova Nota" FontFamily="InterSemiBold" FontSize="12" TextColor="White" FontAttributes="Bold" HorizontalTextAlignment="Center"/>
+                            </VerticalStackLayout>
+                        </Border>
+                        
+                    </Grid>
+                </VerticalStackLayout>
+
+                <!-- Gráfico de Resumo Diário (Estilo Gestor) -->
+                <Border BackgroundColor="White" Stroke="#E0E0E0" StrokeThickness="1" StrokeShape="RoundRectangle 24" Padding="20">
+                    <VerticalStackLayout Spacing="20">
+                        <Grid ColumnDefinitions="*, Auto">
+                            <VerticalStackLayout Grid.Column="0" Spacing="2">
+                                <Label Text="Progresso Diário" FontFamily="InterBold" FontSize="18" FontAttributes="Bold" TextColor="#1A1A1A"/>
+                                <Label Text="{Binding DataAtual}" FontFamily="InterRegular" FontSize="13" TextColor="{StaticResource SecondaryText}"/>
+                            </VerticalStackLayout>
+                            <Border Grid.Column="1" BackgroundColor="#F8F9FA" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="10,5">
+                                <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                                    <Label Text="Hoje" FontFamily="InterSemiBold" FontSize="12" TextColor="#1A1A1A"/>
+                                    <Image Source="icon_arrow_down.png" WidthRequest="10" HeightRequest="10"/>
+                                </HorizontalStackLayout>
+                            </Border>
+                        </Grid>
+
+                        <Grid ColumnDefinitions="140, *" ColumnSpacing="20">
+                            <!-- O Gráfico Circular -->
+                            <Grid Grid.Column="0" HeightRequest="140" WidthRequest="140">
+                                <lvc:PieChart Series="{Binding ResumoDiarioSeries}" LegendPosition="Hidden" Margin="0"/>
+                                <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
+                                    <!-- Calcula a % no ViewModel para mostrar aqui -->
+                                    <Label Text="{Binding ProgressoPercentual}" FontFamily="InterBold" FontSize="22" FontAttributes="Bold" TextColor="#1A1A1A" HorizontalOptions="Center"/>
+                                    <Label Text="FEITO" FontFamily="InterSemiBold" FontSize="10" TextColor="{StaticResource SecondaryText}" HorizontalOptions="Center"/>
+                                </VerticalStackLayout>
+                            </Grid>
+
+                            <!-- Legenda do Gráfico -->
+                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="10">
+                                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                    <Ellipse Fill="#10B981" WidthRequest="8" HeightRequest="8" VerticalOptions="Center"/>
+                                    <Label Text="Concluídas" FontFamily="InterRegular" FontSize="13" TextColor="{StaticResource SecondaryText}" VerticalOptions="Center" WidthRequest="80"/>
+                                    <Label Text="{Binding TarefasConcluidas}" FontFamily="InterBold" FontSize="14" FontAttributes="Bold" TextColor="#1A1A1A" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                                <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                                    <Ellipse Fill="#F59E0B" WidthRequest="8" HeightRequest="8" VerticalOptions="Center"/>
+                                    <Label Text="Pendentes" FontFamily="InterRegular" FontSize="13" TextColor="{StaticResource SecondaryText}" VerticalOptions="Center" WidthRequest="80"/>
+                                    <Label Text="{Binding TarefasPendentes}" FontFamily="InterBold" FontSize="14" FontAttributes="Bold" TextColor="#1A1A1A" VerticalOptions="Center"/>
+                                </HorizontalStackLayout>
+                            </VerticalStackLayout>
+                        </Grid>
+                    </VerticalStackLayout>
+                </Border>
+
+                <!-- Lista de Tarefas -->
+                <VerticalStackLayout Spacing="15">
+                    <Grid ColumnDefinitions="*, Auto">
+                        <Label Grid.Column="0" Text="Próximas Tarefas" FontFamily="InterBold" FontSize="18" FontAttributes="Bold" TextColor="#1A1A1A"/>
+                        <Label Grid.Column="1" Text="Ver todas" FontFamily="InterSemiBold" FontSize="14" TextColor="#3B82F6">
+                            <Label.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AbrirTodasTarefasCommand}" />
+                            </Label.GestureRecognizers>
+                        </Label>
+                    </Grid>
+
+                    <CollectionView ItemsSource="{Binding ProximasTarefas}" HeightRequest="250">
+                        <CollectionView.EmptyView>
+                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="10" Padding="20">
+                                <Image Source="icon_check_green.png" WidthRequest="50" HeightRequest="50" Opacity="0.5"/>
+                                <Label Text="Não há tarefas pendentes!" TextColor="{StaticResource SecondaryText}" HorizontalOptions="Center"/>
+                            </VerticalStackLayout>
+                        </CollectionView.EmptyView>
+                        <CollectionView.ItemsLayout>
+                            <LinearItemsLayout Orientation="Vertical" ItemSpacing="10" />
+                        </CollectionView.ItemsLayout>
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:TarefaResumo">
+                                <Border BackgroundColor="White" Stroke="{Binding CorStatus}" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="15">
+                                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="15">
+                                        <!-- Ícone ou Checkbox -->
+                                        <Ellipse Grid.Column="0" WidthRequest="24" HeightRequest="24" Fill="{Binding CorFundoIcone}" Stroke="{Binding CorStatus}" StrokeThickness="2" VerticalOptions="Center"/>
+                                        
+                                        <!-- Info -->
+                                        <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                            <Label Text="{Binding Titulo}" FontFamily="InterSemiBold" FontSize="15" TextColor="#1A1A1A"/>
+                                            <HorizontalStackLayout Spacing="5">
+                                                <Label Text="{Binding NomeUtente}" FontFamily="InterRegular" FontSize="13" TextColor="{StaticResource SecondaryText}"/>
+                                                <Label Text="•" TextColor="{StaticResource SecondaryText}"/>
+                                                <Label Text="{Binding DataHora, StringFormat='{0:HH:mm}'}" FontFamily="InterMedium" FontSize="13" TextColor="#3B82F6"/>
+                                            </HorizontalStackLayout>
+                                        </VerticalStackLayout>
+
+                                        <!-- Botão Ação -->
+                                        <Image Grid.Column="2" Source="icon_arrow_right.png" WidthRequest="20" HeightRequest="20" VerticalOptions="Center" Opacity="0.5"/>
+                                    </Grid>
+                                </Border>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

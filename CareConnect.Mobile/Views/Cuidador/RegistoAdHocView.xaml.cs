@@ -1,8 +1,8 @@
 namespace CareConnect.Mobile.Views.Cuidador;
 
-public partial class TaskHistoryView : ContentPage
+public partial class RegistoAdHocView : ContentPage
 {
-	public TaskHistoryView()
+	public RegistoAdHocView()
 	{
 		InitializeComponent();
 	}

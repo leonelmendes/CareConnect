@@ -1,3 +1,4 @@
+using CareConnect.Shared.DTOs;
 using CareConnect.Shared.Models;
 
 namespace CareConnect.API.Repositories.TaskLogs;
@@ -12,4 +13,6 @@ public interface ITaskLogRepositories
 
     // Atualiza o estado de uma tarefa (ex: de Pendente para Realizado ou Falhado)
     Task<TaskLog?> UpdateStatusAsync(Guid id, CareTaskStatus novoStatus, string notas, Guid executorId);
+    // Obtém o resumo das tarefas de um cuidador para um dia específico (Dashboard)
+    Task<IEnumerable<TarefaResumoDto>> ObterResumoTarefasDoDiaAsync(Guid executorId, DateTime data);
 }

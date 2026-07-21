@@ -1,6 +1,7 @@
 using Microsoft.EntityFrameworkCore;
 using CareConnect.API.Data;
 using CareConnect.Shared.Models;
+using CareConnect.Shared.DTOs;
 
 namespace CareConnect.API.Repositories.TaskLogs;
 
@@ -72,5 +73,33 @@ public class TaskLogRepositories : ITaskLogRepositories
 
         await _context.SaveChangesAsync();
         return taskLog;
+    }
+
+    public async Task<IEnumerable<TarefaResumoDto>> ObterResumoTarefasDoDiaAsync(Guid executorId, DateTime data)
+    {
+        var inicioDoDia = data.Date;
+        var fimDoDia = inicioDoDia.AddDays(1).AddTicks(-1);
+
+        return await _context.TaskLogs
+            .Include(t => t.CarePlan)
+            .ThenInclude(c => c.Patient)
+            .Where(t => t.ExecutorId == executorId && 
+                        t.TimestampExecucao >= inicioDoDia && 
+                        t.TimestampExecucao <= fimDoDia)
+            .OrderBy(t => t.TimestampExecucao)
+            .Select(t => new TarefaResumoDto
+            {
+                Id = t.Id,
+                DataHora = t.TimestampExecucao,
+                
+                // CORREÇÃO: Usamos t.CarePlan.Descricao em vez de Titulo
+                Titulo = t.CarePlan!.Descricao ?? "Tarefa sem descrição", 
+                
+                // Nota: Confirma se o teu modelo Patient usa a propriedade 'Nome'
+                NomeUtente = t.CarePlan.Patient!.Nome ?? "Utente Desconhecido", 
+                
+                Concluida = t.Status == CareTaskStatus.Realizado 
+            })
+            .ToListAsync();
     }
 }

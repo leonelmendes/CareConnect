@@ -13,11 +13,14 @@ public partial class UtentesView : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        
+
+        // Sempre que a página abrir, dispara o carregamento da API
         if (BindingContext is UtentesViewModel vm)
         {
-            // Executa em segundo plano sem travar a abertura da tela!
-            vm.CarregarUtentesAsyncCommand.Execute(null);
+            if (vm.ListaUtentes.Count == 0)
+            {
+                vm.AtualizarListaCommand.Execute(null);
+            }
         }
     }
 }

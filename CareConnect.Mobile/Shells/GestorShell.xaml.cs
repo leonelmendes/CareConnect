@@ -16,5 +16,7 @@ public partial class GestorShell : Shell
         Routing.RegisterRoute("GestorPlanosView", typeof(GestorPlanosView));
         Routing.RegisterRoute("CriarPlanoCuidadoView", typeof(CriarPlanoCuidadoView));
         Routing.RegisterRoute("DetalhePlanoView", typeof(DetalhePlanoView));
+        Routing.RegisterRoute("EditarUtenteView", typeof(EditarUtenteView));
+
     }
 }

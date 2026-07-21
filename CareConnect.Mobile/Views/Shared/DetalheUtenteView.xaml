@@ -21,21 +21,27 @@
 
             <VerticalStackLayout HorizontalOptions="Center" Spacing="5">
                 <Border WidthRequest="100" HeightRequest="100" StrokeShape="RoundRectangle 50" StrokeThickness="0" BackgroundColor="#E5E7EB" HorizontalOptions="Center">
-                    <Image Source="{Binding UtenteRecebido.FotoUrl}" Aspect="AspectFill" />
+                    <Image Source="{Binding UtenteRecebido.AvatarUrl}" HeightRequest="100" WidthRequest="100" Aspect="AspectFill" />
                 </Border>
                 <Label Text="{Binding UtenteRecebido.Nome}" FontFamily="InterBold" FontSize="20" TextColor="#111827" HorizontalOptions="Center" Margin="0,10,0,0"/>
-                <Label Text="{Binding UtenteRecebido.Idade, StringFormat='{0} anos'}" FontFamily="InterRegular" FontSize="14" TextColor="#6B7280" HorizontalOptions="Center"/>
+                <Label Text="{Binding IdadeFormatada}" FontFamily="InterRegular" FontSize="14" TextColor="#6B7280" HorizontalOptions="Center"/>
             </VerticalStackLayout>
 
-            <HorizontalStackLayout HorizontalOptions="Center" Spacing="30" Margin="0,10,0,10">
+            <!-- PAINEL DE AÇÕES RÁPIDAS -->
+            <HorizontalStackLayout HorizontalOptions="Center" Spacing="20" Margin="0,15,0,15">
 
+                <!-- BOTÃO: LIGAR -->
                 <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
                     <Border WidthRequest="50" HeightRequest="50" StrokeShape="RoundRectangle 25" Stroke="#E5E7EB" BackgroundColor="White">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding LigarCommand}"/>
+                        </Border.GestureRecognizers>
                         <Label Text="📞" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center"/>
                     </Border>
                     <Label Text="Ligar" FontSize="12" FontFamily="InterMedium" TextColor="#6B7280" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
 
+                <!-- BOTÃO: EMERGÊNCIA (Contacto de Emergência) -->
                 <VerticalStackLayout Spacing="5" HorizontalOptions="Center">
                     <Border WidthRequest="50" HeightRequest="50" StrokeShape="RoundRectangle 25" Stroke="#FECACA" BackgroundColor="#FEF2F2">
                         <Border.GestureRecognizers>
@@ -46,15 +52,29 @@
                     <Label Text="Emergência" FontSize="12" FontFamily="InterMedium" TextColor="#EF4444" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
 
+                <!-- BOTÃO: EDITAR (Apenas Gestor) -->
                 <VerticalStackLayout Spacing="5" HorizontalOptions="Center" IsVisible="{Binding IsGestor}">
-                    <Border WidthRequest="50" HeightRequest="50" StrokeShape="RoundRectangle 25" Stroke="#E5E7EB" BackgroundColor="White">
+                    <Border WidthRequest="50" HeightRequest="50" StrokeShape="RoundRectangle 25" Stroke="#BFDBFE" BackgroundColor="#EFF6FF">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding EditarUtenteCommand}"/>
+                        </Border.GestureRecognizers>
                         <Label Text="✏️" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center"/>
                     </Border>
-                    <Label Text="Editar" FontSize="12" FontFamily="InterMedium" TextColor="#6B7280" HorizontalOptions="Center"/>
+                    <Label Text="Editar" FontSize="12" FontFamily="InterMedium" TextColor="#1D4ED8" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+
+                <!-- BOTÃO: ELIMINAR (Apenas Gestor) -->
+                <VerticalStackLayout Spacing="5" HorizontalOptions="Center" IsVisible="{Binding IsGestor}">
+                    <Border WidthRequest="50" HeightRequest="50" StrokeShape="RoundRectangle 25" Stroke="#FECACA" BackgroundColor="White">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding DeletarUtenteCommand}"/>
+                        </Border.GestureRecognizers>
+                        <Label Text="🗑️" FontSize="20" HorizontalOptions="Center" VerticalOptions="Center"/>
+                    </Border>
+                    <Label Text="Apagar" FontSize="12" FontFamily="InterMedium" TextColor="#EF4444" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
 
             </HorizontalStackLayout>
-
             <VerticalStackLayout Spacing="10">
                 <Label Text="Condições Médicas" FontFamily="InterBold" FontSize="16" TextColor="#111827" Margin="5,0,0,0"/>
                 <Border StrokeShape="RoundRectangle 15" Stroke="#E5E7EB" BackgroundColor="White" Padding="15,5">
