@@ -47,7 +47,7 @@ public partial class CuidadorHomeViewModel : ObservableObject
     [RelayCommand]
     private async Task CarregarDadosIniciaisAsync()
     {
-        var nomeGuardado = await SecureStorage.Default.GetAsync("usuario_nome");
+        var nomeGuardado = Preferences.Default.Get("user_nome", string.Empty);
         NomeCuidador = string.IsNullOrWhiteSpace(nomeGuardado) ? "Cuidador(a)" : nomeGuardado;
 
         // Busca as tarefas à API através do serviço
@@ -88,7 +88,7 @@ public partial class CuidadorHomeViewModel : ObservableObject
             {
                 Values = new[] { concluidas },
                 Name = "Concluídas",
-                Fill = new SolidColorPaint(SKColors.Parse("#10B981")), // Verde
+                Fill = new SolidColorPaint(SKColor.Parse("#10B981")), // Verde
                 InnerRadius = 50,
                 MaxRadialColumnWidth = 15
             },
@@ -96,7 +96,7 @@ public partial class CuidadorHomeViewModel : ObservableObject
             {
                 Values = new[] { pendentes },
                 Name = "Pendentes",
-                Fill = new SolidColorPaint(SKColors.Parse("#F59E0B")), // Laranja/Amarelo
+                Fill = new SolidColorPaint(SKColor.Parse("#F59E0B")), // Laranja/Amarelo
                 InnerRadius = 50,
                 MaxRadialColumnWidth = 15
             }
@@ -104,7 +104,7 @@ public partial class CuidadorHomeViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task AbrirRegistoAdHocCommand()
+    private async Task AbrirRegistoAdHoc()
     {
         // Navega para a página de criação de tarefa Ad-Hoc
         // Certifica-te de que a rota "RegistoAdHocView" está registada no teu AppShell
@@ -112,7 +112,7 @@ public partial class CuidadorHomeViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task AbrirNotasCommand()
+    private async Task AbrirNotas()
     {
         // Placeholder para outra ação rápida
         await Application.Current!.MainPage!.DisplayAlertAsync("Notas", "Funcionalidade de notas rápidas em breve.", "OK");

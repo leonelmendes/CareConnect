@@ -2,6 +2,7 @@
 using CareConnect.Mobile.Shells;
 using CareConnect.Mobile.ViewModels;
 using CareConnect.Mobile.ViewModels.Auth;
+using CareConnect.Mobile.ViewModels.Cuidador;
 using CareConnect.Mobile.ViewModels.Gestor;
 using CareConnect.Mobile.ViewModels.Shared;
 using CareConnect.Mobile.Views.Auth;
@@ -165,6 +166,9 @@ public static class MauiProgram
 
         builder.Services.AddTransient<CuidadorHomeViewModel>();
         builder.Services.AddTransient<CuidadorHomeView>();
+
+        builder.Services.AddTransient<RegistoAdHocView>();
+        builder.Services.AddTransient<RegistoAdHocViewModel>();
 
         #endregion
 

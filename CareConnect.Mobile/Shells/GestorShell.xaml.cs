@@ -1,3 +1,4 @@
+using CareConnect.Mobile.Views.Cuidador;
 using CareConnect.Mobile.Views.Gestor;
 using CareConnect.Mobile.Views.Shared;
 
@@ -18,5 +19,6 @@ public partial class GestorShell : Shell
         Routing.RegisterRoute("DetalhePlanoView", typeof(DetalhePlanoView));
         Routing.RegisterRoute("EditarUtenteView", typeof(EditarUtenteView));
 
+        Routing.RegisterRoute("RegistoAdHocView", typeof(RegistoAdHocView));
     }
 }

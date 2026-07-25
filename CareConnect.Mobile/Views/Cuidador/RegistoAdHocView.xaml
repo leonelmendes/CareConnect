@@ -1,12 +1,60 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             xmlns:components="clr-namespace:CareConnect.Mobile.Components;assembly=CareConnect.Mobile"
              x:Class="CareConnect.Mobile.Views.Cuidador.RegistoAdHocView"
-             Title="RegistoAdHocView">
-    <VerticalStackLayout>
-        <Label 
-            Text="Welcome to .NET MAUI!"
-            VerticalOptions="Center" 
-            HorizontalOptions="Center" />
-    </VerticalStackLayout>
+             Title="Registo Ad-Hoc"
+             BackgroundColor="#F8F9FA">
+
+    <ScrollView>
+        <VerticalStackLayout Padding="20" Spacing="20">
+
+            <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
+                <components:BackButton Grid.Column="0"/>
+                <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="2">
+                    <Label Text="Nova Tarefa Não Programada" FontFamily="InterBold" FontSize="20" TextColor="#111827" HorizontalOptions="Center"/>
+                    <Label Text="Registe uma atividade que não estava no plano de cuidados." FontFamily="InterRegular" FontSize="12" TextColor="#9CA3AF" HorizontalOptions="Center"/>
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- Seleção do Utente -->
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Utente" FontFamily="InterSemiBold" FontSize="14" TextColor="#1A1A1A"/>
+                <Border BackgroundColor="White" Stroke="#E0E0E0" StrokeThickness="1" StrokeShape="RoundRectangle 8">
+                    <Picker Title="Selecione o utente..." 
+                            ItemsSource="{Binding UtentesDisponiveis}" 
+                            ItemDisplayBinding="{Binding Nome}"
+                            SelectedItem="{Binding UtenteSelecionado}"
+                            Margin="10,0"/>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Título da Tarefa -->
+            <VerticalStackLayout Spacing="8">
+                <Label Text="O que foi feito?" FontFamily="InterSemiBold" FontSize="14" TextColor="#1A1A1A"/>
+                <Border BackgroundColor="White" Stroke="#E0E0E0" StrokeThickness="1" StrokeShape="RoundRectangle 8">
+                    <Entry Placeholder="Ex: Medição extra de tensão" Text="{Binding TituloTarefa}" Margin="10,0"/>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Notas Adicionais -->
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Notas Adicionais" FontFamily="InterSemiBold" FontSize="14" TextColor="#1A1A1A"/>
+                <Border BackgroundColor="White" Stroke="#E0E0E0" StrokeThickness="1" StrokeShape="RoundRectangle 8">
+                    <Editor Placeholder="Detalhes da ocorrência..." Text="{Binding Notas}" HeightRequest="100" Margin="10,0"/>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Botão Guardar -->
+            <Button Text="Guardar Registo" 
+                    Command="{Binding GuardarAdHocCommand}"
+                    BackgroundColor="#3B82F6" 
+                    TextColor="White" 
+                    FontAttributes="Bold"
+                    CornerRadius="8" 
+                    HeightRequest="50"
+                    Margin="0,20,0,0"/>
+                    
+        </VerticalStackLayout>
+    </ScrollView>
 </ContentPage>
