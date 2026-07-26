@@ -3,6 +3,7 @@ using System;
 using CareConnect.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CareConnect.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260725175319_AdicionarSuporteAdHoc")]
+    partial class AdicionarSuporteAdHoc
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -175,15 +178,10 @@ namespace CareConnect.API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid?>("PatientId")
-                        .HasColumnType("uuid");
-
                     b.Property<int>("Role")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("PatientId");
 
                     b.ToTable("Users");
                 });
@@ -228,13 +226,6 @@ namespace CareConnect.API.Migrations
                     b.Navigation("Executor");
                 });
 
-            modelBuilder.Entity("CareConnect.Shared.Models.User", b =>
-                {
-                    b.HasOne("CareConnect.Shared.Models.Patient", null)
-                        .WithMany("Cuidadores")
-                        .HasForeignKey("PatientId");
-                });
-
             modelBuilder.Entity("CareConnect.Shared.Models.CarePlan", b =>
                 {
                     b.Navigation("TaskLogs");
@@ -243,8 +234,6 @@ namespace CareConnect.API.Migrations
             modelBuilder.Entity("CareConnect.Shared.Models.Patient", b =>
                 {
                     b.Navigation("CarePlans");
-
-                    b.Navigation("Cuidadores");
                 });
 
             modelBuilder.Entity("CareConnect.Shared.Models.User", b =>

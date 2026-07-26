@@ -28,4 +28,7 @@ public class Patient
     
     [JsonIgnore]
     public ICollection<CarePlan> CarePlans { get; set; } = new List<CarePlan>();
+
+    [JsonIgnore]
+    public ICollection<User> Cuidadores { get; set; } = new List<User>();
 }

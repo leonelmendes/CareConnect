@@ -120,4 +120,29 @@ public class PatientsController : ControllerBase
 
         return NoContent();
     }
+
+    [HttpGet("meus-pacientes")]
+    [Authorize] // Garante que só quem tem login consegue aceder
+    public async Task<IActionResult> GetMeusPacientes()
+    {
+        try
+        {
+            // Extrai o ID do Cuidador logado a partir do token
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier) ?? User.FindFirst("id");
+            if (userIdClaim == null || !Guid.TryParse(userIdClaim.Value, out Guid cuidadorId))
+            {
+                return Unauthorized("ID do utilizador não encontrado no token.");
+            }
+
+            var pacientes = await _patientRepository.GetPacientesDoCuidadorAsync(cuidadorId);
+
+            // Se quiseres, podes mapear para um DTO de listagem aqui, 
+            // ou devolver a entidade diretamente se não for muito pesada
+            return Ok(pacientes);
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, "Ocorreu um erro ao carregar os pacientes.");
+        }
+    }
 }

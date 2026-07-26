@@ -102,7 +102,7 @@
                     <Label Text="ATRIBUIÇÃO INICIAL" FontFamily="InterBold" FontSize="12" TextColor="#6B7280" Margin="5,0,0,0"/>
                     <Border StrokeShape="RoundRectangle 16" Stroke="#E5E7EB" BackgroundColor="White" Padding="15,5">
                         <Grid HeightRequest="50">
-                            <Picker ItemsSource="{Binding CuidadoresDisponiveis}" SelectedItem="{Binding CuidadorSelecionado}" Title="Atribuir Cuidador Principal" FontFamily="InterRegular" FontSize="15" TextColor="#111827" TitleColor="#9CA3AF" BackgroundColor="Transparent" HorizontalOptions="FillAndExpand"/>
+                            <Picker ItemsSource="{Binding CuidadoresDisponiveis}" SelectedItem="{Binding CuidadorSelecionado}" ItemDisplayBinding="{Binding Nome}" Title="Atribuir Cuidador Principal" FontFamily="InterRegular" FontSize="15" TextColor="#111827" TitleColor="#9CA3AF" BackgroundColor="Transparent" HorizontalOptions="FillAndExpand"/>
                         </Grid>
                     </Border>
                     <Label Text="Poderá criar os Planos de Cuidados (CarePlans) e agendar tarefas após o registo do utente." FontFamily="InterRegular" FontSize="11" TextColor="#9CA3AF" Margin="5,2,0,0"/>

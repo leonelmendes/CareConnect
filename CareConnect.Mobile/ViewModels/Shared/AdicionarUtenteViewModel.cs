@@ -1,4 +1,5 @@
-﻿using CareConnect.Mobile.Services;
+﻿using CareConnect.Mobile.Models;
+using CareConnect.Mobile.Services;
 using CareConnect.Shared.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -24,13 +25,17 @@ public partial class AdicionarUtenteViewModel : ObservableObject
     [ObservableProperty] private string _contacto = string.Empty;
     [ObservableProperty] private string _contactoEmergencia = string.Empty;
     [ObservableProperty] private string _alergias = string.Empty;
-    
+    [ObservableProperty] private string _notas = string.Empty;
+
     private FileResult? _fotoFicheiro;
 
     // --- CAIXAS DE SELEÇÃO ---
-    [ObservableProperty] private ObservableCollection<string> _cuidadoresDisponiveis = new();
-    [ObservableProperty] private string _cuidadorSelecionado = string.Empty;
-    
+    [ObservableProperty]
+    private ObservableCollection<CuidadorResumo> _cuidadoresDisponiveis = new();
+
+    [ObservableProperty]
+    private CuidadorResumo _cuidadorSelecionado;
+
     [ObservableProperty] private ObservableCollection<string> _condicoesDisponiveis = new();
     [ObservableProperty] private string _condicaoSelecionada = string.Empty;
 
@@ -51,7 +56,12 @@ public partial class AdicionarUtenteViewModel : ObservableObject
         // TODO: Aqui deves chamar a tua API para ir buscar a lista de Cuidadores da tua empresa.
         // Exemplo: var cuidadores = await _userService.GetCuidadoresAsync();
         // Por agora, mantém o mock para não quebrar a compilação:
-        CuidadoresDisponiveis = new ObservableCollection<string> { "Ana Silva", "Sarah Miller", "Michael Brown" };
+        CuidadoresDisponiveis = new ObservableCollection<CuidadorResumo>
+        {
+            new CuidadorResumo { Id = Guid.NewGuid(), Nome = "Ana Silva" },
+            new CuidadorResumo { Id = Guid.NewGuid(), Nome = "Sarah Miller" },
+            new CuidadorResumo { Id = Guid.NewGuid(), Nome = "Michael Brown" }
+        };
     }
 
     [RelayCommand] private void AumentarIdade() => Idade++;
@@ -122,7 +132,7 @@ public partial class AdicionarUtenteViewModel : ObservableObject
                 CondicoesMedicas = CondicaoSelecionada,
                 Alergias = Alergias,
                 Ativo = true,
-                Notas = !string.IsNullOrWhiteSpace(CuidadorSelecionado) ? $"Cuidador atribuído: {CuidadorSelecionado}" : "Nenhum cuidador inicial atribuído."
+                Notas = Notas //!string.IsNullOrWhiteSpace(CuidadorSelecionado) ? $"Cuidador atribuído: {CuidadorSelecionado}" : "Nenhum cuidador inicial atribuído."
             };
 
             // 2. Grava na Base de Dados

@@ -7,6 +7,7 @@ namespace CareConnect.Mobile.ViewModels.Shared;
 public partial class PerfilViewModel : ObservableObject
 {
     private readonly AuthService _authService;
+    private readonly INotificationService _notificationService;
 
     [ObservableProperty]
     private string _nome = "Carregando...";
@@ -23,10 +24,14 @@ public partial class PerfilViewModel : ObservableObject
     [ObservableProperty]
     private bool _isDarkMode;
 
-    public PerfilViewModel(AuthService authService)
+    [ObservableProperty]
+    private bool _isGestor;
+
+    public PerfilViewModel(AuthService authService, INotificationService notificationService)
     {
         _authService = authService;
         CarregarDadosPerfil();
+        _notificationService = notificationService;
     }
 
     public void CarregarDadosPerfil()
@@ -34,8 +39,11 @@ public partial class PerfilViewModel : ObservableObject
         // 1. Lê os dados salvos nas Preferências
         Nome = Preferences.Default.Get("user_nome", "Utilizador CareConnect");
         Emaill = Preferences.Default.Get("last_logged_email", "email@careconnect.pt");
-        Perfil = Preferences.Default.Get("auth_profile", "Gestor");
-        
+
+
+        Perfil = Preferences.Default.Get("auth_profile", "Cuidador");
+        IsGestor = Perfil.Equals("Gestor", StringComparison.OrdinalIgnoreCase);
+
         var fotoSalva = Preferences.Default.Get("user_avatar", string.Empty);
         if (!string.IsNullOrWhiteSpace(fotoSalva))
         {
@@ -48,7 +56,6 @@ public partial class PerfilViewModel : ObservableObject
         OnPropertyChanged(nameof(IsDarkMode));
     }
 
-    // ⚠️ MÁGICA DO .NET MAUI: Dispara sempre que o utilizador clica no Switch!
     partial void OnIsDarkModeChanged(bool value)
     {
         Preferences.Default.Set("app_theme_dark", value);
@@ -70,5 +77,12 @@ public partial class PerfilViewModel : ObservableObject
             _authService.FazerLogout();
             Application.Current!.Windows[0].Page = new AppShell();
         }
+    }
+
+    [RelayCommand]
+    private async Task NavegarMenuAsync(string menu)
+    {
+        // Podes adicionar navegação real para cada opção de perfil mais tarde
+        await Shell.Current.DisplayAlert(menu, $"Ecrã '{menu}' em construção.", "OK");
     }
 }

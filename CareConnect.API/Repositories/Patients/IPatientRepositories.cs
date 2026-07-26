@@ -18,4 +18,6 @@ public interface IPatientRepositories
 
     // Inativa um paciente (Soft Delete) em vez de o apagar da base de dados
     Task<bool> DeactivateAsync(Guid id, Guid gestorId);
+    // Obtém apenas os pacientes ativos atribuídos a um cuidador específico
+    Task<IEnumerable<Patient>> GetPacientesDoCuidadorAsync(Guid cuidadorId);
 }

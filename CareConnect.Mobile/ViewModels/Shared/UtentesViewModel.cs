@@ -13,27 +13,28 @@ public partial class UtentesViewModel : ObservableObject
     private readonly PatientService _patientService;
     private readonly INotificationService _notificationService;
 
-    // Cache local com todos os pacientes vindos da API para não perdermos os dados ao filtrar
     private List<Patient> _todosUtentesCache = new();
     private string _filtroDoencaAtual = "Todas";
 
     [ObservableProperty]
     private ObservableCollection<Patient> _listaUtentes = new();
+
     [ObservableProperty]
     private bool _isEmpty;
 
     [ObservableProperty]
     private bool _isRefreshing;
 
-    // Esta propriedade está ligada à Entry. O MVVM Toolkit chama o método abaixo automaticamente quando muda.
     [ObservableProperty]
     private string _textoPesquisa;
+
     [ObservableProperty]
     private bool _isFiltroAberto;
 
     [ObservableProperty]
     private List<string> _listaDoencasFiltro = new();
 
+    // A nossa bússola: diz-nos quem está a usar a App
     public bool IsGestor => Preferences.Default.Get("auth_profile", "Gestor") == "Gestor";
 
     public UtentesViewModel(PatientService patientService, INotificationService notificationService)
@@ -45,13 +46,11 @@ public partial class UtentesViewModel : ObservableObject
         {
             MainThread.BeginInvokeOnMainThread(() =>
             {
-                // Invoca silenciosamente o comando que tu já tens para atualizar a API
-                AtualizarListaCommand.Execute(null); 
+                AtualizarListaCommand.Execute(null);
             });
         });
     }
 
-    // Método mágico do Toolkit: dispara sempre que o utilizador digita ou apaga uma letra
     partial void OnTextoPesquisaChanged(string value)
     {
         AplicarFiltros();
@@ -65,41 +64,54 @@ public partial class UtentesViewModel : ObservableObject
         IsRefreshing = false;
     }
 
+    // 🔥 AQUI ESTÁ A ÚNICA GRANDE MUDANÇA 🔥
     [RelayCommand]
     private async Task CarregarUtentesAsync()
     {
         try
         {
-            var pacientesDb = await _patientService.GetMyPatientsAsync();
-            
-            // Guardamos na cache
+            List<Patient> pacientesDb;
+
+            // O nosso "Polícia Sinaleiro"
+            if (IsGestor)
+            {
+                // Se for o gestor, vai buscar todos os utentes da instituição
+                // Nota: Garante que tens este método no teu PatientService!
+                pacientesDb = await _patientService.GetMyPatientsAsync();
+            }
+            else
+            {
+                // Se for cuidador, vai buscar apenas os utentes que lhe foram atribuídos
+                // (O endpoint novo que fizemos na API)
+                pacientesDb = await _patientService.GetMeusPacientesAsync();
+            }
+
+            // O resto continua igual: guardamos na cache e aplicamos a pesquisa
             _todosUtentesCache = pacientesDb;
-            
-            // Aplicamos os filtros (caso haja alguma pesquisa ou filtro ativo ao recarregar)
             AplicarFiltros();
         }
         catch (Exception ex)
         {
             System.Diagnostics.Debug.WriteLine($"Erro ao carregar utentes: {ex.Message}");
+            // Podes adicionar aqui um _notificationService.MostrarErroAsync se quiseres
         }
     }
 
-    // A lógica central que cruza a pesquisa por texto com o filtro de doenças
     private void AplicarFiltros()
     {
         var filtrados = _todosUtentesCache.AsEnumerable();
 
         if (!string.IsNullOrWhiteSpace(TextoPesquisa))
         {
-            filtrados = filtrados.Where(p => 
-                !string.IsNullOrEmpty(p.Nome) && 
+            filtrados = filtrados.Where(p =>
+                !string.IsNullOrEmpty(p.Nome) &&
                 p.Nome.Contains(TextoPesquisa, StringComparison.OrdinalIgnoreCase));
         }
 
         if (_filtroDoencaAtual != "Todas")
         {
-            filtrados = filtrados.Where(p => 
-                !string.IsNullOrEmpty(p.CondicoesMedicas) && 
+            filtrados = filtrados.Where(p =>
+                !string.IsNullOrEmpty(p.CondicoesMedicas) &&
                 p.CondicoesMedicas.Contains(_filtroDoencaAtual, StringComparison.OrdinalIgnoreCase));
         }
 
@@ -109,14 +121,12 @@ public partial class UtentesViewModel : ObservableObject
             ListaUtentes.Add(paciente);
         }
 
-        // Se a lista estiver vazia, o IsEmpty fica true e mostra a mensagem
         IsEmpty = ListaUtentes.Count == 0;
     }
 
     [RelayCommand]
     private async Task MostrarFiltrosAsync()
     {
-        // Puxa as doenças únicas de todos os utentes (ignorando nulos e vazios)
         var doencas = _todosUtentesCache
             .Where(p => !string.IsNullOrWhiteSpace(p.CondicoesMedicas))
             .Select(p => p.CondicoesMedicas)
@@ -129,10 +139,7 @@ public partial class UtentesViewModel : ObservableObject
             return;
         }
 
-        // Adiciona a opção para limpar o filtro no topo
         doencas.Insert(0, "Todas");
-
-        // Mostra o menu nativo na parte inferior do ecrã
         var acao = await Shell.Current.DisplayActionSheet("Filtrar por Doença", "Cancelar", null, doencas.ToArray());
 
         if (!string.IsNullOrEmpty(acao) && acao != "Cancelar")
@@ -164,7 +171,6 @@ public partial class UtentesViewModel : ObservableObject
             return;
         }
 
-        // Gera a lista de doenças dinamicamente
         var doencas = _todosUtentesCache
             .Where(p => !string.IsNullOrWhiteSpace(p.CondicoesMedicas))
             .Select(p => p.CondicoesMedicas)
@@ -173,14 +179,13 @@ public partial class UtentesViewModel : ObservableObject
 
         if (!doencas.Any())
         {
-            //Shell.Current.DisplayAlert("Aviso", "Ainda não existem utentes com doenças registadas.", "OK");
             await _notificationService.MostrarAvisoAsync("Ainda não existem utentes com doenças registadas.");
             return;
         }
 
         doencas.Insert(0, "Todas");
         ListaDoencasFiltro = doencas;
-        
+
         IsFiltroAberto = true;
     }
 
@@ -188,11 +193,10 @@ public partial class UtentesViewModel : ObservableObject
     private void SelecionarDoenca(string doencaSelecionada)
     {
         _filtroDoencaAtual = doencaSelecionada;
-        IsFiltroAberto = false; // Fecha o menu
-        AplicarFiltros();       // Filtra a lista
+        IsFiltroAberto = false;
+        AplicarFiltros();
     }
 
-    // COMANDO PARA FECHAR SE CLICAR FORA DO MENU
     [RelayCommand]
     private void FecharFiltro()
     {

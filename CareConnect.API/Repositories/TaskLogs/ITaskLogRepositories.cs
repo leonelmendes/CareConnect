@@ -15,4 +15,5 @@ public interface ITaskLogRepositories
     Task<TaskLog?> UpdateStatusAsync(Guid id, CareTaskStatus novoStatus, string notas, Guid executorId);
     // Obtém o resumo das tarefas de um cuidador para um dia específico (Dashboard)
     Task<IEnumerable<TarefaResumoDto>> ObterResumoTarefasDoDiaAsync(Guid executorId, DateTime data);
+    Task<bool> RegistarAdHocAsync(Guid cuidadorId, RegistoAdHocDto dto);
 }

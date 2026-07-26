@@ -196,4 +196,24 @@ public class PatientService
             return null;
         }
     }
+
+    public async Task<List<Patient>> GetMeusPacientesAsync()
+    {
+        try
+        {
+            // O HttpClient já deve estar configurado com o JWT Token do Cuidador
+            var response = await _httpClient.GetAsync("api/Patients/meus-pacientes");
+
+            if (response.IsSuccessStatusCode)
+            {
+                return await response.Content.ReadFromJsonAsync<List<Patient>>() ?? new List<Patient>();
+            }
+        }
+        catch (Exception ex)
+        {
+            // Log do erro
+        }
+
+        return new List<Patient>();
+    }
 }

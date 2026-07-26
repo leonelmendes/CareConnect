@@ -4,22 +4,32 @@
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
     xmlns:views="clr-namespace:CareConnect.Mobile.Views.Cuidador"
+    xmlns:shared="clr-namespace:CareConnect.Mobile.Views.Shared"
     Shell.NavBarIsVisible="False" 
     NavigationPage.HasNavigationBar="False"
     Shell.FlyoutBehavior="Disabled">
 
     <TabBar>
-        <Tab Title="Dashboard" Icon="icon_home.png">
-            <ShellContent ContentTemplate="{DataTemplate views:CuidadorHomeView}" />
+        <!-- Dashboard (Página Inicial) -->
+        <Tab Title="Dashboard" Icon="icon_inicio">
+            <!-- NOTA: Podes alterar este conteúdo dinamicamente por código (C#) se for o Gestor -->
+            <ShellContent Route="DashboardPage" ContentTemplate="{DataTemplate views:CuidadorHomeView}" />
         </Tab>
-        
+
+        <!-- Pacientes (Partilhado) -->
         <Tab Title="Pacientes" Icon="icon_utentes.png">
+            <ShellContent Route="PacientesPage" ContentTemplate="{DataTemplate shared:UtentesView}" />
         </Tab>
-        
+
+        <!-- Tarefas (Partilhado ou Específico - vamos assumir que tens uma página para isto) -->
         <Tab Title="Tarefas" Icon="icon_tarefas.png">
+            <!-- Substitui por onde quer que esteja a tua lista geral de tarefas -->
+            <ShellContent Route="TarefasPage" ContentTemplate="{DataTemplate views:TarefasView}" />
         </Tab>
-        
+
+        <!-- Perfil (Partilhado) -->
         <Tab Title="Perfil" Icon="icon_perfil.png">
+            <ShellContent Route="PerfilPage" ContentTemplate="{DataTemplate shared:PerfilView}" />
         </Tab>
     </TabBar>
 </Shell>

@@ -52,4 +52,27 @@ public class TarefaService
             return new List<TarefaResumo>();
         }
     }
+
+    public async Task<bool> RegistarAdHocAsync(RegistoAdHocDto dto)
+    {
+        try
+        {
+            var token = await SecureStorage.Default.GetAsync(TokenKey);
+
+            if (!string.IsNullOrEmpty(token))
+            {
+                _httpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", token);
+            }
+
+            // O endpoint será /api/Dashboard/ad-hoc (vamos ter de o criar na API a seguir)
+            var response = await _httpClient.PostAsJsonAsync($"{Constants.BaseUrl}/api/Dashboard/ad-hoc", dto);
+
+            return response.IsSuccessStatusCode;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao registar ad-hoc: {ex.Message}");
+            return false;
+        }
+    }
 }

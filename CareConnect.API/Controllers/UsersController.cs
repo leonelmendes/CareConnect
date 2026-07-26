@@ -4,6 +4,7 @@ using CareConnect.Shared.DTOs;
 using CareConnect.Shared.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using System.Security.Claims;
 
 namespace CareConnect.API.Controllers;
@@ -38,6 +39,24 @@ public class UsersController : ControllerBase
             return NotFound();
         }
         return Ok(user);
+    }
+
+    [HttpGet("cuidadores")]
+    public async Task<IActionResult> GetCuidadoresAtivos()
+    {
+        try
+        {
+            var cuidadores = await _repository.GetCuidadoresAtivosAsync();
+
+            // Se a lista vier vazia, podes optar por devolver NotFound() ou apenas uma lista vazia com Ok(). 
+            // Geralmente devolver Ok() com lista vazia é o ideal para arrays.
+            return Ok(cuidadores);
+        }
+        catch (Exception ex)
+        {
+            // Aqui podes registar o erro (logger)
+            return StatusCode(500, "Ocorreu um erro ao obter a lista de cuidadores.");
+        }
     }
 
     [AllowAnonymous]

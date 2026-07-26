@@ -1,6 +1,8 @@
-using System.Collections.ObjectModel;
+using CareConnect.Mobile.Services;
+using CareConnect.Shared.DTOs;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
 // Ajusta os namespaces consoante a tua estrutura
 // using CareConnect.Mobile.Models; 
 // using CareConnect.Mobile.Services;
@@ -9,8 +11,9 @@ namespace CareConnect.Mobile.ViewModels.Cuidador;
 
 public partial class RegistoAdHocViewModel : ObservableObject
 {
-    // PROPRIEDADES LIGADAS À INTERFACE (XAML)
-    
+    private readonly TarefaService _tarefaService;
+    private readonly INotificationService _notificationService;
+
     [ObservableProperty]
     private ObservableCollection<UtenteResumo> _utentesDisponiveis;
 
@@ -26,34 +29,33 @@ public partial class RegistoAdHocViewModel : ObservableObject
     [ObservableProperty]
     private bool _isBusy;
 
-    public RegistoAdHocViewModel()
+    public RegistoAdHocViewModel(TarefaService tarefaService, INotificationService notificationService)
     {
+        _tarefaService = tarefaService;
+        _notificationService = notificationService;
         UtentesDisponiveis = new ObservableCollection<UtenteResumo>();
         
-        // Num cenário real, aqui chamarias um _utenteService.ObterUtentesAsync()
-        // Para já, vamos colocar dados de teste para veres o Picker a funcionar:
         CarregarUtentesDeTeste();
     }
 
     private void CarregarUtentesDeTeste()
     {
-        UtentesDisponiveis.Add(new UtenteResumo { Id = 1, Nome = "Maria Silva" });
-        UtentesDisponiveis.Add(new UtenteResumo { Id = 2, Nome = "João Santos" });
+        UtentesDisponiveis.Add(new UtenteResumo { Id = Guid.NewGuid(), Nome = "Maria Silva" });
+        UtentesDisponiveis.Add(new UtenteResumo { Id = Guid.NewGuid(), Nome = "João Santos" });
     }
 
     [RelayCommand]
     private async Task GuardarAdHocAsync()
     {
-        // 1. Validações básicas
         if (UtenteSelecionado == null)
         {
-            await Shell.Current.DisplayAlert("Aviso", "Por favor, selecione um utente.", "OK");
+            await _notificationService.MostrarAvisoAsync("Por favor, selecione um utente.");
             return;
         }
 
         if (string.IsNullOrWhiteSpace(TituloTarefa))
         {
-            await Shell.Current.DisplayAlert("Aviso", "Por favor, indique o que foi feito.", "OK");
+            await _notificationService.MostrarAvisoAsync("Por favor, indique o que foi feito.");
             return;
         }
 
@@ -61,32 +63,35 @@ public partial class RegistoAdHocViewModel : ObservableObject
 
         try
         {
-            // 2. Aqui no futuro vais chamar a tua API para guardar
-            // Exemplo: await _tarefaService.RegistarAdHocAsync(novoRegisto);
-            
-            // Simular o tempo de resposta da API
-            await Task.Delay(1000); 
+            // 1. Preparar o DTO com os dados do formulário
+            var novoRegisto = new RegistoAdHocDto
+            {
+                UtenteId = UtenteSelecionado.Id,
+                Titulo = TituloTarefa,
+                Notas = Notas ?? string.Empty,
+                DataHora = DateTime.UtcNow // Ou DateTime.Now, dependendo de como a tua API lida com datas
+            };
 
-            // 3. Feedback de sucesso e voltar ao ecrã anterior
-            await Shell.Current.DisplayAlert("Sucesso", "Registo Ad-Hoc guardado com sucesso!", "OK");
-            
-            // Voltar ao Dashboard
-            await Shell.Current.GoToAsync(".."); 
+            // 2. Enviar para a API
+            var sucesso = await _tarefaService.RegistarAdHocAsync(novoRegisto);
+
+            if (sucesso)
+            {
+                await _notificationService.MostrarSucessoAsync("Registo Ad-Hoc guardado com sucesso!");
+                await Shell.Current.GoToAsync("..");
+            }
+            else
+            {
+                await _notificationService.MostrarErroAsync("Não foi possível guardar o registo na base de dados.");
+            }
         }
         catch (Exception ex)
         {
-            await Shell.Current.DisplayAlert("Erro", $"Não foi possível guardar o registo: {ex.Message}", "OK");
+            await _notificationService.MostrarErroAsync($"Ocorreu um erro: {ex.Message}");
         }
         finally
         {
             IsBusy = false;
         }
     }
-}
-
-// Classe auxiliar simples (podes usar a que já tiveres no teu projeto)
-public class UtenteResumo
-{
-    public int Id { get; set; }
-    public string Nome { get; set; }
 }

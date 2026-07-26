@@ -102,4 +102,32 @@ public class TaskLogRepositories : ITaskLogRepositories
             })
             .ToListAsync();
     }
+
+    public async Task<bool> RegistarAdHocAsync(Guid cuidadorId, RegistoAdHocDto dto)
+    {
+        try
+        {
+            var novoRegisto = new TaskLog
+            {
+                ExecutorId = cuidadorId, // Mapeado para a tua propriedade
+                UtenteId = dto.UtenteId, // Novo campo
+                TituloAdHoc = dto.Titulo, // Novo campo
+                Notas = dto.Notas,
+                TimestampExecucao = dto.DataHora, // Mapeado para a tua propriedade
+                Status = CareTaskStatus.Realizado, // Substitui 'Completed' pelo nome exato que tens no Enum para "Concluída"
+                IsAdHoc = true, // Marca como Ad-Hoc
+                CarePlanId = null // Não tem plano associado
+            };
+
+            await _context.TaskLogs.AddAsync(novoRegisto);
+            var result = await _context.SaveChangesAsync();
+
+            return result > 0;
+        }
+        catch (Exception ex)
+        {
+            // Podes colocar um breakpoint aqui para apanhar erros de BD
+            return false;
+        }
+    }
 }

@@ -1,7 +1,8 @@
 
-using Microsoft.EntityFrameworkCore;
 using CareConnect.API.Data;
+using CareConnect.Shared.DTOs;
 using CareConnect.Shared.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace CareConnect.API.Repositories.Users;
 
@@ -46,5 +47,17 @@ public class UserRepositories : IUserRepositories
         _context.Users.Update(user);
 
         await _context.SaveChangesAsync();
+    }
+
+    public async Task<IEnumerable<CuidadorResumo>> GetCuidadoresAtivosAsync()
+    {
+        return await _context.Users
+            .Where(u => u.Role == UserRole.Cuidador)
+            .Select(u => new CuidadorResumo
+            {
+                Id = u.Id,
+                Nome = u.Nome
+            })
+            .ToListAsync();
     }
 }
