@@ -2,6 +2,7 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:models="clr-namespace:CareConnect.Mobile.Models"
+             xmlns:viewmodels="clr-namespace:CareConnect.Mobile.ViewModels.Cuidador"
              xmlns:lvc="clr-namespace:LiveChartsCore.SkiaSharpView.Maui;assembly=LiveChartsCore.SkiaSharpView.Maui"
              x:Class="CareConnect.Mobile.Views.Cuidador.CuidadorHomeView"
              Title="Início"
@@ -72,6 +73,102 @@
                         
                     </Grid>
                 </VerticalStackLayout>
+
+                <!-- TÍTULO E CALENDÁRIO SEMANAL -->
+                <VerticalStackLayout Grid.Row="1" Spacing="15" Padding="0,10,0,20">
+                    <VerticalStackLayout Padding="20,0">
+                        <Label Text="Meu Cronograma" FontFamily="InterBold" FontSize="24" TextColor="#111827"/>
+                        <Label Text="{Binding DataAtualExtenso}" FontFamily="InterRegular" FontSize="14" TextColor="#6B7280"/>
+                    </VerticalStackLayout>
+
+                    <ScrollView Orientation="Horizontal" HorizontalScrollBarVisibility="Never">
+                        <HorizontalStackLayout BindableLayout.ItemsSource="{Binding DiasSemana}" Spacing="10" Padding="20,0">
+                            <BindableLayout.ItemTemplate>
+                                <DataTemplate x:DataType="models:DiaSemanaModel">
+                                    <!-- Cartão do Dia (Com Gesture de Clique) -->
+                                    <Border WidthRequest="55" HeightRequest="75" StrokeThickness="0" BackgroundColor="{Binding CorFundo}" StrokeShape="RoundRectangle 25">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer 
+                                        Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CuidadorHomeViewModel}}, Path=SelecionarDiaCommand}" 
+                                        CommandParameter="{Binding .}" />
+                                        </Border.GestureRecognizers>
+
+                                        <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="5">
+                                            <Label Text="{Binding NomeDiaCortado}" FontFamily="InterMedium" FontSize="12" TextColor="{Binding CorTexto}" HorizontalOptions="Center" TextTransform="Uppercase"/>
+                                            <Label Text="{Binding NumeroDia}" FontFamily="InterBold" FontSize="18" TextColor="{Binding CorTexto}" HorizontalOptions="Center"/>
+                                            <Ellipse WidthRequest="4" HeightRequest="4" Fill="{Binding CorPonto}" IsVisible="{Binding TemTarefas}" HorizontalOptions="Center"/>
+                                        </VerticalStackLayout>
+                                    </Border>
+                                </DataTemplate>
+                            </BindableLayout.ItemTemplate>
+                        </HorizontalStackLayout>
+                    </ScrollView>
+                </VerticalStackLayout>
+
+                <!-- TIMELINE DE TAREFAS -->
+                <VerticalStackLayout Grid.Row="2" >
+                    <CollectionView Grid.Row="2" ItemsSource="{Binding ProximasTarefas}">
+
+                        <!-- MENSAGEM QUANDO O DIA SELECIONADO NÃO TEM TAREFAS -->
+                        <CollectionView.EmptyView>
+                            <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="12" Padding="20,50">
+                                <Image Source="icon_check_green.png" WidthRequest="50" HeightRequest="50" Opacity="0.4" HorizontalOptions="Center"/>
+                                <Label Text="Sem tarefas agendadas" FontFamily="InterBold" FontSize="18" TextColor="#374151" HorizontalOptions="Center"/>
+                                <Label Text="Não há atividades registadas para o dia selecionado." FontFamily="InterRegular" FontSize="14" TextColor="#6B7280" HorizontalOptions="Center" HorizontalTextAlignment="Center"/>
+                            </VerticalStackLayout>
+                        </CollectionView.EmptyView>
+
+                        <CollectionView.ItemTemplate>
+                            <DataTemplate x:DataType="models:TarefaResumo">
+                                <Grid ColumnDefinitions="50, *" RowDefinitions="Auto, *" Margin="0,0,0,10">
+
+                                    <!-- Coluna 0: Timeline (Hora + Bolinha + Linha) -->
+                                    <!-- Coluna 0: Timeline Otimizada -->
+                                    <Grid Grid.Column="0" Grid.RowSpan="2" RowDefinitions="Auto, Auto, *" HorizontalOptions="Center">
+                                        <Label Grid.Row="0" Text="{Binding HoraFormatada}" FontFamily="InterSemiBold" FontSize="13" TextColor="#1E40AF" HorizontalOptions="Center" Margin="0,15,0,5"/>
+                                        <Ellipse Grid.Row="1" WidthRequest="10" HeightRequest="10" Fill="White" Stroke="#1E40AF" StrokeThickness="2" HorizontalOptions="Center"/>
+                                        <BoxView Grid.Row="2" WidthRequest="2" Color="#E5E7EB" HorizontalOptions="Center" Margin="0,5,0,0"/>
+                                    </Grid>
+
+                                    <!-- Coluna 1: Cartão -->
+                                    <Border Grid.Column="1" Grid.Row="0" BackgroundColor="White" Stroke="#E5E7EB" StrokeThickness="1" StrokeShape="RoundRectangle 16" Padding="15" Margin="0,5,0,15">
+                                        <Border.GestureRecognizers>
+                                            <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CuidadorHomeViewModel}}, Path=AbrirExecucaoTarefaCommand}" CommandParameter="{Binding .}"/>
+                                        </Border.GestureRecognizers>
+
+                                        <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="12" VerticalOptions="Center">
+                                            <Border Grid.Column="0" WidthRequest="40" HeightRequest="40" StrokeShape="RoundRectangle 20" StrokeThickness="0">
+                                                <Image Source="{Binding AvatarUtente}" Aspect="AspectFill" BackgroundColor="#F3F4F6"/>
+                                            </Border>
+
+                                            <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                                                <Label Text="{Binding NomeUtente}" FontFamily="InterBold" FontSize="15" TextColor="#111827"/>
+                                                <HorizontalStackLayout Spacing="5">
+                                                    <Image Source="{Binding IconeTipo}" WidthRequest="14" HeightRequest="14" VerticalOptions="Center"/>
+                                                    <Label Text="{Binding Categoria}" FontFamily="InterRegular" FontSize="13" TextColor="#6B7280" VerticalOptions="Center"/>
+                                                </HorizontalStackLayout>
+                                            </VerticalStackLayout>
+
+                                            <Border Grid.Column="2" WidthRequest="28" HeightRequest="28" StrokeShape="RoundRectangle 14" Stroke="{Binding CorStatus}" StrokeThickness="1.5" BackgroundColor="Transparent" VerticalOptions="Center">
+                                                <Image Source="icon_check_green.png" WidthRequest="14" HeightRequest="14" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding EstaConcluida}"/>
+                                            </Border>
+                                        </Grid>
+                                    </Border>
+                                </Grid>
+                            </DataTemplate>
+                        </CollectionView.ItemTemplate>
+                    </CollectionView>
+                </VerticalStackLayout>
+
+                <ActivityIndicator Grid.Row="2" 
+                           IsRunning="{Binding IsBusy}" 
+                           IsVisible="{Binding IsBusy}"
+                           Color="#1E40AF" 
+                           HorizontalOptions="Center" 
+                           VerticalOptions="Center" 
+                           WidthRequest="50" 
+                           HeightRequest="50"
+                           Margin="0,50,0,0"/>
 
                 <!-- Gráfico de Resumo Diário (Estilo Gestor) -->
                 <Border BackgroundColor="White" Stroke="#E0E0E0" StrokeThickness="1" StrokeShape="RoundRectangle 24" Padding="20">

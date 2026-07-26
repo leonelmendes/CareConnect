@@ -3,12 +3,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using CareConnect.Mobile.Models;
 using CareConnect.Mobile.Services;
-using LiveChartsCore;
-using LiveChartsCore.SkiaSharpView;
-using LiveChartsCore.SkiaSharpView.Painting;
-using SkiaSharp;
 
-namespace CareConnect.Mobile.ViewModels;
+namespace CareConnect.Mobile.ViewModels.Cuidador;
 
 public partial class CuidadorHomeViewModel : ObservableObject
 {
@@ -18,104 +14,144 @@ public partial class CuidadorHomeViewModel : ObservableObject
     private string _nomeCuidador = "Cuidador(a)";
 
     [ObservableProperty]
-    private string _dataAtual;
+    private string _dataAtualExtenso = string.Empty;
 
     [ObservableProperty]
-    private int _tarefasConcluidas;
+    private bool _isBusy;
 
     [ObservableProperty]
-    private int _tarefasPendentes;
+    private DateTime _dataSelecionada = DateTime.Today;
 
+    // AQUI ESTAVA O SEGREDO: Transformámos a lista num ObservableProperty
     [ObservableProperty]
-    private string _progressoPercentual = "0%";
+    private ObservableCollection<TarefaResumo> _proximasTarefas = new();
 
-    // Propriedade para o LiveCharts (Gráfico Circular)
-    [ObservableProperty]
-    private ISeries[] _resumoDiarioSeries;
-
-    public ObservableCollection<TarefaResumo> ProximasTarefas { get; set; } = new();
+    public ObservableCollection<DiaSemanaModel> DiasSemana { get; set; } = new();
 
     public CuidadorHomeViewModel(TarefaService tarefaService)
     {
         _tarefaService = tarefaService;
-        DataAtual = DateTime.Now.ToString("dd 'de' MMMM, yyyy", new System.Globalization.CultureInfo("pt-PT"));
-        
-        // Inicializa o gráfico vazio para não dar erro ao abrir a página
-        AtualizarGrafico(0, 1); 
     }
 
     [RelayCommand]
     private async Task CarregarDadosIniciaisAsync()
     {
-        var nomeGuardado = Preferences.Default.Get("user_nome", string.Empty);
-        NomeCuidador = string.IsNullOrWhiteSpace(nomeGuardado) ? "Cuidador(a)" : nomeGuardado;
+        if (IsBusy) return;
 
-        // Busca as tarefas à API através do serviço
-        var tarefasDaApi = await _tarefaService.ObterTarefasHojeAsync();
+        IsBusy = true; // Inicia o estado de carregamento e mostra o spinner
 
-        ProximasTarefas.Clear();
-        TarefasConcluidas = 0;
-        TarefasPendentes = 0;
+        await Task.Delay(50); // Dá tempo à UI para respirar
 
-        foreach (var tarefa in tarefasDaApi)
-        {
-            ProximasTarefas.Add(tarefa);
-            if (tarefa.EstaConcluida)
-                TarefasConcluidas++;
-            else
-                TarefasPendentes++;
-        }
+        GerarCalendarioSemanal(DateTime.Today);
+        await CarregarTarefasDaDataAsync(DataSelecionada);
 
-        var total = TarefasConcluidas + TarefasPendentes;
-        
-        if (total > 0)
-        {
-            ProgressoPercentual = $"{(int)((double)TarefasConcluidas / total * 100)}%";
-        }
-
-        // Atualiza a UI do LiveCharts
-        AtualizarGrafico(TarefasConcluidas, TarefasPendentes);
+        IsBusy = false; // Termina o carregamento
     }
 
-    private void AtualizarGrafico(int concluidas, int pendentes)
+    [RelayCommand]
+    private async Task SelecionarDiaAsync(DiaSemanaModel diaClicado)
     {
-        // Se não houver tarefas, mostramos um gráfico cinzento (pendente)
-        if (concluidas == 0 && pendentes == 0) pendentes = 1;
+        if (diaClicado == null || IsBusy) return;
 
-        ResumoDiarioSeries = new ISeries[]
+        DataSelecionada = diaClicado.Data;
+        DataAtualExtenso = DataSelecionada.ToString("dddd, dd 'de' MMMM", new System.Globalization.CultureInfo("pt-PT"));
+
+        // Atualiza as cores imediatamente
+        foreach (var dia in DiasSemana)
         {
-            new PieSeries<int>
+            if (dia.Data.Date == diaClicado.Data.Date)
             {
-                Values = new[] { concluidas },
-                Name = "Concluídas",
-                Fill = new SolidColorPaint(SKColor.Parse("#10B981")), // Verde
-                InnerRadius = 50,
-                MaxRadialColumnWidth = 15
-            },
-            new PieSeries<int>
-            {
-                Values = new[] { pendentes },
-                Name = "Pendentes",
-                Fill = new SolidColorPaint(SKColor.Parse("#F59E0B")), // Laranja/Amarelo
-                InnerRadius = 50,
-                MaxRadialColumnWidth = 15
+                dia.IsSelected = true;
+                dia.CorFundo = "#1E40AF";
+                dia.CorTexto = "White";
+                dia.CorPonto = "White";
             }
+            else
+            {
+                dia.IsSelected = false;
+                dia.CorFundo = "Transparent";
+                dia.CorTexto = "#6B7280";
+                dia.CorPonto = "#1E40AF";
+            }
+        }
+
+        IsBusy = true;
+        await Task.Delay(50);
+
+        await CarregarTarefasDaDataAsync(DataSelecionada);
+
+        IsBusy = false;
+    }
+
+    private async Task CarregarTarefasDaDataAsync(DateTime data)
+    {
+        try
+        {
+            // Executamos a busca de dados de forma assíncrona
+            var tarefasDaApi = await _tarefaService.ObterTarefasHojeAsync();
+            var listaTemporaria = new ObservableCollection<TarefaResumo>();
+
+            if (tarefasDaApi != null && tarefasDaApi.Any(t => t.DataHora.Date == data.Date))
+            {
+                foreach (var tarefa in tarefasDaApi.Where(t => t.DataHora.Date == data.Date))
+                {
+                    listaTemporaria.Add(tarefa);
+                }
+            }
+            else if (data.Date == DateTime.Today.Date)
+            {
+                // MOCK DATA: Apenas para HOJE mostramos os cartões de teste
+                listaTemporaria.Add(new TarefaResumo { Id = Guid.NewGuid(), Titulo = "Medicação da Manhã", Categoria = "Medicação", NomeUtente = "João Silva", DataHora = DateTime.Today.AddHours(8), EstaConcluida = true });
+                listaTemporaria.Add(new TarefaResumo { Id = Guid.NewGuid(), Titulo = "Higiene Pessoal", Categoria = "Higiene", NomeUtente = "Maria Oliveira", DataHora = DateTime.Today.AddHours(9).AddMinutes(30), EstaConcluida = false });
+                listaTemporaria.Add(new TarefaResumo { Id = Guid.NewGuid(), Titulo = "Alimentação (Almoço)", Categoria = "Alimentação", NomeUtente = "Carlos Santos", DataHora = DateTime.Today.AddHours(12).AddMinutes(30), EstaConcluida = false });
+            }
+
+            // ATUALIZA A INTERFACE DE UMA SÓ VEZ! Sem "Clear" e sem "Add" na lista visível.
+            // É isto que resolve o teu congelamento de 5 segundos.
+            ProximasTarefas = listaTemporaria;
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"🔥 ERRO: {ex.Message}");
+        }
+    }
+
+    private void GerarCalendarioSemanal(DateTime dataReferencia)
+    {
+        DiasSemana.Clear();
+        DataAtualExtenso = dataReferencia.ToString("dddd, dd 'de' MMMM", new System.Globalization.CultureInfo("pt-PT"));
+
+        var inicioSemana = dataReferencia.Date;
+
+        for (int i = 0; i < 7; i++)
+        {
+            var dia = inicioSemana.AddDays(i);
+            bool isHoje = dia.Date == DateTime.Today.Date;
+
+            DiasSemana.Add(new DiaSemanaModel
+            {
+                Data = dia,
+                NomeDiaCortado = dia.ToString("ddd", new System.Globalization.CultureInfo("pt-PT")).Substring(0, 3).ToUpper(),
+                NumeroDia = dia.Day.ToString(),
+                IsSelected = isHoje,
+                CorFundo = isHoje ? "#1E40AF" : "Transparent",
+                CorTexto = isHoje ? "White" : "#6B7280",
+                CorPonto = isHoje ? "White" : "#1E40AF",
+                TemTarefas = true
+            });
+        }
+    }
+
+    [RelayCommand]
+    private async Task AbrirExecucaoTarefaAsync(TarefaResumo tarefaClicada)
+    {
+        if (tarefaClicada == null) return;
+
+        var parametros = new Dictionary<string, object>
+        {
+            { "TarefaAtual", tarefaClicada }
         };
-    }
 
-    [RelayCommand]
-    private async Task AbrirRegistoAdHoc()
-    {
-        // Navega para a página de criação de tarefa Ad-Hoc
-        // Certifica-te de que a rota "RegistoAdHocView" está registada no teu AppShell
-        await Shell.Current.GoToAsync("RegistoAdHocView");
+        await Shell.Current.GoToAsync("ExecucaoTarefaModal", parametros);
     }
-
-    [RelayCommand]
-    private async Task AbrirNotas()
-    {
-        // Placeholder para outra ação rápida
-        await Application.Current!.MainPage!.DisplayAlertAsync("Notas", "Funcionalidade de notas rápidas em breve.", "OK");
-    }
-
 }

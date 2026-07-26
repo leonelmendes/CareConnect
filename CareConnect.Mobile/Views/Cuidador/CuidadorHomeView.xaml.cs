@@ -1,4 +1,4 @@
-using CareConnect.Mobile.ViewModels;
+using CareConnect.Mobile.ViewModels.Cuidador;
 
 namespace CareConnect.Mobile.Views.Cuidador;
 
