@@ -170,6 +170,9 @@ public static class MauiProgram
         builder.Services.AddTransient<RegistoAdHocView>();
         builder.Services.AddTransient<RegistoAdHocViewModel>();
 
+        builder.Services.AddTransient<ExecucaoTarefaPopup>();
+        builder.Services.AddTransient<ExecucaoTarefaViewModel>();
+
         #endregion
 
 #if DEBUG

@@ -126,6 +126,9 @@
 	  <MauiXaml Update="Views\Cuidador\CuidadorHomeView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>
+	  <MauiXaml Update="Views\Cuidador\ExecucaoTarefaPopup.xaml">
+	    <Generator>MSBuild:Compile</Generator>
+	  </MauiXaml>
 	  <MauiXaml Update="Views\Cuidador\TaskExecutionModalView.xaml">
 	    <Generator>MSBuild:Compile</Generator>
 	  </MauiXaml>

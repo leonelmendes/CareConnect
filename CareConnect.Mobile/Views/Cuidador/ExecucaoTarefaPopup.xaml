@@ -1,0 +1,106 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<toolkit:Popup xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+               xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+               xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
+               x:Class="CareConnect.Mobile.Views.Cuidador.ExecucaoTarefaPopup"
+               BackgroundColor="Transparent"
+               CanBeDismissedByTappingOutsideOfPopup="True"
+               VerticalOptions="End">
+
+    <!-- Fundo Branco do Modal com cantos arredondados no topo -->
+    <Border BackgroundColor="White"
+            Padding="25,20,25,30"
+            WidthRequest="{OnPlatform Android=380, iOS=380, Default=400}"
+            StrokeThickness="0">
+
+        <Border.StrokeShape>
+            <RoundRectangle CornerRadius="24,24,0,0" />
+        </Border.StrokeShape>
+
+        <VerticalStackLayout Spacing="20">
+
+            <!-- Barra superior para indicar que se pode arrastar (estético) -->
+            <BoxView WidthRequest="40" HeightRequest="5" CornerRadius="2.5" Color="#E5E7EB" HorizontalOptions="Center" Margin="0,0,0,10"/>
+
+            <!-- Cabeçalho (Ícone + Título + Info Utente) -->
+            <Grid ColumnDefinitions="Auto, *" ColumnSpacing="15">
+                <Border Grid.Column="0" WidthRequest="48" HeightRequest="48" BackgroundColor="#EFF6FF" StrokeThickness="0" StrokeShape="RoundRectangle 12">
+                    <Image Source="{Binding TarefaSelecionada.IconeTipo}" WidthRequest="24" HeightRequest="24" HorizontalOptions="Center" VerticalOptions="Center"/>
+                </Border>
+
+                <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">
+                    <Label Text="{Binding TarefaSelecionada.Titulo}" FontFamily="InterBold" FontSize="18" TextColor="#111827"/>
+                    <Label Text="{Binding TarefaSelecionada.NomeUtente}" FontFamily="InterSemiBold" FontSize="14" TextColor="#1E40AF"/>
+                    <HorizontalStackLayout Spacing="5">
+                        <Image Source="icon_clock.png" WidthRequest="12" HeightRequest="12" VerticalOptions="Center"/>
+                        <Label Text="{Binding TarefaSelecionada.HoraFormatada}" FontFamily="InterRegular" FontSize="13" TextColor="#6B7280" VerticalOptions="Center"/>
+                    </HorizontalStackLayout>
+                </VerticalStackLayout>
+            </Grid>
+
+            <!-- Botões de Estado (Concluído vs Não Realizado) -->
+            <Grid ColumnDefinitions="*, *" ColumnSpacing="15" Margin="0,10,0,0">
+                <Button Grid.Column="0" 
+                        Text="✓ Concluído" 
+                        Command="{Binding MarcarConcluidoCommand}"
+                        BackgroundColor="{Binding CorBotaoConcluido}" 
+                        TextColor="White" 
+                        FontFamily="InterSemiBold" 
+                        CornerRadius="8" 
+                        HeightRequest="48"/>
+
+                <Button Grid.Column="1" 
+                        Text="✕ Não Realizado" 
+                        Command="{Binding MarcarNaoRealizadoCommand}"
+                        BackgroundColor="{Binding CorBotaoNaoRealizado}" 
+                        TextColor="White" 
+                        FontFamily="InterSemiBold" 
+                        CornerRadius="8" 
+                        HeightRequest="48"/>
+            </Grid>
+
+            <!-- Campo de Notas -->
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Notas" FontFamily="InterSemiBold" FontSize="14" TextColor="#374151"/>
+                <Border Stroke="#D1D5DB" StrokeThickness="1" StrokeShape="RoundRectangle 8" BackgroundColor="White" Padding="10,0">
+                    <Editor Placeholder="Adicionar notas ou justificativa..." 
+                            Text="{Binding Notas}"
+                            HeightRequest="80" 
+                            AutoSize="TextChanges"
+                            FontFamily="InterRegular" 
+                            FontSize="14" 
+                            TextColor="#111827"/>
+                </Border>
+                <Label Text="{Binding Notas.Length, StringFormat='{0}/250'}" FontFamily="InterRegular" FontSize="11" TextColor="#9CA3AF" HorizontalOptions="End"/>
+            </VerticalStackLayout>
+
+            <!-- Anexar Foto (Borda Tracejada simulada) -->
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Anexar Foto (Opcional)" FontFamily="InterSemiBold" FontSize="14" TextColor="#374151"/>
+                <Border StrokeDashArray="4,4" Stroke="#93C5FD" StrokeThickness="1.5" StrokeShape="RoundRectangle 8" BackgroundColor="#F8FAFC" HeightRequest="60">
+                    <Border.GestureRecognizers>
+                        <TapGestureRecognizer Command="{Binding TirarFotoCommand}"/>
+                    </Border.GestureRecognizers>
+                    <HorizontalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="10">
+                        <Image Source="icon_camera.png" WidthRequest="20" HeightRequest="20"/>
+                        <VerticalStackLayout VerticalOptions="Center">
+                            <Label Text="Anexar Foto" FontFamily="InterSemiBold" FontSize="14" TextColor="#1E40AF"/>
+                            <Label Text="Tirar ou escolher da galeria" FontFamily="InterRegular" FontSize="11" TextColor="#6B7280"/>
+                        </VerticalStackLayout>
+                    </HorizontalStackLayout>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Botão de Salvar -->
+            <Button Text="Salvar Registo" 
+                    Command="{Binding SalvarRegistoCommand}"
+                    BackgroundColor="#1E40AF" 
+                    TextColor="White" 
+                    FontFamily="InterBold" 
+                    FontSize="16" 
+                    CornerRadius="8" 
+                    HeightRequest="50" 
+                    Margin="0,10,0,0"/>
+        </VerticalStackLayout>
+    </Border>
+</toolkit:Popup>

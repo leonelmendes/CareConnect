@@ -1,14 +1,16 @@
-using System.Collections.ObjectModel;
-using CommunityToolkit.Mvvm.ComponentModel;
-using CommunityToolkit.Mvvm.Input;
 using CareConnect.Mobile.Models;
 using CareConnect.Mobile.Services;
+using CommunityToolkit.Maui.Extensions;
+using CommunityToolkit.Mvvm.ComponentModel;
+using CommunityToolkit.Mvvm.Input;
+using System.Collections.ObjectModel;
 
 namespace CareConnect.Mobile.ViewModels.Cuidador;
 
 public partial class CuidadorHomeViewModel : ObservableObject
 {
     private readonly TarefaService _tarefaService;
+    private readonly INotificationService _notificationService;
 
     [ObservableProperty]
     private string _nomeCuidador = "Cuidador(a)";
@@ -28,9 +30,10 @@ public partial class CuidadorHomeViewModel : ObservableObject
 
     public ObservableCollection<DiaSemanaModel> DiasSemana { get; set; } = new();
 
-    public CuidadorHomeViewModel(TarefaService tarefaService)
+    public CuidadorHomeViewModel(TarefaService tarefaService, INotificationService notificationService)
     {
         _tarefaService = tarefaService;
+        _notificationService = notificationService;
     }
 
     [RelayCommand]
@@ -143,15 +146,14 @@ public partial class CuidadorHomeViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private async Task AbrirExecucaoTarefaAsync(TarefaResumo tarefaClicada)
+    private void AbrirExecucaoTarefa(TarefaResumo tarefaClicada)
     {
         if (tarefaClicada == null) return;
 
-        var parametros = new Dictionary<string, object>
-        {
-            { "TarefaAtual", tarefaClicada }
-        };
+        // Passamos o serviço para a ViewModel da Modal
+        var popupViewModel = new ExecucaoTarefaViewModel(tarefaClicada, _notificationService);
+        var popup = new CareConnect.Mobile.Views.Cuidador.ExecucaoTarefaPopup(popupViewModel);
 
-        await Shell.Current.GoToAsync("ExecucaoTarefaModal", parametros);
+        Application.Current.MainPage.ShowPopup(popup);
     }
 }
