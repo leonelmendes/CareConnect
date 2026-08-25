@@ -20,5 +20,8 @@ public partial class GestorShell : Shell
         Routing.RegisterRoute("EditarUtenteView", typeof(EditarUtenteView));
 
         Routing.RegisterRoute("RegistoAdHocView", typeof(RegistoAdHocView));
+
+        Routing.RegisterRoute("SelecaoUtenteRelatorioView", typeof(Views.Gestor.SelecaoUtenteRelatorioView));
+        Routing.RegisterRoute("RelatorioDiarioView", typeof(Views.Gestor.RelatorioDiarioView));
     }
 }

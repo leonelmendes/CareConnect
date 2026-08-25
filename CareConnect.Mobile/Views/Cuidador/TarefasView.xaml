@@ -3,13 +3,138 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:viewmodels="clr-namespace:CareConnect.Mobile.ViewModels.Cuidador"
              x:Class="CareConnect.Mobile.Views.Cuidador.TarefasView"
+             BackgroundColor="#F8FAFC"
              Title="Tarefas">
 
-    <ContentPage.BindingContext>
-        <viewmodels:TarefasViewModel />
-    </ContentPage.BindingContext>
+    <Grid RowDefinitions="Auto, *" Padding="20,16,20,0">
 
-    <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center">
-        <Label Text="Página de Tarefas" FontFamily="InterSemiBold" FontSize="20" />
-    </VerticalStackLayout>
+        <!-- CABEÇALHO PRINCIPAL -->
+        <Grid Grid.Row="0" ColumnDefinitions="*, Auto" VerticalOptions="Center" Margin="0,0,0,15">
+            <HorizontalStackLayout Grid.Column="0" Spacing="5" VerticalOptions="Center">
+                <Image Source="logo_careconnect.png" HeightRequest="28" />
+                <Label Text="CareConnect" FontFamily="InterBold" FontSize="20" TextColor="#1A1A1A" FontAttributes="Bold" VerticalOptions="Center"/>
+            </HorizontalStackLayout>
+
+            <Grid Grid.Column="1" WidthRequest="40" HeightRequest="40">
+                <Ellipse Fill="White" Stroke="#E0E0E0" StrokeThickness="1" WidthRequest="40" HeightRequest="40" />
+                <Image Source="icon_notification.png" WidthRequest="20" HeightRequest="20" HorizontalOptions="Center" VerticalOptions="Center"/>
+                <Ellipse Fill="#EF4444" WidthRequest="8" HeightRequest="8" HorizontalOptions="End" VerticalOptions="Start" Margin="0,8,8,0"/>
+            </Grid>
+        </Grid>
+
+        <!-- CONTEÚDO SCROLLÁVEL -->
+        <ScrollView Grid.Row="1">
+            <VerticalStackLayout Spacing="20">
+
+                <!-- TÍTULO DA PÁGINA / SAUDAÇÃO -->
+                <VerticalStackLayout Spacing="5">
+                    <HorizontalStackLayout Spacing="8" VerticalOptions="Center">
+                        <Label Text="Olá," FontFamily="InterRegular" FontSize="16" TextColor="#64748B"/>
+                        <Border BackgroundColor="#EEF2FF" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="6,2">
+                            <Label Text="Cuidador(a)" FontFamily="InterSemiBold" FontSize="11" TextColor="#3B82F6"/>
+                        </Border>
+                    </HorizontalStackLayout>
+                    <HorizontalStackLayout Spacing="5" VerticalOptions="Center">
+                        <Label Text="{Binding NomeCuidador}" FontFamily="InterBold" FontSize="24" FontAttributes="Bold" TextColor="#1A1A1A" LineBreakMode="TailTruncation" MaxLines="1" />
+                        <Label Text="👋" FontSize="24"/>
+                    </HorizontalStackLayout>
+                    <Label Text="Histórico Diário de Tarefas" FontFamily="InterBold" FontSize="20" TextColor="#1A1A1A" Margin="0,10,0,0"/>
+                </VerticalStackLayout>
+
+                <!-- SELETOR DE DIAS -->
+                <Border BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 10" Padding="12,8">
+                    <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="10" VerticalOptions="Center">
+                        <Label Grid.Column="0" Text="📅" FontSize="18" VerticalOptions="Center"/>
+                        <DatePicker Grid.Column="1" 
+                                    Date="{Binding DataSelecionada}" 
+                                    TextColor="#1A1A1A" 
+                                    FontFamily="InterMedium" 
+                                    FontSize="14" 
+                                    VerticalOptions="Center"/>
+                        <Label Grid.Column="2" Text="Alterar Dia" FontSize="12" TextColor="#3B82F6" VerticalOptions="Center" FontFamily="InterSemiBold"/>
+                    </Grid>
+                </Border>
+
+                <!-- LISTA DE TAREFAS DO DIA -->
+                <CollectionView ItemsSource="{Binding Tarefas}" EmptyView="Sem registos de tarefas para este dia selecionado.">
+                    <CollectionView.ItemTemplate>
+                        <DataTemplate>
+                            <Border BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="14" Margin="0,0,0,12">
+                                <Grid RowDefinitions="Auto, Auto, Auto, Auto" ColumnDefinitions="4, *, Auto" ColumnSpacing="12" RowSpacing="6">
+
+                                    <!-- Barra Lateral Indicadora -->
+                                    <BoxView Grid.Row="0" Grid.RowSpan="4" Grid.Column="0" CornerRadius="2" 
+                                             BackgroundColor="{Binding CorStatus}" />
+
+                                    <!-- Detalhes Principais -->
+                                    <VerticalStackLayout Grid.Row="0" Grid.Column="1" Spacing="4">
+
+                                        <!-- Estado (Texto Descritivo e Cor Dinâmica) -->
+                                        <Label Text="{Binding TextoStatus}" 
+                                               TextColor="{Binding CorStatus}" 
+                                               FontSize="11" 
+                                               FontAttributes="Bold" />
+
+                                        <Label Text="{Binding Titulo}" FontFamily="InterBold" FontSize="15" TextColor="#1A1A1A" FontAttributes="Bold"/>
+
+                                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center">
+                                            <Label Text="👤" FontSize="11" VerticalOptions="Center"/>
+                                            <Label Text="{Binding NomeUtente}" FontSize="12" TextColor="#64748B" VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+                                    </VerticalStackLayout>
+
+                                    <!-- Indicador Detalhes -->
+                                    <Border Grid.Row="0" Grid.Column="2" BackgroundColor="#F8FAFC" StrokeThickness="0" StrokeShape="RoundRectangle 8" Padding="10,6" VerticalOptions="Center">
+                                        <VerticalStackLayout Spacing="2">
+                                            <Label Text="Detalhes" FontSize="11" FontFamily="InterMedium" TextColor="#475569" HorizontalOptions="Center"/>
+                                        </VerticalStackLayout>
+                                    </Border>
+
+                                    <!-- Linha 1: Horários Detalhados -->
+                                    <HorizontalStackLayout Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Spacing="15" Margin="0,4,0,0">
+
+                                        <!-- PREVISTO: Só aparece nas tarefas normais (MostrarPrevisto = true) -->
+                                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center" IsVisible="{Binding MostrarPrevisto}">
+                                            <Label Text="🕒 Previsto:" FontSize="11" TextColor="#64748B" VerticalOptions="Center"/>
+                                            <Label Text="{Binding DataHora, StringFormat='{}{0:HH:mm}'}" FontSize="11" FontFamily="InterSemiBold" TextColor="#1A1A1A" VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+
+                                        <!-- FEITO ÀS: Aparece quando tem hora de conclusão (Ad-Hoc ou Concluída) -->
+                                        <HorizontalStackLayout Spacing="4" VerticalOptions="Center" IsVisible="{Binding EstaConcluida}">
+                                            <Label Text="✅ Feito às:" FontSize="11" TextColor="#16A34A" VerticalOptions="Center"/>
+                                            <Label Text="{Binding HoraConclusaoFormatada}" FontSize="11" FontFamily="InterSemiBold" TextColor="#16A34A" VerticalOptions="Center"/>
+                                        </HorizontalStackLayout>
+
+                                    </HorizontalStackLayout>
+
+                                    <!-- Linha 2: Notas -->
+                                    <Label Grid.Row="2" Grid.Column="1" Grid.ColumnSpan="2" 
+                                           Text="{Binding Notas}" 
+                                           FontSize="12" 
+                                           TextColor="#4B5563" 
+                                           Margin="0,4,0,0"
+                                           IsVisible="{Binding Notas, Converter={StaticResource StringNotNullOrEmptyConverter}}"/>
+
+                                    <!-- Linha 3: Foto Anexada -->
+                                    <!-- AQUI ESTAVA A DAR ERRO ANTES, AGORA USA FOTOURL EM VEZ DE AVATARUTENTE -->
+
+                                    <Border StrokeThickness="3" StrokeShape="RoundRectangle 55" 
+                                            WidthRequest="110" HeightRequest="110" Padding="3" Grid.Row="3" HorizontalOptions="Start" Margin="15,0"
+                                            Shadow="{Shadow Brush=#2563EB, Offset='0,4', Radius=12, Opacity=0.3}">
+
+                                        <Image 
+                                               Source="{Binding AvatarUtente}"
+                                               Aspect="AspectFill" 
+                                               IsVisible="{Binding AvatarUtente, Converter={StaticResource StringNotNullOrEmptyConverter}}"/>
+
+                                    </Border>
+                                </Grid>
+                            </Border>
+                        </DataTemplate>
+                    </CollectionView.ItemTemplate>
+                </CollectionView>
+
+            </VerticalStackLayout>
+        </ScrollView>
+    </Grid>
 </ContentPage>

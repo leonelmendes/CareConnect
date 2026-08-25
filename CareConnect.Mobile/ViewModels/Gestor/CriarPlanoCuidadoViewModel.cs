@@ -112,13 +112,23 @@ public partial class CriarPlanoCuidadoViewModel : ObservableObject
         {
             IsLoading = true;
 
+            // Pega o ID do primeiro cuidador da lista ou da propriedade disponível no utente selecionado
+            Guid cuidadorIdParaEnviar = Guid.Empty;
+
+            // Verifica se a propriedade "Cuidadores" (com C maiúsculo, conforme o JSON) tem elementos
+            if (PacienteSelecionado.Cuidadores != null && PacienteSelecionado.Cuidadores.Any())
+            {
+                cuidadorIdParaEnviar = PacienteSelecionado.Cuidadores.First().Id;
+            }
+
             var novoPlano = new CarePlan
             {
                 PatientId = PacienteSelecionado.Id,
                 Tipo = _tipoSelecionado,
                 Descricao = DescricaoTarefa,
                 HoraProgramada = HorarioSelecionado,
-                Frequencia = _frequenciaSelecionada
+                Frequencia = _frequenciaSelecionada,
+                ExecutorId = cuidadorIdParaEnviar
             };
 
             await _carePlanService.CreatePlanAsync(novoPlano);

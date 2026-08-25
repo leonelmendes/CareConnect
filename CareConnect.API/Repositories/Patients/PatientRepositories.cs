@@ -31,7 +31,23 @@ namespace CareConnect.API.Repositories.Patients
 
         public async Task<Patient> CreateAsync(Patient patient)
         {
-            // O ID já é gerado automaticamente pelo modelo, apenas adicionamos e guardamos
+            // 1. Inicializa a lista de cuidadores do Entity Framework
+            patient.Cuidadores = new List<User>();
+
+            // 2. Transforma os IDs que vieram do telemóvel nos objetos reais dos Cuidadores
+            if (patient.CuidadoresIds != null && patient.CuidadoresIds.Any())
+            {
+                var cuidadoresReais = await _context.Users
+                    .Where(u => patient.CuidadoresIds.Contains(u.Id))
+                    .ToListAsync();
+
+                foreach (var cuidador in cuidadoresReais)
+                {
+                    patient.Cuidadores.Add(cuidador);
+                }
+            }
+
+            // 3. O Entity Framework agora vê os cuidadores anexados e guarda a relação automaticamente
             await _context.Patients.AddAsync(patient);
             await _context.SaveChangesAsync();
 
@@ -80,9 +96,8 @@ namespace CareConnect.API.Repositories.Patients
         public async Task<IEnumerable<Patient>> GetPacientesDoCuidadorAsync(Guid cuidadorId)
         {
             return await _context.Patients
-                .Include(p => p.Cuidadores) // <-- ADICIONADO AQUI
-                                            // Filtra utentes ativos E que tenham este cuidador na sua lista de Cuidadores
-                .Where(p => p.Ativo && p.Cuidadores.Any(c => c.Id == cuidadorId))
+                .Include(p => p.Cuidadores) // Traz os dados do cuidador para a App
+                .Where(p => p.Cuidadores.Any(c => c.Id == cuidadorId) && p.Ativo) // Filtra apenas os utentes DESTE cuidador
                 .ToListAsync();
         }
     }

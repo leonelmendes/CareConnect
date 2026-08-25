@@ -1,97 +1,163 @@
-using CareConnect.Mobile.Services;
-using CareConnect.Shared.DTOs;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
+using CareConnect.Shared.DTOs;
+using CareConnect.Mobile.Services;
 using System.Collections.ObjectModel;
-// Ajusta os namespaces consoante a tua estrutura
-// using CareConnect.Mobile.Models; 
-// using CareConnect.Mobile.Services;
+using Microsoft.Maui.Media;
 
 namespace CareConnect.Mobile.ViewModels.Cuidador;
 
 public partial class RegistoAdHocViewModel : ObservableObject
 {
     private readonly TarefaService _tarefaService;
-    private readonly INotificationService _notificationService;
+    private readonly PatientService _patientService;
 
     [ObservableProperty]
-    private ObservableCollection<UtenteResumo> _utentesDisponiveis;
+    private ObservableCollection<UtenteResumo> utentesDisponiveis = new();
 
     [ObservableProperty]
-    private UtenteResumo _utenteSelecionado;
+    private UtenteResumo utenteSelecionado;
 
     [ObservableProperty]
-    private string _tituloTarefa;
+    private string categoriaSelecionada = "Sinais Vitais"; // Predefinição
 
     [ObservableProperty]
-    private string _notas;
+    private TimeSpan horaSelecionada = DateTime.Now.TimeOfDay; // Pega a hora atual
 
     [ObservableProperty]
-    private bool _isBusy;
+    private string notas;
 
-    public RegistoAdHocViewModel(TarefaService tarefaService, INotificationService notificationService)
+    // Propriedades para a Foto
+    [ObservableProperty]
+    private ImageSource fotoPreview;
+
+    [ObservableProperty]
+    private bool temFoto = false;
+
+    private FileResult _fotoSelecionada;
+
+    public RegistoAdHocViewModel(TarefaService tarefaService, PatientService patientService)
     {
         _tarefaService = tarefaService;
-        _notificationService = notificationService;
-        UtentesDisponiveis = new ObservableCollection<UtenteResumo>();
-        
-        CarregarUtentesDeTeste();
+        _patientService = patientService;
+        _ = CarregarDadosIniciaisAsync();
     }
 
-    private void CarregarUtentesDeTeste()
-    {
-        UtentesDisponiveis.Add(new UtenteResumo { Id = Guid.NewGuid(), Nome = "Maria Silva" });
-        UtentesDisponiveis.Add(new UtenteResumo { Id = Guid.NewGuid(), Nome = "João Santos" });
-    }
-
+    // Carrega os utentes reais assim que a página abre
     [RelayCommand]
-    private async Task GuardarAdHocAsync()
+    public async Task CarregarDadosIniciaisAsync()
     {
-        if (UtenteSelecionado == null)
-        {
-            await _notificationService.MostrarAvisoAsync("Por favor, selecione um utente.");
-            return;
-        }
-
-        if (string.IsNullOrWhiteSpace(TituloTarefa))
-        {
-            await _notificationService.MostrarAvisoAsync("Por favor, indique o que foi feito.");
-            return;
-        }
-
-        IsBusy = true;
-
         try
         {
-            // 1. Preparar o DTO com os dados do formulário
-            var novoRegisto = new RegistoAdHocDto
-            {
-                UtenteId = UtenteSelecionado.Id,
-                Titulo = TituloTarefa,
-                Notas = Notas ?? string.Empty,
-                DataHora = DateTime.UtcNow // Ou DateTime.Now, dependendo de como a tua API lida com datas
-            };
+            // 1. Recebes a lista de Patient (modelo completo)
+            var pacientes = await _patientService.GetMeusPacientesAsync();
 
-            // 2. Enviar para a API
-            var sucesso = await _tarefaService.RegistarAdHocAsync(novoRegisto);
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                if (pacientes != null && pacientes.Any())
+                {
+                    // 2. Transformamos cada 'Patient' num 'UtenteResumo'
+                    var utentesConvertidos = pacientes.Select(p => new UtenteResumo
+                    {
+                        Id = p.Id,
+                        Nome = p.Nome // Nota: Se na tua classe Patient a propriedade for "Name" em vez de "Nome", ajusta aqui!
+                    }).ToList();
 
-            if (sucesso)
-            {
-                await _notificationService.MostrarSucessoAsync("Registo Ad-Hoc guardado com sucesso!");
-                await Shell.Current.GoToAsync("..");
-            }
-            else
-            {
-                await _notificationService.MostrarErroAsync("Não foi possível guardar o registo na base de dados.");
-            }
+                    // 3. Entregamos a lista convertida ao ecrã
+                    UtentesDisponiveis = new ObservableCollection<UtenteResumo>(utentesConvertidos);
+                }
+                else
+                {
+                    System.Diagnostics.Debug.WriteLine("A API não devolveu nenhum utente para este cuidador.");
+                }
+            });
         }
         catch (Exception ex)
         {
-            await _notificationService.MostrarErroAsync($"Ocorreu um erro: {ex.Message}");
+            System.Diagnostics.Debug.WriteLine($"Erro ao carregar utentes no Ad-Hoc: {ex.Message}");
         }
-        finally
+    }
+
+    // Muda a categoria ao clicar nos botões
+    [RelayCommand]
+    private void SelecionarCategoria(string categoria)
+    {
+        CategoriaSelecionada = categoria;
+    }
+
+    [RelayCommand]
+    private async Task AnexarFotoAsync()
+    {
+        try
         {
-            IsBusy = false;
+            var action = await Shell.Current.DisplayActionSheet("Adicionar Foto", "Cancelar", null, "Tirar Foto", "Escolher da Galeria");
+
+            if (action == "Tirar Foto")
+                _fotoSelecionada = await MediaPicker.Default.CapturePhotoAsync();
+            else if (action == "Escolher da Galeria")
+                _fotoSelecionada = await MediaPicker.Default.PickPhotoAsync();
+
+            if (_fotoSelecionada != null)
+            {
+                // Mostra o preview na UI
+                var stream = await _fotoSelecionada.OpenReadAsync();
+                FotoPreview = ImageSource.FromStream(() => stream);
+                TemFoto = true;
+            }
+        }
+        catch (Exception)
+        {
+            await Shell.Current.DisplayAlert("Erro", "Não foi possível carregar a imagem.", "OK");
+        }
+    }
+
+    [RelayCommand]
+    private async Task SubmeterRegistoAsync()
+    {
+        if (UtenteSelecionado == null)
+        {
+            await Shell.Current.DisplayAlert("Aviso", "Por favor, selecione um utente.", "OK");
+            return;
+        }
+
+        string awsImageUrl = string.Empty;
+
+        // 1. Faz o Upload da foto para a AWS usando o caminho físico do ficheiro
+        if (_fotoSelecionada != null)
+        {
+            awsImageUrl = await _tarefaService.UploadFotoAdHocAsync(_fotoSelecionada.FullPath);
+
+            if (string.IsNullOrEmpty(awsImageUrl))
+            {
+                // Não cancelamos o fluxo, apenas avisamos. Garante que a app não bloqueia na defesa!
+                await Shell.Current.DisplayAlert("Aviso", "A foto não foi guardada, mas vamos submeter o registo principal.", "OK");
+            }
+        }
+
+        // 2. Prepara o DTO com a URL gerada (ou vazia, caso não haja foto)
+        var dataFinal = DateTime.Today.Add(HoraSelecionada);
+
+        var dto = new RegistoAdHocDto
+        {
+            UtenteId = UtenteSelecionado.Id,
+            Titulo = $"Ocorrência: {CategoriaSelecionada}",
+            Categoria = CategoriaSelecionada,
+            Notas = Notas ?? string.Empty,
+            DataHora = dataFinal,
+            FotoUrl = awsImageUrl
+        };
+
+        // 3. Grava a tarefa na API
+        bool sucesso = await _tarefaService.RegistarAdHocAsync(dto);
+
+        if (sucesso)
+        {
+            await Shell.Current.DisplayAlert("Sucesso", "Registo submetido com sucesso!", "OK");
+            await Shell.Current.GoToAsync(".."); // Volta ao ecrã anterior
+        }
+        else
+        {
+            await Shell.Current.DisplayAlert("Erro", "Falha ao enviar o registo principal para a API.", "OK");
         }
     }
 }

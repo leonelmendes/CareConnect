@@ -7,6 +7,7 @@ public class CarePlan
 {
     public Guid Id { get; set; } = Guid.NewGuid();
     public Guid PatientId { get; set; }
+    public Guid ExecutorId { get; set; }
     [JsonConverter(typeof(JsonStringEnumConverter))]
     public PlanType Tipo { get; set; }
     public string Descricao { get; set; } = string.Empty;
@@ -16,7 +17,10 @@ public class CarePlan
     // Propriedades de Navegação
     [JsonIgnore]
     public Patient? Patient { get; set; }
-    
+
+    [JsonIgnore]
+    public User? Executor { get; set; }
+
     [JsonIgnore]
     public ICollection<TaskLog> TaskLogs { get; set; } = new List<TaskLog>();
 }

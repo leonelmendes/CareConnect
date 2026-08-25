@@ -1,5 +1,6 @@
 using System.Net.Http.Headers;
 using System.Net.Http.Json;
+using CareConnect.Shared.DTOs;
 using CareConnect.Shared.Models;
 
 namespace CareConnect.Mobile.Services;
@@ -36,7 +37,9 @@ public class PatientService
         
         if (response.IsSuccessStatusCode)
         {
-            return await response.Content.ReadFromJsonAsync<List<Patient>>() ?? new List<Patient>();
+            // AQUI ESTÁ A MAGIA: Opções para o desserializador ler "cuidadores" (JSON) como "Cuidadores" (C#)
+            var options = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+            return await response.Content.ReadFromJsonAsync<List<Patient>>(options) ?? new List<Patient>();
         }
         return new List<Patient>();
     }
@@ -201,19 +204,46 @@ public class PatientService
     {
         try
         {
-            // O HttpClient já deve estar configurado com o JWT Token do Cuidador
-            var response = await _httpClient.GetAsync("api/Patients/meus-pacientes");
+            await ConfigurarTokenAsync();
+            var response = await _httpClient.GetAsync($"{Constants.BaseUrl}/api/Patients/meus-pacientes");
 
             if (response.IsSuccessStatusCode)
             {
-                return await response.Content.ReadFromJsonAsync<List<Patient>>() ?? new List<Patient>();
+                // AQUI TAMBÉM: Garante que os dados do cuidador são lidos corretamente
+                var options = new System.Text.Json.JsonSerializerOptions { PropertyNameCaseInsensitive = true };
+                return await response.Content.ReadFromJsonAsync<List<Patient>>(options) ?? new List<Patient>();
             }
         }
         catch (Exception ex)
         {
-            // Log do erro
+            System.Diagnostics.Debug.WriteLine($"Erro GetMeusPacientes: {ex.Message}");
         }
 
         return new List<Patient>();
+    }
+
+    public async Task<List<CuidadorResumo>> ObterCuidadoresDisponiveisAsync()
+    {
+        try
+        {
+            // Garante que o token de autenticação está a ser enviado
+            await ConfigurarTokenAsync();
+
+            // Ajusta esta rota para o endpoint real da tua API que devolve os cuidadores
+            var response = await _httpClient.GetAsync($"{Constants.BaseUrl}/api/users/cuidadores");
+
+            if (response.IsSuccessStatusCode)
+            {
+                var cuidadores = await response.Content.ReadFromJsonAsync<List<CuidadorResumo>>();
+                return cuidadores ?? new List<CuidadorResumo>();
+            }
+
+            return new List<CuidadorResumo>();
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine($"Erro ao carregar cuidadores: {ex.Message}");
+            return new List<CuidadorResumo>();
+        }
     }
 }

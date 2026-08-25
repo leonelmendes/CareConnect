@@ -14,11 +14,15 @@ namespace CareConnect.Mobile.ViewModels.Gestor;
 public partial class GestorHomeViewModel : ObservableObject
 {
     private readonly INotificationService _notificationService;
-    private readonly PatientService _patientService; // ⚠️ Injeção do serviço de utentes
+    private readonly PatientService _patientService;
+    private readonly TarefaService _tarefaService;
 
     // --- PROPRIEDADES DINÂMICAS DA HOME ---
     [ObservableProperty]
     private string _nomeGestor = "Carregando...";
+
+    [ObservableProperty]
+    private int _numeroAlertas;
 
     [ObservableProperty]
     private string _totalUtentesAtivos = "0";
@@ -63,10 +67,11 @@ public partial class GestorHomeViewModel : ObservableObject
         } 
     };
 
-    public GestorHomeViewModel(INotificationService notificationService, PatientService patientService)
+    public GestorHomeViewModel(INotificationService notificationService, PatientService patientService, TarefaService tarefaService)
     {
         _notificationService = notificationService;
         _patientService = patientService;
+        _tarefaService = tarefaService;
     }
 
     [RelayCommand]
@@ -84,6 +89,7 @@ public partial class GestorHomeViewModel : ObservableObject
             var nomeGuardado = Preferences.Default.Get("user_nome", "Gestor");
             NomeGestor = string.IsNullOrWhiteSpace(nomeGuardado) ? "Gestor" : nomeGuardado;
 
+            // --- CARREGAR UTENTES ---
             var listaPacientes = await _patientService.GetMyPatientsAsync();
 
             Pacientes.Clear();
@@ -96,6 +102,10 @@ public partial class GestorHomeViewModel : ObservableObject
             }
 
             TotalUtentesAtivos = ativosCount.ToString();
+
+            // --- CARREGAR ALERTAS (TAREFAS AD-HOC DE HOJE) ---
+            var tarefasDeHoje = await _tarefaService.ObterTarefasPorDataAsync(DateTime.Today);
+            CalcularAlertas(tarefasDeHoje);
         }
         catch (Exception ex)
         {
@@ -106,8 +116,8 @@ public partial class GestorHomeViewModel : ObservableObject
             IsLoading = false;
         }
 
-
-        // Adiciona alertas recentes simulados
+        // Limpa os alertas antigos antes de adicionar os novos para evitar duplicados
+        Alertas.Clear();
         Alertas.Add(new AlertaRecente { Titulo = "João Silva", Descricao = "Sinais vitais fora do intervalo", Tempo = "Há 15 min", CorIcone = "#FEE2E2", ImagemIcone = "icon_alert_red" });
         Alertas.Add(new AlertaRecente { Titulo = "Ana Ferreira", Descricao = "Lembrete de medicamento esquecido", Tempo = "Há 45 min", CorIcone = "#FEF3C7", ImagemIcone = "icon_alert_yellow" });
         Alertas.Add(new AlertaRecente { Titulo = "Carlos Mendes", Descricao = "Avaliação de dor muito elevada", Tempo = "Há 1 h", CorIcone = "#FEE2E2", ImagemIcone = "icon_alert_red" });
@@ -116,21 +126,31 @@ public partial class GestorHomeViewModel : ObservableObject
     [RelayCommand]
     private async Task AbrirNovoUtenteAsync()
     {
-        // Navega para a página de Cadastrar Utente
         await Shell.Current.GoToAsync("AdicionarUtenteView");
     }
 
     [RelayCommand]
     private async Task AbrirCriarPlanoAsync()
     {
-        // Navega para a página de Criar Plano de Cuidado
         await Shell.Current.GoToAsync("CriarPlanoCuidadoView");
     }
 
     [RelayCommand]
     private async Task AbrirTodosUtentesAsync()
     {
-        // Muda para a aba "Utentes" no Shell principal
         await Shell.Current.GoToAsync("//UtentesView");
+    }
+
+    // ⚠️ 3. Comando para navegar para a seleção de relatórios
+    [RelayCommand]
+    private async Task AbrirRelatoriosAsync()
+    {
+        await Shell.Current.GoToAsync("SelecaoUtenteRelatorioView");
+    }
+
+    private void CalcularAlertas(List<TarefaResumo> todasTarefasDoDia)
+    {
+        // Conta quantas tarefas são Ad-Hoc e atualiza o ecrã automaticamente
+        NumeroAlertas = todasTarefasDoDia.Count(t => t.IsAdHoc);
     }
 }

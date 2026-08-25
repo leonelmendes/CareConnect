@@ -107,7 +107,7 @@
 
                 <!-- TIMELINE DE TAREFAS -->
                 <VerticalStackLayout Grid.Row="2" >
-                    <CollectionView Grid.Row="2" ItemsSource="{Binding ProximasTarefas}">
+                    <CollectionView Grid.Row="2" ItemsSource="{Binding ProximasTarefas}" MinimumHeightRequest="200">
 
                         <!-- MENSAGEM QUANDO O DIA SELECIONADO NÃO TEM TAREFAS -->
                         <CollectionView.EmptyView>
@@ -149,11 +149,14 @@
                                                 </HorizontalStackLayout>
                                             </VerticalStackLayout>
 
-                                            <Border Grid.Column="2" WidthRequest="28" HeightRequest="28" StrokeShape="RoundRectangle 14" Stroke="{Binding CorStatus}" StrokeThickness="1.5" BackgroundColor="Transparent" VerticalOptions="Center">
-                                                <Image Source="icon_check_green.png" WidthRequest="14" HeightRequest="14" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding EstaConcluida}"/>
+                                            <Border IsVisible="{Binding EstaConcluida}" Grid.Column="2" WidthRequest="32" HeightRequest="32" StrokeShape="RoundRectangle 16" Stroke="#22C55E" StrokeThickness="1.5" BackgroundColor="#F0FDF4" VerticalOptions="Center">
+                                                <Image Source="icon_correct.png" WidthRequest="30" HeightRequest="30" HorizontalOptions="Center" VerticalOptions="Center" IsVisible="{Binding EstaConcluida}"/>
                                             </Border>
                                         </Grid>
+                                        
+                                        
                                     </Border>
+
                                 </Grid>
                             </DataTemplate>
                         </CollectionView.ItemTemplate>
@@ -240,7 +243,12 @@
                                 <Border BackgroundColor="White" Stroke="{Binding CorStatus}" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="15">
                                     <Grid ColumnDefinitions="Auto, *, Auto" ColumnSpacing="15">
                                         <!-- Ícone ou Checkbox -->
-                                        <Ellipse Grid.Column="0" WidthRequest="24" HeightRequest="24" Fill="{Binding CorFundoIcone}" Stroke="{Binding CorStatus}" StrokeThickness="2" VerticalOptions="Center"/>
+                                        <Ellipse Grid.Column="0" WidthRequest="24" HeightRequest="24" Fill="{Binding CorFundoIcone}" Stroke="{Binding CorStatus}" StrokeThickness="2" VerticalOptions="Center">
+                                            <Ellipse.GestureRecognizers>
+                                                <TapGestureRecognizer Command="{Binding Source={RelativeSource AncestorType={x:Type viewmodels:CuidadorHomeViewModel}}, Path=ConcluirTarefaCommand}" 
+                                                                      CommandParameter="{Binding .}"/>
+                                            </Ellipse.GestureRecognizers>
+                                        </Ellipse>
                                         
                                         <!-- Info -->
                                         <VerticalStackLayout Grid.Column="1" VerticalOptions="Center" Spacing="2">

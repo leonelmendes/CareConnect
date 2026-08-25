@@ -1,9 +1,10 @@
-using Microsoft.AspNetCore.Mvc;
-using CareConnect.Shared.Models;
-using CareConnect.Shared.DTOs;
+using CareConnect.API.Data;
 using CareConnect.API.Repositories.CarePlans;
-using Microsoft.AspNetCore.Authorization;
 using CareConnect.API.Repositories.Users;
+using CareConnect.Shared.DTOs;
+using CareConnect.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 
 namespace CareConnect.API.Controllers;
@@ -15,11 +16,13 @@ public class CarePlansController : ControllerBase
 {
     private readonly ICarePlanRepositories _repository;
     private readonly IUserRepositories _userRepository;
+    private readonly AppDbContext _context;
 
-    public CarePlansController(ICarePlanRepositories repository, IUserRepositories userRepository)
+    public CarePlansController(ICarePlanRepositories repository, IUserRepositories userRepository, AppDbContext context)
     {
         _repository = repository;
         _userRepository = userRepository;
+        _context = context;
     }
 
     // Método Auxiliar de Segurança
@@ -69,13 +72,58 @@ public class CarePlansController : ControllerBase
         var currentUser = await ObterUtilizadorAutenticadoAsync();
         if (currentUser == null) return Unauthorized();
 
-        // Garante a geração de um novo ID no backend
         novoPlano.Id = Guid.NewGuid();
 
+        // Se o frontend não mandou um ExecutorId explícito, assumimos que é o utilizador logado (caso seja o próprio a criar)
+        if (novoPlano.ExecutorId == Guid.Empty)
+        {
+            novoPlano.ExecutorId = currentUser.Id;
+        }
+
+        // 1. Salva o plano principal (passando o novoPlano que já tem o ExecutorId correto)
         var planoCriado = await _repository.CreateAsync(novoPlano, currentUser.Id);
 
-        if (planoCriado == null) 
+        if (planoCriado == null)
             return BadRequest("Paciente inválido, inativo ou não lhe pertence.");
+
+        // GERAÇÃO DE TAREFAS USANDO O EXECUTOR CORRETO DO PLANO
+        var tarefasGeradas = new List<TaskLog>();
+        var dataInicioUtc = DateTime.UtcNow;
+
+        for (int i = 0; i <= 6; i++)
+        {
+            var dataDia = dataInicioUtc.AddDays(i);
+
+            var dataFinalDaTarefaUtc = new DateTime(
+                dataDia.Year,
+                dataDia.Month,
+                dataDia.Day,
+                planoCriado.HoraProgramada.Hours,
+                planoCriado.HoraProgramada.Minutes,
+                planoCriado.HoraProgramada.Seconds,
+                DateTimeKind.Utc
+            );
+
+            var novaTarefa = new TaskLog
+            {
+                CarePlanId = planoCriado.Id,
+                ExecutorId = planoCriado.ExecutorId, // Atribui diretamente ao cuidador do plano!
+                UtenteId = planoCriado.PatientId,
+                Titulo = string.IsNullOrWhiteSpace(planoCriado.Descricao) ? planoCriado.Tipo.ToString() : planoCriado.Descricao,
+                Categoria = planoCriado.Tipo.ToString(),
+                DataHoraAgendada = dataFinalDaTarefaUtc,
+                Status = 0,
+                IsAdHoc = false,
+                Notas = string.Empty,
+                FotoUrl = string.Empty,
+                TimestampExecucao = null
+            };
+
+            tarefasGeradas.Add(novaTarefa);
+        }
+
+        await _context.TaskLogs.AddRangeAsync(tarefasGeradas);
+        await _context.SaveChangesAsync();
 
         return CreatedAtAction(nameof(GetById), new { id = planoCriado.Id }, planoCriado);
     }

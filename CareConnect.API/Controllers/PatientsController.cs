@@ -1,10 +1,11 @@
-using Microsoft.AspNetCore.Mvc;
-using CareConnect.Shared.Models;
 using CareConnect.API.Repositories.Patients;
-using Microsoft.AspNetCore.Authorization;
 using CareConnect.API.Repositories.Users;
-using System.Security.Claims;
 using CareConnect.API.Services; // ⚠️ Adicionado para o S3Service
+using CareConnect.Shared.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
+using System.Diagnostics;
+using System.Security.Claims;
 
 namespace CareConnect.API.Controllers;
 
@@ -72,7 +73,10 @@ public class PatientsController : ControllerBase
         novoPaciente.Ativo = true;
         novoPaciente.DataCriacao = DateTime.UtcNow;
 
+        // O objeto "novoPaciente" já leva a lista "CuidadoresIds" preenchida que veio do telemóvel.
+        // Mandamos diretamente para o repositório resolver.
         var pacienteCriado = await _patientRepository.CreateAsync(novoPaciente);
+
         return CreatedAtAction(nameof(GetById), new { id = pacienteCriado.Id }, pacienteCriado);
     }
 
@@ -136,7 +140,6 @@ public class PatientsController : ControllerBase
 
             var pacientes = await _patientRepository.GetPacientesDoCuidadorAsync(cuidadorId);
 
-            // Se quiseres, podes mapear para um DTO de listagem aqui, 
             // ou devolver a entidade diretamente se não for muito pesada
             return Ok(pacientes);
         }

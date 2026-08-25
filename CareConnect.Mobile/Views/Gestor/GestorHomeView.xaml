@@ -67,7 +67,7 @@
                                 <Image Source="icon_notification.png" WidthRequest="16" HeightRequest="16" VerticalOptions="Center" HorizontalOptions="Center"/>
                             </Border>
                             <VerticalStackLayout Spacing="0">
-                                <Label Text="5" FontFamily="InterBold" FontSize="20" FontAttributes="Bold" TextColor="#EF4444"/>
+                                <Label Text="{Binding NumeroAlertas}" FontSize="24" TextColor="#EF4444" FontFamily="InterBold" />
                                 <Label Text="Alertas" FontFamily="InterSemiBold" FontSize="11" TextColor="#1A1A1A"/>
                                 <Label Text="Requer atenção" FontFamily="InterRegular" FontSize="10" TextColor="#EF4444"/>
                             </VerticalStackLayout>
@@ -128,7 +128,11 @@
                             </VerticalStackLayout>
                         </Border>
 
-                        <Border Grid.Column="2" BackgroundColor="#4F75D3" StrokeThickness="0" StrokeShape="RoundRectangle 12" HeightRequest="90" Opacity="0.6">
+                        <Border Grid.Column="2" BackgroundColor="#4F75D3" StrokeThickness="0" StrokeShape="RoundRectangle 12" HeightRequest="90">
+                            <Border.GestureRecognizers>
+                                <TapGestureRecognizer Command="{Binding AbrirRelatoriosCommand}" />
+                            </Border.GestureRecognizers>
+                            
                             <VerticalStackLayout VerticalOptions="Center" HorizontalOptions="Center" Spacing="8">
                                 <Image Source="icon_reports.png" WidthRequest="28" HeightRequest="28"/>
                                 <Label Text="Relatórios" FontFamily="InterSemiBold" FontSize="12" TextColor="White" FontAttributes="Bold" HorizontalTextAlignment="Center"/>

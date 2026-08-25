@@ -7,10 +7,15 @@
 		<key>NSAllowsLocalNetworking</key>
 		<true/>
 	</dict>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>A aplicação precisa de permissão para guardar fotografias.</string>
+	
 	<key>NSCameraUsageDescription</key>
     <string>O CareConnect precisa de acesso à câmara para tirar fotos de perfil aos utilizadores.</string>
+	
     <key>NSPhotoLibraryUsageDescription</key>
     <string>O CareConnect precisa de acesso à galeria para escolher fotos de perfil para os utilizadores.</string>
+	
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>UIDeviceFamily</key>

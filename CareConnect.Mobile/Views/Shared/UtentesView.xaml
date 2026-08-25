@@ -3,10 +3,17 @@
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:shared="clr-namespace:CareConnect.Shared.Models;assembly=CareConnect.Shared"
              xmlns:viewmodels="clr-namespace:CareConnect.Mobile.ViewModels.Shared"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="CareConnect.Mobile.Views.Shared.UtentesView"
              Title="Utentes"
              Shell.NavBarIsVisible="False"
              BackgroundColor="#F8F9FA">
+
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior 
+            EventName="Appearing"
+            Command="{Binding AtualizarListaCommand}" />
+    </ContentPage.Behaviors>
 
     <Grid>
         <!-- 1. SCROLL GLOBAL DA PÁGINA (Com Pull-To-Refresh) -->

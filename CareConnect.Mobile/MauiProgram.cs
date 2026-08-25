@@ -13,6 +13,7 @@ using CommunityToolkit.Maui;
 using DotNet.Meteor.HotReload.Plugin;
 using LiveChartsCore.SkiaSharpView.Maui;
 using Microsoft.Extensions.Logging;
+using QuestPDF.Infrastructure;
 using SkiaSharp.Views.Maui.Controls.Hosting;
 
 namespace CareConnect.Mobile;
@@ -22,6 +23,8 @@ public static class MauiProgram
     public static MauiApp CreateMauiApp()
     {
         var builder = MauiApp.CreateBuilder();
+
+        //QuestPDF.Settings.License = LicenseType.Community;
 
         builder
             .UseMauiApp<App>()
@@ -172,6 +175,15 @@ public static class MauiProgram
 
         builder.Services.AddTransient<ExecucaoTarefaPopup>();
         builder.Services.AddTransient<ExecucaoTarefaViewModel>();
+
+        builder.Services.AddTransient<TarefasView>();
+        builder.Services.AddTransient<TarefasViewModel>();
+
+        builder.Services.AddTransient<CareConnect.Mobile.Views.Gestor.SelecaoUtenteRelatorioView>();
+        builder.Services.AddTransient<CareConnect.Mobile.ViewModels.Gestor.SelecaoUtenteRelatorioViewModel>();
+
+        builder.Services.AddTransient<CareConnect.Mobile.Views.Gestor.RelatorioDiarioView>();
+        builder.Services.AddTransient<CareConnect.Mobile.ViewModels.Gestor.RelatorioDiarioViewModel>();
 
         #endregion
 

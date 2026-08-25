@@ -1,5 +1,7 @@
 using CareConnect.Mobile.Models;
 using CareConnect.Mobile.Services;
+using CareConnect.Mobile.Views.Cuidador;
+using CareConnect.Shared.DTOs;
 using CommunityToolkit.Maui.Extensions;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -11,6 +13,15 @@ public partial class CuidadorHomeViewModel : ObservableObject
 {
     private readonly TarefaService _tarefaService;
     private readonly INotificationService _notificationService;
+
+    [ObservableProperty]
+    private string tituloAdHoc;
+
+    [ObservableProperty]
+    private string categoriaAdHoc;
+
+    [ObservableProperty]
+    private string notasAdHoc;
 
     [ObservableProperty]
     private string _nomeCuidador = "Cuidador(a)";
@@ -43,12 +54,23 @@ public partial class CuidadorHomeViewModel : ObservableObject
 
         IsBusy = true; // Inicia o estado de carregamento e mostra o spinner
 
-        await Task.Delay(50); // Dá tempo à UI para respirar
+        try
+        {
+            //await Task.Delay(50); // Dá tempo à UI para respirar
 
-        GerarCalendarioSemanal(DateTime.Today);
-        await CarregarTarefasDaDataAsync(DataSelecionada);
+            // 1. Carregar o nome do Cuidador do SecureStorage
+            // (Certifica-te que tens a propriedade NomeCuidador criada no topo da ViewModel)
+            var nomeGuardado = Preferences.Default.Get("user_nome", string.Empty);
+            NomeCuidador = string.IsNullOrWhiteSpace(nomeGuardado) ? "Cuidador(a)" : nomeGuardado;
 
-        IsBusy = false; // Termina o carregamento
+            // 2. Carregar o resto da UI
+            GerarCalendarioSemanal(DateTime.Today);
+            await CarregarTarefasDaDataAsync(DataSelecionada);
+        }
+        finally
+        {
+            IsBusy = false; // Termina o carregamento com toda a segurança
+        }
     }
 
     [RelayCommand]
@@ -90,28 +112,18 @@ public partial class CuidadorHomeViewModel : ObservableObject
     {
         try
         {
-            // Executamos a busca de dados de forma assíncrona
-            var tarefasDaApi = await _tarefaService.ObterTarefasHojeAsync();
-            var listaTemporaria = new ObservableCollection<TarefaResumo>();
+            var tarefasDaApi = await _tarefaService.ObterTarefasPorDataAsync(data);
 
-            if (tarefasDaApi != null && tarefasDaApi.Any(t => t.DataHora.Date == data.Date))
+            // 2. A CORREÇÃO: Limpar a lista atual e adicionar os novos itens um a um
+            ProximasTarefas.Clear();
+
+            if (tarefasDaApi != null && tarefasDaApi.Any())
             {
-                foreach (var tarefa in tarefasDaApi.Where(t => t.DataHora.Date == data.Date))
+                foreach (var tarefa in tarefasDaApi)
                 {
-                    listaTemporaria.Add(tarefa);
+                    ProximasTarefas.Add(tarefa);
                 }
             }
-            else if (data.Date == DateTime.Today.Date)
-            {
-                // MOCK DATA: Apenas para HOJE mostramos os cartões de teste
-                listaTemporaria.Add(new TarefaResumo { Id = Guid.NewGuid(), Titulo = "Medicação da Manhã", Categoria = "Medicação", NomeUtente = "João Silva", DataHora = DateTime.Today.AddHours(8), EstaConcluida = true });
-                listaTemporaria.Add(new TarefaResumo { Id = Guid.NewGuid(), Titulo = "Higiene Pessoal", Categoria = "Higiene", NomeUtente = "Maria Oliveira", DataHora = DateTime.Today.AddHours(9).AddMinutes(30), EstaConcluida = false });
-                listaTemporaria.Add(new TarefaResumo { Id = Guid.NewGuid(), Titulo = "Alimentação (Almoço)", Categoria = "Alimentação", NomeUtente = "Carlos Santos", DataHora = DateTime.Today.AddHours(12).AddMinutes(30), EstaConcluida = false });
-            }
-
-            // ATUALIZA A INTERFACE DE UMA SÓ VEZ! Sem "Clear" e sem "Add" na lista visível.
-            // É isto que resolve o teu congelamento de 5 segundos.
-            ProximasTarefas = listaTemporaria;
         }
         catch (Exception ex)
         {
@@ -146,14 +158,102 @@ public partial class CuidadorHomeViewModel : ObservableObject
     }
 
     [RelayCommand]
-    private void AbrirExecucaoTarefa(TarefaResumo tarefaClicada)
+    private async Task AbrirExecucaoTarefa(TarefaResumo tarefaClicada)
     {
         if (tarefaClicada == null) return;
 
+        // VERIFICA SE JÁ ESTÁ CONCLUÍDA
+        if (tarefaClicada.EstaConcluida)
+        {
+            await _notificationService.MostrarAvisoAsync("Esta tarefa já foi concluída e não pode ser alterada.");
+            return; // Impede de abrir o popup!
+        }
+
         // Passamos o serviço para a ViewModel da Modal
-        var popupViewModel = new ExecucaoTarefaViewModel(tarefaClicada, _notificationService);
-        var popup = new CareConnect.Mobile.Views.Cuidador.ExecucaoTarefaPopup(popupViewModel);
+        var popupViewModel = new ExecucaoTarefaViewModel(tarefaClicada, _notificationService, _tarefaService);
+        var popup = new ExecucaoTarefaPopup(popupViewModel);
 
         Application.Current.MainPage.ShowPopup(popup);
+    }
+
+    [RelayCommand]
+    private async Task AbrirRegistoAdHoc()
+    {
+        // Navega para a página de criação de tarefa Ad-Hoc
+        // Certifica-te de que a rota "RegistoAdHocView" está registada no teu AppShell
+        await Shell.Current.GoToAsync("RegistoAdHocView");
+    }
+
+    [RelayCommand]
+    private async Task AbrirNotas()
+    {
+        await Application.Current!.MainPage!.DisplayAlertAsync("Notas", "Funcionalidade de notas rápidas em breve.", "OK");
+    }
+
+    [RelayCommand]
+    private async Task ConcluirTarefaAsync(TarefaResumo tarefa)
+    {
+        // Se a tarefa já está concluída ou é nula, não fazemos nada
+        if (tarefa == null || tarefa.EstaConcluida) return;
+
+        // Confirma o valor numérico de "Realizado" no teu Enum CareTaskStatus
+        int valorStatusRealizado = 2;
+
+        bool sucesso = await _tarefaService.AtualizarEstadoTarefaAsync(tarefa.Id, valorStatusRealizado, "Concluído via App Mobile");
+
+        if (sucesso)
+        {
+            // Atualiza visualmente no telemóvel
+            tarefa.EstaConcluida = true;
+        }
+    }
+
+    [RelayCommand]
+    private async Task RegistarTarefaAdHocAsync()
+    {
+        // 1. Validação básica
+        if (string.IsNullOrWhiteSpace(TituloAdHoc))
+        {
+            await _notificationService.MostrarAvisoAsync("O título da tarefa é obrigatório.");
+            return;
+        }
+
+        // 2. Criar o DTO
+        var novaTarefa = new RegistoAdHocDto
+        {
+            // ATENÇÃO: Para testar, precisas de um Guid de um Utente que exista na tua BD.
+            // Se ainda não tiveres a lógica para ir buscar o Utente atual, coloca o Guid de um Utente fixo que tenhas criado diretamente no SQL Server para testes.
+            UtenteId = Guid.Parse("5d91ce8a-cf7c-4d8f-8e30-4cc2c444bff8"),
+
+            Titulo = TituloAdHoc,
+            Categoria = string.IsNullOrWhiteSpace(CategoriaAdHoc) ? "Geral" : CategoriaAdHoc,
+            Notas = NotasAdHoc,
+
+            // Regista a tarefa para o dia que estás a visualizar no calendário
+            DataHora = DateTime.UtcNow
+        };
+
+        // 3. Enviar para a API
+        bool sucesso = await _tarefaService.RegistarAdHocAsync(novaTarefa);
+
+        if (sucesso)
+        {
+            // 4. Limpar o formulário do BottomSheet
+            TituloAdHoc = string.Empty;
+            CategoriaAdHoc = string.Empty;
+            NotasAdHoc = string.Empty;
+
+            // 5. Recarregar a lista do ecrã para a nova tarefa aparecer imediatamente!
+            // Substitui "DataSelecionada" pela variável que guarda o dia atual no teu calendário
+            await CarregarTarefasDaDataAsync(DateTime.Now);
+
+            await _notificationService.MostrarSucessoAsync("Tarefa Ad-Hoc registada!");
+
+            // Aqui podes adicionar o código para fechar o BottomSheet, se necessário.
+        }
+        else
+        {
+            await _notificationService.MostrarErroAsync("Não foi possível registar a tarefa.");
+        }
     }
 }

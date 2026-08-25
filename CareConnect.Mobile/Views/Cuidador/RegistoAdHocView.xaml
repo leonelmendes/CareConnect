@@ -2,9 +2,26 @@
 <ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
              xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
              xmlns:components="clr-namespace:CareConnect.Mobile.Components;assembly=CareConnect.Mobile"
+             xmlns:toolkit="http://schemas.microsoft.com/dotnet/2022/maui/toolkit"
              x:Class="CareConnect.Mobile.Views.Cuidador.RegistoAdHocView"
-             Title="Registo Ad-Hoc"
-             BackgroundColor="#F8F9FA">
+             Title=""
+             Shell.NavBarIsVisible="False"
+             Shell.TabBarIsVisible="False"
+             BackgroundColor="#FFFFFF">
+
+    <!-- 1. Declarar o conversor aqui primeiro! -->
+    <ContentPage.Resources>
+        <ResourceDictionary>
+            <toolkit:InvertedBoolConverter x:Key="InvertedBoolConverter" />
+        </ResourceDictionary>
+    </ContentPage.Resources>
+
+    <!-- 2. O Behavior agora usa o toolkit declarado no topo -->
+    <ContentPage.Behaviors>
+        <toolkit:EventToCommandBehavior 
+            EventName="Appearing"
+            Command="{Binding CarregarDadosIniciaisCommand}" />
+    </ContentPage.Behaviors>
 
     <ScrollView>
         <VerticalStackLayout Padding="20" Spacing="20">
@@ -12,49 +29,124 @@
             <Grid ColumnDefinitions="Auto, *, Auto" VerticalOptions="Center">
                 <components:BackButton Grid.Column="0"/>
                 <VerticalStackLayout Grid.Column="1" HorizontalOptions="Center" Spacing="2">
-                    <Label Text="Nova Tarefa Não Programada" FontFamily="InterBold" FontSize="20" TextColor="#111827" HorizontalOptions="Center"/>
-                    <Label Text="Registe uma atividade que não estava no plano de cuidados." FontFamily="InterRegular" FontSize="12" TextColor="#9CA3AF" HorizontalOptions="Center"/>
+                    <Label Text="Ad-Hoc" FontFamily="InterBold" FontSize="24" TextColor="#111827" HorizontalOptions="Center"/>
                 </VerticalStackLayout>
             </Grid>
 
-            <!-- Seleção do Utente -->
+            <VerticalStackLayout Spacing="5">
+                <Label Text="Criar Registo Ad-Hoc" FontFamily="InterBold" FontSize="22" TextColor="#111827"/>
+                <Label Text="Registe informações importantes sobre o utente." FontFamily="InterRegular" FontSize="14" TextColor="#6B7280"/>
+            </VerticalStackLayout>
+
+            <!-- Selecionar Utente (Agora com dados da API) -->
             <VerticalStackLayout Spacing="8">
-                <Label Text="Utente" FontFamily="InterSemiBold" FontSize="14" TextColor="#1A1A1A"/>
-                <Border BackgroundColor="White" Stroke="#E0E0E0" StrokeThickness="1" StrokeShape="RoundRectangle 8">
-                    <Picker Title="Selecione o utente..." 
+                <Label Text="Selecionar Utente" FontFamily="InterSemiBold" FontSize="14" TextColor="#1A1A1A"/>
+                <Border BackgroundColor="#F9FAFB" Stroke="#E5E7EB" StrokeThickness="1" StrokeShape="RoundRectangle 8">
+                    <Picker Title="Selecione um utente" 
                             ItemsSource="{Binding UtentesDisponiveis}" 
                             ItemDisplayBinding="{Binding Nome}"
                             SelectedItem="{Binding UtenteSelecionado}"
-                            Margin="10,0"/>
+                            Margin="10,0" 
+                            TextColor="#111827"
+                            TitleColor="#6B7280"/>
                 </Border>
             </VerticalStackLayout>
 
-            <!-- Título da Tarefa -->
+            <!-- Categorias (Com Animação de Seleção) -->
             <VerticalStackLayout Spacing="8">
-                <Label Text="O que foi feito?" FontFamily="InterSemiBold" FontSize="14" TextColor="#1A1A1A"/>
-                <Border BackgroundColor="White" Stroke="#E0E0E0" StrokeThickness="1" StrokeShape="RoundRectangle 8">
-                    <Entry Placeholder="Ex: Medição extra de tensão" Text="{Binding TituloTarefa}" Margin="10,0"/>
-                </Border>
+                <Label Text="Categoria" FontFamily="InterSemiBold" FontSize="14" TextColor="#1A1A1A"/>
+                <Grid ColumnDefinitions="*, *, *" ColumnSpacing="10">
+
+                    <!-- Botão Sinais Vitais -->
+                    <Button Grid.Column="0" Text="Sinais Vitais" Command="{Binding SelecionarCategoriaCommand}" CommandParameter="Sinais Vitais" BackgroundColor="#F3F4F6" TextColor="#4B5563" CornerRadius="8" FontSize="12" Padding="0">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding CategoriaSelecionada}" Value="Sinais Vitais">
+                                <Setter Property="BackgroundColor" Value="#0052CC" />
+                                <Setter Property="TextColor" Value="White" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+
+                    <!-- Botão Medicação Extra -->
+                    <Button Grid.Column="1" Text="Medicação Extra" Command="{Binding SelecionarCategoriaCommand}" CommandParameter="Medicação Extra" BackgroundColor="#F3F4F6" TextColor="#4B5563" CornerRadius="8" FontSize="12" Padding="0">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding CategoriaSelecionada}" Value="Medicação Extra">
+                                <Setter Property="BackgroundColor" Value="#0052CC" />
+                                <Setter Property="TextColor" Value="White" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+
+                    <!-- Botão Incidente -->
+                    <Button Grid.Column="2" Text="Incidente" Command="{Binding SelecionarCategoriaCommand}" CommandParameter="Incidente" BackgroundColor="#F3F4F6" TextColor="#4B5563" CornerRadius="8" FontSize="12" Padding="0">
+                        <Button.Triggers>
+                            <DataTrigger TargetType="Button" Binding="{Binding CategoriaSelecionada}" Value="Incidente">
+                                <Setter Property="BackgroundColor" Value="#0052CC" />
+                                <Setter Property="TextColor" Value="White" />
+                            </DataTrigger>
+                        </Button.Triggers>
+                    </Button>
+                </Grid>
             </VerticalStackLayout>
 
-            <!-- Notas Adicionais -->
+            <!-- Seleção de Hora (Data é sempre a de hoje) -->
             <VerticalStackLayout Spacing="8">
-                <Label Text="Notas Adicionais" FontFamily="InterSemiBold" FontSize="14" TextColor="#1A1A1A"/>
-                <Border BackgroundColor="White" Stroke="#E0E0E0" StrokeThickness="1" StrokeShape="RoundRectangle 8">
-                    <Editor Placeholder="Detalhes da ocorrência..." Text="{Binding Notas}" HeightRequest="100" Margin="10,0"/>
+                <Label Text="Hora da Ocorrência" FontFamily="InterSemiBold" FontSize="14" TextColor="#1A1A1A"/>
+                <Border BackgroundColor="#F9FAFB" Stroke="#E5E7EB" StrokeThickness="1" StrokeShape="RoundRectangle 8" Padding="10,0">
+                    <Grid ColumnDefinitions="Auto, *">
+                        <Image Source="calendar_icon.png" WidthRequest="20" HeightRequest="20" VerticalOptions="Center"/>
+                        <!-- Alterado para TimePicker -->
+                        <TimePicker Grid.Column="1" Time="{Binding HoraSelecionada}" TextColor="#111827" Margin="10,0"/>
+                    </Grid>
                 </Border>
             </VerticalStackLayout>
 
-            <!-- Botão Guardar -->
-            <Button Text="Guardar Registo" 
-                    Command="{Binding GuardarAdHocCommand}"
-                    BackgroundColor="#3B82F6" 
+            <!-- Notas -->
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Detalhes / Notas" FontFamily="InterSemiBold" FontSize="14" TextColor="#1A1A1A"/>
+                <Border BackgroundColor="#F9FAFB" Stroke="#E5E7EB" StrokeThickness="1" StrokeShape="RoundRectangle 8">
+                    <Editor Placeholder="Descreva o que aconteceu..." Text="{Binding Notas}" HeightRequest="100" Margin="10,0"/>
+                </Border>
+            </VerticalStackLayout>
+
+            <!-- Anexar Foto (Mostra a foto se existir, ou o botão tracejado se não existir) -->
+            <VerticalStackLayout Spacing="8">
+                <Label Text="Anexar Foto" FontFamily="InterSemiBold" FontSize="14" TextColor="#1A1A1A"/>
+
+                <Grid>
+                    <!-- Estado 1: Sem Foto (Tracejado) -->
+                    <Border BackgroundColor="#F8FAFC" Stroke="#0052CC" StrokeThickness="1" StrokeDashArray="5,5" StrokeShape="RoundRectangle 8" HeightRequest="100" IsVisible="{Binding TemFoto, Converter={toolkit:InvertedBoolConverter}}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding AnexarFotoCommand}" />
+                        </Border.GestureRecognizers>
+                        <VerticalStackLayout HorizontalOptions="Center" VerticalOptions="Center" Spacing="5">
+                            <Image Source="camera_icon.png" WidthRequest="30" HeightRequest="30"/>
+                            <Label Text="Adicionar Foto" FontFamily="InterSemiBold" FontSize="14" TextColor="#0052CC" HorizontalOptions="Center"/>
+                            <Label Text="JPG, PNG até 10MB" FontFamily="InterRegular" FontSize="10" TextColor="#6B7280" HorizontalOptions="Center"/>
+                        </VerticalStackLayout>
+                    </Border>
+
+                    <!-- Estado 2: Com Foto (Preview) -->
+                    <Border Stroke="#E5E7EB" StrokeThickness="1" StrokeShape="RoundRectangle 8" HeightRequest="150" IsVisible="{Binding TemFoto}">
+                        <Border.GestureRecognizers>
+                            <TapGestureRecognizer Command="{Binding AnexarFotoCommand}" />
+                        </Border.GestureRecognizers>
+                        <Image Source="{Binding FotoPreview}" Aspect="AspectFill" />
+                    </Border>
+                </Grid>
+            </VerticalStackLayout>
+
+            <!-- Botão Submeter -->
+            <Button Text="Submeter Registo" 
+                    Command="{Binding SubmeterRegistoCommand}"
+                    BackgroundColor="#0052CC" 
                     TextColor="White" 
-                    FontAttributes="Bold"
+                    FontFamily="InterBold"
+                    FontSize="16"
                     CornerRadius="8" 
                     HeightRequest="50"
-                    Margin="0,20,0,0"/>
-                    
+                    Margin="0,20,0,20"/>
+
         </VerticalStackLayout>
     </ScrollView>
 </ContentPage>

@@ -1,0 +1,27 @@
+<ContentPage xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
+             xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
+             x:Class="CareConnect.Mobile.Views.Gestor.SelecaoUtenteRelatorioView"
+             Title="Selecionar Utente"
+             BackgroundColor="#F8FAFC">
+
+    <Grid RowDefinitions="Auto, *" Padding="20">
+        <Label Grid.Row="0" Text="Gerar Relatório de:" FontFamily="InterBold" FontSize="20" TextColor="#1A1A1A" Margin="0,0,0,15"/>
+
+        <CollectionView Grid.Row="1" ItemsSource="{Binding Utentes}" SelectionMode="Single" SelectionChangedCommand="{Binding UtenteSelecionadoCommand}" SelectionChangedCommandParameter="{Binding SelectedItem, Source={RelativeSource Self}}">
+            <CollectionView.ItemTemplate>
+                <DataTemplate>
+                    <Border BackgroundColor="White" Stroke="#E2E8F0" StrokeThickness="1" StrokeShape="RoundRectangle 12" Padding="15" Margin="0,0,0,10">
+                        <HorizontalStackLayout Spacing="15" VerticalOptions="Center">
+                            <Image Source="{Binding AvatarUrl}" WidthRequest="50" HeightRequest="50" Aspect="AspectFill">
+                                <Image.Clip>
+                                    <EllipseGeometry Center="25,25" RadiusX="25" RadiusY="25"/>
+                                </Image.Clip>
+                            </Image>
+                            <Label Text="{Binding Nome}" FontSize="16" FontFamily="InterSemiBold" TextColor="#1A1A1A" VerticalOptions="Center"/>
+                        </HorizontalStackLayout>
+                    </Border>
+                </DataTemplate>
+            </CollectionView.ItemTemplate>
+        </CollectionView>
+    </Grid>
+</ContentPage>

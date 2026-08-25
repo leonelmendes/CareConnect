@@ -51,7 +51,14 @@ public partial class DetalheUtenteViewModel : ObservableObject
     {
         if (value != null)
         {
-            // 1. Calcular Idade
+            // 1. SALVA-VIDAS DO ANDROID: Impedir que URLs inválidos (ex: "EMPTY_STRING") rebentem o telemóvel
+            if (string.IsNullOrWhiteSpace(value.AvatarUrl) || !value.AvatarUrl.StartsWith("http"))
+            {
+                // Se não for um link válido, força a usar a imagem local
+                value.AvatarUrl = "avatar_1.png";
+            }
+
+            // 2. Calcular Idade
             if (value.DataNascimento != default && value.DataNascimento != DateTime.MinValue)
             {
                 var hoje = DateTime.Today;
@@ -64,11 +71,12 @@ public partial class DetalheUtenteViewModel : ObservableObject
                 IdadeFormatada = "Data de nascimento não registada";
             }
 
-            // 2. Gerar Cartões das Condições (mantivemos a tua excelente lógica)
-            GerarCartoesCondicoes(value.CondicoesMedicas);
-
-            // 3. NOVO: Gerar Cartões dos Cuidadores Reais associados ao Paciente
-            GerarCartoesCuidadores(value.Cuidadores);
+            // 3. Forçar a atualização visual a correr na Thread Principal do ecrã
+            MainThread.BeginInvokeOnMainThread(() =>
+            {
+                GerarCartoesCondicoes(value.CondicoesMedicas);
+                GerarCartoesCuidadores(value.Cuidadores);
+            });
         }
     }
 
@@ -80,13 +88,18 @@ public partial class DetalheUtenteViewModel : ObservableObject
 
         foreach (var cuidador in cuidadoresDaApi)
         {
+            // Proteção idêntica para a foto do Cuidador
+            string fotoSegura = "avatar_elderly.png";
+            if (!string.IsNullOrWhiteSpace(cuidador.AvatarUrl) && cuidador.AvatarUrl.StartsWith("http"))
+            {
+                fotoSegura = cuidador.AvatarUrl;
+            }
+
             Cuidadores.Add(new CuidadorAtribuido
             {
-                Nome = cuidador.Nome,
-                // Assumindo que a classe User tem a propriedade Role (Enum), converte para texto.
-                // Se o teu modelo tiver algo diferente, ajusta aqui.
+                Nome = cuidador.Nome ?? "Desconhecido",
                 Cargo = "Cuidador",
-                FotoUrl = string.IsNullOrWhiteSpace(cuidador.AvatarUrl) ? "avatar_elderly.png" : cuidador.AvatarUrl
+                FotoUrl = fotoSegura // Usa a foto tratada e segura
             });
         }
     }
@@ -133,10 +146,19 @@ public partial class DetalheUtenteViewModel : ObservableObject
             return;
         }
 
-        if (PhoneDialer.Default.IsSupported)
+        try
+        {
+            // Forçamos a abertura do discador sem perguntar se é suportado
             PhoneDialer.Default.Open(UtenteRecebido.Contacto);
-        else
-            await _notificationService.MostrarAvisoAsync("Este dispositivo não suporta chamadas telefónicas.");
+        }
+        catch (FeatureNotSupportedException)
+        {
+            await _notificationService.MostrarAvisoAsync("O emulador não suporta chamadas reais, mas num telemóvel físico abriria o marcador.");
+        }
+        catch (Exception ex)
+        {
+            await _notificationService.MostrarAvisoAsync($"Erro ao tentar ligar: {ex.Message}");
+        }
     }
 
     [RelayCommand]
@@ -148,10 +170,19 @@ public partial class DetalheUtenteViewModel : ObservableObject
             return;
         }
 
-        if (PhoneDialer.Default.IsSupported)
+        try
+        {
+            // Forçamos a abertura do discador sem perguntar se é suportado
             PhoneDialer.Default.Open(UtenteRecebido.ContactoEmergencia);
-        else
-            await _notificationService.MostrarAvisoAsync("Este dispositivo não suporta chamadas telefónicas.");
+        }
+        catch (FeatureNotSupportedException)
+        {
+            await _notificationService.MostrarAvisoAsync("O emulador não suporta chamadas reais, mas num telemóvel físico abriria o marcador.");
+        }
+        catch (Exception ex)
+        {
+            await _notificationService.MostrarAvisoAsync($"Erro ao tentar ligar: {ex.Message}");
+        }
     }
 
     [RelayCommand]

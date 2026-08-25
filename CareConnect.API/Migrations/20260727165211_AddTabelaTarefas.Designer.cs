@@ -3,6 +3,7 @@ using System;
 using CareConnect.API.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace CareConnect.API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260727165211_AddTabelaTarefas")]
+    partial class AddTabelaTarefas
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -32,9 +35,6 @@ namespace CareConnect.API.Migrations
                         .IsRequired()
                         .HasColumnType("text");
 
-                    b.Property<Guid>("ExecutorId")
-                        .HasColumnType("uuid");
-
                     b.Property<string>("Frequencia")
                         .IsRequired()
                         .HasColumnType("text");
@@ -50,8 +50,6 @@ namespace CareConnect.API.Migrations
                         .HasColumnType("text");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("ExecutorId");
 
                     b.HasIndex("PatientId");
 
@@ -85,10 +83,10 @@ namespace CareConnect.API.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("DataCriacao")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<DateTime>("DataNascimento")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("GestorId")
                         .HasColumnType("uuid");
@@ -121,7 +119,7 @@ namespace CareConnect.API.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("DataHoraAgendada")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<Guid>("ExecutorId")
                         .HasColumnType("uuid");
@@ -141,7 +139,7 @@ namespace CareConnect.API.Migrations
                         .HasColumnType("integer");
 
                     b.Property<DateTime?>("TimestampExecucao")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Titulo")
                         .IsRequired()
@@ -172,7 +170,7 @@ namespace CareConnect.API.Migrations
                         .HasColumnType("text");
 
                     b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp without time zone");
+                        .HasColumnType("timestamp with time zone");
 
                     b.Property<string>("Email")
                         .IsRequired()
@@ -205,19 +203,11 @@ namespace CareConnect.API.Migrations
 
             modelBuilder.Entity("CareConnect.Shared.Models.CarePlan", b =>
                 {
-                    b.HasOne("CareConnect.Shared.Models.User", "Executor")
-                        .WithMany()
-                        .HasForeignKey("ExecutorId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
                     b.HasOne("CareConnect.Shared.Models.Patient", "Patient")
                         .WithMany("CarePlans")
                         .HasForeignKey("PatientId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-
-                    b.Navigation("Executor");
 
                     b.Navigation("Patient");
                 });

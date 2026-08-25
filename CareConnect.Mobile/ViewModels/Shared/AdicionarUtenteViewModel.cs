@@ -1,5 +1,5 @@
-﻿using CareConnect.Mobile.Models;
-using CareConnect.Mobile.Services;
+﻿using CareConnect.Mobile.Services;
+using CareConnect.Shared.DTOs;
 using CareConnect.Shared.Models;
 using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
@@ -49,19 +49,26 @@ public partial class AdicionarUtenteViewModel : ObservableObject
 
     private async Task CarregarDadosReaisAsync()
     {
-        // Aqui simulamos as condições.
+        // Mantém as condições médicas predefinidas
         CondicoesDisponiveis = new ObservableCollection<string> { "Nenhuma", "Diabetes Tipo 2", "Hipertensão", "DPOC", "Alzheimer", "Cardiopatia" };
         CondicaoSelecionada = "Nenhuma";
 
-        // TODO: Aqui deves chamar a tua API para ir buscar a lista de Cuidadores da tua empresa.
-        // Exemplo: var cuidadores = await _userService.GetCuidadoresAsync();
-        // Por agora, mantém o mock para não quebrar a compilação:
-        CuidadoresDisponiveis = new ObservableCollection<CuidadorResumo>
+        try
         {
-            new CuidadorResumo { Id = Guid.NewGuid(), Nome = "Ana Silva" },
-            new CuidadorResumo { Id = Guid.NewGuid(), Nome = "Sarah Miller" },
-            new CuidadorResumo { Id = Guid.NewGuid(), Nome = "Michael Brown" }
-        };
+            // 1. Vai à API buscar a lista real de cuidadores
+            var cuidadoresReais = await _patientService.ObterCuidadoresDisponiveisAsync();
+
+            // 2. Limpa a lista atual (caso tenha lixo) e adiciona os reais
+            CuidadoresDisponiveis.Clear();
+            foreach (var cuidador in cuidadoresReais)
+            {
+                CuidadoresDisponiveis.Add(cuidador);
+            }
+        }
+        catch (Exception ex)
+        {
+            await _notificationService.MostrarErroAsync("Não foi possível carregar a lista de cuidadores.");
+        }
     }
 
     [RelayCommand] private void AumentarIdade() => Idade++;
@@ -122,7 +129,6 @@ public partial class AdicionarUtenteViewModel : ObservableObject
         {
             IsLoading = true;
 
-            // 1. Mapeamento exato para a tua classe Patient
             var novoPaciente = new Patient
             {
                 Nome = NomeCompleto,
@@ -132,7 +138,10 @@ public partial class AdicionarUtenteViewModel : ObservableObject
                 CondicoesMedicas = CondicaoSelecionada,
                 Alergias = Alergias,
                 Ativo = true,
-                Notas = Notas //!string.IsNullOrWhiteSpace(CuidadorSelecionado) ? $"Cuidador atribuído: {CuidadorSelecionado}" : "Nenhum cuidador inicial atribuído."
+                Notas = Notas,
+                CuidadoresIds = CuidadorSelecionado != null
+                    ? new List<Guid> { CuidadorSelecionado.Id }
+                    : new List<Guid>()
             };
 
             // 2. Grava na Base de Dados

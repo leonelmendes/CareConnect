@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
 namespace CareConnect.Shared.Models;
@@ -22,6 +23,9 @@ public class Patient
     // Chave Estrangeira (Guarda apenas o ID do Gestor)
     public Guid GestorId { get; set; }
 
+    // Chave estrangeira  Utente
+    //public Guid? CuidadorId { get; set; }
+
     // Propriedades de Navegação (Obrigatórias para o AppDbContext funcionar)
     [JsonIgnore]
     public User? Gestor { get; set; }
@@ -29,6 +33,9 @@ public class Patient
     [JsonIgnore]
     public ICollection<CarePlan> CarePlans { get; set; } = new List<CarePlan>();
 
-    [JsonIgnore]
+    //[JsonIgnore]
     public ICollection<User> Cuidadores { get; set; } = new List<User>();
+
+    [NotMapped] // Usa o NotMapped do Entity Framework para não tentar criar esta coluna na base de dados
+    public List<Guid>? CuidadoresIds { get; set; } = new List<Guid>();
 }
