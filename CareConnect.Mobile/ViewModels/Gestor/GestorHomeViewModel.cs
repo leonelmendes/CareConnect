@@ -17,7 +17,6 @@ public partial class GestorHomeViewModel : ObservableObject
     private readonly PatientService _patientService;
     private readonly TarefaService _tarefaService;
 
-    // --- PROPRIEDADES DINÂMICAS DA HOME ---
     [ObservableProperty]
     private string _nomeGestor = "Carregando...";
 
@@ -30,12 +29,10 @@ public partial class GestorHomeViewModel : ObservableObject
     [ObservableProperty]
     private bool _isLoading;
 
-    // ⚠️ LISTA REAL DE UTENTES VINDA DA BASE DE DADOS
     public ObservableCollection<Patient> Pacientes { get; } = new();
 
     public ObservableCollection<AlertaRecente> Alertas { get; } = new();
 
-    // --- DADOS PARA O GRÁFICO DONUT (Daily Summary) ---
     public ISeries[] ResumoDiarioSeries { get; set; } =
     {
         new PieSeries<int> { Values = new[] { 32 }, Name = "Completed", InnerRadius = 50, Fill = new SolidColorPaint(SKColor.Parse("#10B981")) },
@@ -43,22 +40,19 @@ public partial class GestorHomeViewModel : ObservableObject
         new PieSeries<int> { Values = new[] { 8 }, Name = "Pending", InnerRadius = 50, Fill = new SolidColorPaint(SKColor.Parse("#E5E7EB")) }
     };
 
-    // --- DADOS PARA O GRÁFICO DE BARRAS (Care Tasks Activity) ---
     public ISeries[] AtividadeSeries { get; set; } =
     {
         new ColumnSeries<int>
         {
             Values = new[] { 2, 4, 3, 7, 4, 5, 3 },
             Fill = new SolidColorPaint(SKColor.Parse("#2563EB")),
-            Rx = 6, // Arredonda os cantos superiores das barras (como no Figma!)
+            Rx = 6, 
             Ry = 6
         }
     };
 
-    // Esconde as linhas de fundo do eixo Y para ficar limpo
     public Axis[] EixoY { get; set; } = { new Axis { IsVisible = false } };
     
-    // Rótulos do eixo X (00h, 08h, etc)
     public Axis[] EixoX { get; set; } = { 
         new Axis { 
             Labels = new[] { "00h", "", "08h", "", "16h", "", "24h" },
@@ -89,7 +83,6 @@ public partial class GestorHomeViewModel : ObservableObject
             var nomeGuardado = Preferences.Default.Get("user_nome", "Gestor");
             NomeGestor = string.IsNullOrWhiteSpace(nomeGuardado) ? "Gestor" : nomeGuardado;
 
-            // --- CARREGAR UTENTES ---
             var listaPacientes = await _patientService.GetMyPatientsAsync();
 
             Pacientes.Clear();
@@ -103,7 +96,6 @@ public partial class GestorHomeViewModel : ObservableObject
 
             TotalUtentesAtivos = ativosCount.ToString();
 
-            // --- CARREGAR ALERTAS (TAREFAS AD-HOC DE HOJE) ---
             var tarefasDeHoje = await _tarefaService.ObterTarefasPorDataAsync(DateTime.Today);
             CalcularAlertas(tarefasDeHoje);
         }
@@ -116,7 +108,6 @@ public partial class GestorHomeViewModel : ObservableObject
             IsLoading = false;
         }
 
-        // Limpa os alertas antigos antes de adicionar os novos para evitar duplicados
         Alertas.Clear();
         Alertas.Add(new AlertaRecente { Titulo = "João Silva", Descricao = "Sinais vitais fora do intervalo", Tempo = "Há 15 min", CorIcone = "#FEE2E2", ImagemIcone = "icon_alert_red" });
         Alertas.Add(new AlertaRecente { Titulo = "Ana Ferreira", Descricao = "Lembrete de medicamento esquecido", Tempo = "Há 45 min", CorIcone = "#FEF3C7", ImagemIcone = "icon_alert_yellow" });
@@ -141,7 +132,6 @@ public partial class GestorHomeViewModel : ObservableObject
         await Shell.Current.GoToAsync("//UtentesView");
     }
 
-    // ⚠️ 3. Comando para navegar para a seleção de relatórios
     [RelayCommand]
     private async Task AbrirRelatoriosAsync()
     {
@@ -150,7 +140,6 @@ public partial class GestorHomeViewModel : ObservableObject
 
     private void CalcularAlertas(List<TarefaResumo> todasTarefasDoDia)
     {
-        // Conta quantas tarefas são Ad-Hoc e atualiza o ecrã automaticamente
         NumeroAlertas = todasTarefasDoDia.Count(t => t.IsAdHoc);
     }
 }

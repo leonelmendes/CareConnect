@@ -1,5 +1,4 @@
 <Solution>
-  <Project Path="CareConnect.API/CareConnect.API.csproj" />
   <Project Path="CareConnect.Mobile/CareConnect.Mobile.csproj" />
   <Project Path="CareConnect.Shared/CareConnect.Shared.csproj" />
 </Solution>
